@@ -105,9 +105,9 @@ Deve-se criar testes unitários para garantir o funcionamento das estruturas cri
 
 Deve-se enviar os dados obtidos a cada 10 segundos para uma API com a seguinte rota
 
-`POST /telemetry/gyroscope` - Dados do giroscópio;
-`POST /telemetry/gps` - Dados do GPS;
-`POST /telemetry/photo` - Dados da Foto;
+- `POST /telemetry/gyroscope` - Dados do giroscópio;
+- `POST /telemetry/gps` - Dados do GPS;
+- `POST /telemetry/photo` - Dados da Foto;
 
 ## Nível 4
 
@@ -115,7 +115,7 @@ Deve-se realizar um _crop_ da foto obtida para que se consiga extrair somente um
 
 ## Nível 5
 
-Faça com que cada uma das requisições ocorre de forma paralela, e não de forma síncrona;
+Faça com que cada uma das requisições ocorra de forma paralela, e não de forma síncrona;
 
 # Desafio Backend
 
