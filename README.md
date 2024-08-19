@@ -1,7 +1,3 @@
-# Projeto Android: Coleta de Dados e Captura de Fotos
-
-Este projeto é uma aplicação Android que opera em segundo plano para coletar dados de localização e giroscópio, capturar fotos e verificar se essas fotos contêm rostos. Utiliza Room para persistência de dados e Retrofit para comunicação com um backend.
-
 ## Funcionalidades
 
 - **Serviço em Segundo Plano**: Coleta dados de localização e giroscópio periodicamente a cada 10 segundos.
