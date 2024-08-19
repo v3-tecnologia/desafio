@@ -127,9 +127,9 @@ Lembre-se essa aplicação precisa ser em GO!
 
 Deve-se criar uma API que receba requisições de acordo com os endpoints:
 
-`POST /telemetry/gyroscope` - Dados do giroscópio;
-`POST /telemetry/gps` - Dados do GPS;
-`POST /telemetry/photo` - Dados da Foto;
+- `POST /telemetry/gyroscope` - Dados do giroscópio;
+- `POST /telemetry/gps` - Dados do GPS;
+- `POST /telemetry/photo` - Dados da Foto;
 
 Deve-se garantir que os dados recebidos estão preenchidos corretamente.
 
