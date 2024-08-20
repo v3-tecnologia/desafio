@@ -1,2 +1,11 @@
 # temporary files
 tmp
+
+# binary files
+bin
+
+# environment variables
+.env
+
+# docker
+.docker
