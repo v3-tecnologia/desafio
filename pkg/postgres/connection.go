@@ -34,5 +34,11 @@ func NewPostgresConnection(cfg *config.Config) (*sqlx.DB, error) {
 
 	slog.Info("Connected successfully to the database!")
 
+	if err := runMigrations(db.DB, cfg.DatabaseConfig.DatabaseName); err != nil {
+		return nil, err
+	}
+
+	slog.Info("Migrations ran!")
+
 	return db, nil
 }
