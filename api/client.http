@@ -16,5 +16,7 @@ POST {{baseUrl}}/telemetry/gyroscope
 Content-Type: application/json
 
 {
-    "name": "dummy example"
+    "x": -192.4,
+    "y": 99.0,
+    "z": 12.944
 }
