@@ -14,6 +14,7 @@ import (
 	"github.com/charmingruby/g3/config"
 	"github.com/charmingruby/g3/internal/common/adapter"
 	"github.com/charmingruby/g3/internal/common/api/rest"
+	"github.com/charmingruby/g3/internal/common/constant"
 	"github.com/charmingruby/g3/internal/telemetry/database/postgres_repository"
 	"github.com/charmingruby/g3/internal/telemetry/domain/usecase"
 	v1 "github.com/charmingruby/g3/internal/telemetry/transport/rest/endpoint/v1"
@@ -91,7 +92,7 @@ func initDependencies(router *gin.Engine, db *sqlx.DB) {
 		os.Exit(1)
 	}
 
-	storageAdapter := adapter.NewLocalStorageAdapter("./tmp/files")
+	storageAdapter := adapter.NewLocalStorageAdapter(constant.FilesDirectory)
 
 	telemetryService := usecase.NewTelemetryUseCaseRegistry(gpsRepo, gyroscopeRepo, photoRepo, storageAdapter)
 
