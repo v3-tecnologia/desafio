@@ -9,6 +9,7 @@ import (
 	"github.com/charmingruby/g3/internal/common/api/rest"
 	"github.com/charmingruby/g3/internal/common/custom_err"
 	"github.com/charmingruby/g3/internal/telemetry/domain/dto"
+	"github.com/charmingruby/g3/internal/telemetry/transport/rest/endpoint/v1/presenter"
 	"github.com/gin-gonic/gin"
 )
 
@@ -58,5 +59,7 @@ func (h *Handler) createPhotoEndpoint(c *gin.Context) {
 		return
 	}
 
-	rest.NewCreatedResponse(c, "gyroscope", output)
+	mappedPhoto := presenter.DomainPhotoToHTTP(output.Photo)
+
+	rest.NewCreatedResponse(c, "photo", mappedPhoto)
 }
