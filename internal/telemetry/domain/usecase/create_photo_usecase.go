@@ -39,6 +39,8 @@ func (r *TelemetryUseCaseRegistry) CreatePhotoUseCase(input dto.CreatePhotoInput
 	photo.AmountOfFacesDetected = len(detections)
 
 	if photo.AmountOfFacesDetected > 0 {
+		photo.IsRecognized = true
+
 		var sum float64
 		for _, item := range detections {
 			sum += item.Confidence
