@@ -1,4 +1,4 @@
-package v1_presenter
+package presenter
 
 import (
 	"time"

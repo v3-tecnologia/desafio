@@ -4,7 +4,7 @@ import (
 	"github.com/charmingruby/g3/internal/common/api/api_rest"
 	"github.com/charmingruby/g3/internal/common/custom_err"
 	"github.com/charmingruby/g3/internal/telemetry/domain/dto"
-	"github.com/charmingruby/g3/internal/telemetry/transport/rest/endpoint/v1/v1_presenter"
+	"github.com/charmingruby/g3/internal/telemetry/transport/rest/endpoint/v1/presenter"
 	"github.com/gin-gonic/gin"
 )
 
@@ -37,7 +37,7 @@ func (h *Handler) createGPSEndpoint(c *gin.Context) {
 		return
 	}
 
-	mappedGPS := v1_presenter.DomainGPSToHTTP(output.GPS)
+	mappedGPS := presenter.DomainGPSToHTTP(output.GPS)
 
 	api_rest.NewCreatedResponse(c, "gps", mappedGPS)
 }
