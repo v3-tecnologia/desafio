@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/charmingruby/g3/internal/common/custom_err"
@@ -9,12 +11,12 @@ import (
 
 func Test_NewPhoto(t *testing.T) {
 	t.Run("it should be able to assign all fields if valid", func(t *testing.T) {
-		imageURL := "image_url"
+		fileName := "test.txt"
 		isRecognized := true
 
 		p, err := NewPhoto(
 			PhotoProps{
-				ImageURL:     imageURL,
+				Filename:     fileName,
 				IsRecognized: isRecognized,
 			},
 		)
@@ -22,6 +24,11 @@ func Test_NewPhoto(t *testing.T) {
 		assert.NotNil(t, p)
 		assert.NoError(t, err)
 		assert.NotEmpty(t, p.ID)
+
+		imgURLParts := strings.Split(p.ImageURL, "_")
+
+		imageURL := fmt.Sprintf("%s_%s", imgURLParts[0], fileName)
+
 		assert.Equal(t, imageURL, p.ImageURL)
 		assert.Equal(t, isRecognized, p.IsRecognized)
 	})

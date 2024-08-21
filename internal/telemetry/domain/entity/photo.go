@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/charmingruby/g3/internal/common/core"
@@ -8,14 +9,14 @@ import (
 )
 
 type PhotoProps struct {
-	ImageURL     string
+	Filename     string
 	IsRecognized bool
 }
 
 func NewPhoto(props PhotoProps) (*Photo, error) {
 	p := Photo{
 		ID:           core.NewID(),
-		ImageURL:     props.ImageURL,
+		ImageURL:     props.Filename,
 		IsRecognized: props.IsRecognized,
 		CreatedAt:    time.Now(),
 	}
@@ -23,6 +24,8 @@ func NewPhoto(props PhotoProps) (*Photo, error) {
 	if err := p.validate(); err != nil {
 		return nil, err
 	}
+
+	p.ImageURL = fmt.Sprintf("%s_%s", time.Now().String(), props.Filename)
 
 	return &p, nil
 }
