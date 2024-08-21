@@ -18,6 +18,7 @@ import (
 	"github.com/charmingruby/g3/internal/telemetry/database/postgres_repository"
 	"github.com/charmingruby/g3/internal/telemetry/domain/usecase"
 	v1 "github.com/charmingruby/g3/internal/telemetry/transport/rest/endpoint/v1"
+	"github.com/charmingruby/g3/pkg/aws"
 	"github.com/charmingruby/g3/pkg/postgres"
 	"github.com/charmingruby/g3/test/inmemory_repository"
 	"github.com/gin-gonic/gin"
@@ -48,7 +49,7 @@ func main() {
 	router := gin.Default()
 	rest.SetupCORS(router)
 
-	initDependencies(router, db)
+	initDependencies(router, *cfg, db)
 
 	server := rest.NewServer(router, "3000")
 
@@ -77,7 +78,7 @@ func main() {
 	slog.Info("Gracefully shutdown!")
 }
 
-func initDependencies(router *gin.Engine, db *sqlx.DB) {
+func initDependencies(router *gin.Engine, cfg config.Config, db *sqlx.DB) {
 	gpsRepo, err := postgres_repository.NewGPSPostgresRepository(db)
 	if err != nil {
 		slog.Error(fmt.Sprintf("DATABASE REPOSITORY: %s", err.Error()))
@@ -92,9 +93,12 @@ func initDependencies(router *gin.Engine, db *sqlx.DB) {
 		os.Exit(1)
 	}
 
-	storageAdapter := adapter.NewLocalStorageAdapter(constant.FilesDirectory)
+	aws := aws.NewAWSInstance(cfg)
 
-	telemetryService := usecase.NewTelemetryUseCaseRegistry(gpsRepo, gyroscopeRepo, photoRepo, storageAdapter)
+	storageAdapter := adapter.NewLocalStorageAdapter(constant.FilesDirectory)
+	recognizerAdapter := adapter.NewAWSRekognitionRecognizerAdapter(aws.Rekognition)
+
+	telemetryService := usecase.NewTelemetryUseCaseRegistry(gpsRepo, gyroscopeRepo, photoRepo, storageAdapter, recognizerAdapter)
 
 	v1.NewHandler(router, &telemetryService).Register()
 }

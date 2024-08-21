@@ -17,18 +17,21 @@ func NewTelemetryUseCaseRegistry(
 	gyroscopeRepo repository.GyroscopeRepository,
 	photoRepo repository.PhotoRepository,
 	storagePort port.StoragePort,
+	recognizerPort port.RecognizerPort,
 ) TelemetryUseCaseRegistry {
 	return TelemetryUseCaseRegistry{
-		gpsRepo:       gpsRepo,
-		gyroscopeRepo: gyroscopeRepo,
-		photoRepo:     photoRepo,
-		storagePort:   storagePort,
+		gpsRepo:        gpsRepo,
+		gyroscopeRepo:  gyroscopeRepo,
+		photoRepo:      photoRepo,
+		storagePort:    storagePort,
+		recognizerPort: recognizerPort,
 	}
 }
 
 type TelemetryUseCaseRegistry struct {
-	gpsRepo       repository.GPSRepository
-	gyroscopeRepo repository.GyroscopeRepository
-	photoRepo     repository.PhotoRepository
-	storagePort   port.StoragePort
+	gpsRepo        repository.GPSRepository
+	gyroscopeRepo  repository.GyroscopeRepository
+	photoRepo      repository.PhotoRepository
+	storagePort    port.StoragePort
+	recognizerPort port.RecognizerPort
 }

@@ -24,7 +24,7 @@ func (s *Suite) SetupSuite() {
 	s.gyroscopeRepo = inmemory_repository.NewGyroscopeInMemoryRepository()
 	s.photoRepo = inmemory_repository.NewPhotoInMemoryRepository()
 	s.storageAdapter = inmemory_adapter.NewStorageInMemoryAdapter()
-	s.useCase = NewTelemetryUseCaseRegistry(s.gpsRepo, s.gyroscopeRepo, s.photoRepo, s.storageAdapter)
+	s.useCase = NewTelemetryUseCaseRegistry(s.gpsRepo, s.gyroscopeRepo, s.photoRepo, s.storageAdapter, s.useCase.recognizerPort)
 }
 
 func (s *Suite) SetupTest() {

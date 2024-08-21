@@ -25,6 +25,28 @@ func (r *TelemetryUseCaseRegistry) CreatePhotoUseCase(input dto.CreatePhotoInput
 		return dto.CreatePhotoOutputDTO{}, err
 	}
 
+	detections, err := r.recognizerPort.Recognize(photo.ImageURL)
+	if err != nil {
+		log.InternalErrLog(
+			"CreatePhotoUseCase",
+			"Recognizer port",
+			err,
+		)
+
+		return dto.CreatePhotoOutputDTO{}, custom_err.NewInternalErr()
+	}
+
+	photo.AmountOfFacesDetected = len(detections)
+
+	if photo.AmountOfFacesDetected > 0 {
+		var sum float64
+		for _, item := range detections {
+			sum += item.Confidence
+		}
+
+		photo.ConfidenceMean = sum / float64(len(detections))
+	}
+
 	if err := r.photoRepo.Store(*photo); err != nil {
 		log.InternalErrLog(
 			"CreatePhotoUseCase",
