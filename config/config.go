@@ -7,11 +7,13 @@ import (
 )
 
 type environment struct {
-	DatabaseUser     string `env:"DATABASE_USER,required"`
-	DatabasePassword string `env:"DATABASE_PASSWORD,required"`
-	DatabaseHost     string `env:"DATABASE_HOST,required"`
-	DatabaseName     string `env:"DATABASE_NAME,required"`
-	DatabaseSSL      string `env:"DATABASE_SSL,required"`
+	DatabaseUser       string `env:"DATABASE_USER,required"`
+	DatabasePassword   string `env:"DATABASE_PASSWORD,required"`
+	DatabaseHost       string `env:"DATABASE_HOST,required"`
+	DatabaseName       string `env:"DATABASE_NAME,required"`
+	DatabaseSSL        string `env:"DATABASE_SSL,required"`
+	AWSSecretAccessKey string `env:"AWS_SECRET_ACCESS_KEY,required"`
+	AWSAccessKeyID     string `env:"AWS_ACCESS_KEY,required"`
 }
 
 func NewConfig() (*Config, error) {
@@ -31,12 +33,17 @@ func NewConfig() (*Config, error) {
 			DatabaseName: environment.DatabaseName,
 			SSL:          environment.DatabaseSSL,
 		},
+		AWSConfig: &awsConfig{
+			AccessKeyID:     environment.AWSAccessKeyID,
+			SecretAccessKey: environment.AWSSecretAccessKey,
+		},
 	}
 
 	return &cfg, nil
 }
 
 type Config struct {
+	AWSConfig      *awsConfig
 	DatabaseConfig *databaseConfig
 }
 
@@ -46,4 +53,9 @@ type databaseConfig struct {
 	Host         string
 	DatabaseName string
 	SSL          string
+}
+
+type awsConfig struct {
+	AccessKeyID     string
+	SecretAccessKey string
 }
