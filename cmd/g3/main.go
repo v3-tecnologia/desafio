@@ -13,11 +13,13 @@ import (
 
 	"github.com/charmingruby/g3/config"
 	"github.com/charmingruby/g3/internal/common/api/api_rest"
+	"github.com/charmingruby/g3/internal/telemetry/database/postgres_repository"
 	"github.com/charmingruby/g3/internal/telemetry/domain/usecase"
 	v1 "github.com/charmingruby/g3/internal/telemetry/transport/rest/endpoint/v1"
 	"github.com/charmingruby/g3/pkg/postgres"
 	"github.com/charmingruby/g3/test/inmemory_repository"
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 )
 
@@ -35,7 +37,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	_, err = postgres.NewPostgresConnection(cfg)
+	db, err := postgres.NewPostgresConnection(cfg)
 	if err != nil {
 		slog.Error(fmt.Sprintf("DATABASE: %s", err.Error()))
 		os.Exit(1)
@@ -44,7 +46,7 @@ func main() {
 	router := gin.Default()
 	api_rest.SetupCORS(router)
 
-	initDependencies(router)
+	initDependencies(router, db)
 
 	server := api_rest.NewServer(router, "3000")
 
@@ -73,10 +75,15 @@ func main() {
 	slog.Info("Gracefully shutdown!")
 }
 
-func initDependencies(router *gin.Engine) {
+func initDependencies(router *gin.Engine, db *sqlx.DB) {
 	gpsRepo := inmemory_repository.NewGPSInMemoryRepository()
 	photoRepo := inmemory_repository.NewPhotoInMemoryRepository()
-	gyroscopeRepo := inmemory_repository.NewGyroscopeInMemoryRepository()
+
+	gyroscopeRepo, err := postgres_repository.NewGyroscopePostgresRepository(db)
+	if err != nil {
+		slog.Error(fmt.Sprintf("DATABASE REPOSITORY: %s", err.Error()))
+		os.Exit(1)
+	}
 
 	telemetryService := usecase.NewTelemetryUseCaseRegistry(gpsRepo, gyroscopeRepo, photoRepo)
 
