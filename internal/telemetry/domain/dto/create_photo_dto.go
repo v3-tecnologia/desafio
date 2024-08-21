@@ -1,10 +1,14 @@
 package dto
 
-import "github.com/charmingruby/g3/internal/telemetry/domain/entity"
+import (
+	"io"
+
+	"github.com/charmingruby/g3/internal/telemetry/domain/entity"
+)
 
 type CreatePhotoInputDTO struct {
-	ImageURL     string
-	IsRecognized bool
+	File     io.Reader
+	FileName string
 }
 
 type CreatePhotoOutputDTO struct {
