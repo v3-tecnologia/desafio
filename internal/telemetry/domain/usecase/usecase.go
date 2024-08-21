@@ -6,9 +6,9 @@ import (
 )
 
 type TelemetryUseCase interface {
-	CreatePhoto(input dto.CreatePhotoInputDTO) (dto.CreatePhotoOutputDTO, error)
-	CreateGPS(input dto.CreateGPSInputDTO) (dto.CreateGPSOutputDTO, error)
-	CreateGyroscope(input dto.CreateGyroscopeInputDTO) (dto.CreateGyroscopeOutputDTO, error)
+	CreatePhotoUseCase(input dto.CreatePhotoInputDTO) (dto.CreatePhotoOutputDTO, error)
+	CreateGPSUseCase(input dto.CreateGPSInputDTO) (dto.CreateGPSOutputDTO, error)
+	CreateGyroscopeUseCase(input dto.CreateGyroscopeInputDTO) (dto.CreateGyroscopeOutputDTO, error)
 }
 
 func NewTelemetryUseCaseRegistry(
