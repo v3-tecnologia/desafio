@@ -5,7 +5,8 @@ POST {{baseUrl}}/telemetry/gps
 Content-Type: application/json
 
 {
-    "name": "dummy example"
+    "latitude": 28.99,
+    "longitude": -491.99
 }
 
 ###
