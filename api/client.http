@@ -1,0 +1,19 @@
+@baseUrl = http://localhost:3000
+
+# @name create_gps
+POST {{baseUrl}}/telemetry/gps
+Content-Type: application/json
+
+{
+    "name": "dummy example"
+}
+
+###
+
+# @name create_gyroscope
+POST {{baseUrl}}/telemetry/gyroscope
+Content-Type: application/json
+
+{
+    "name": "dummy example"
+}

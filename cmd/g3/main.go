@@ -13,7 +13,10 @@ import (
 
 	"github.com/charmingruby/g3/config"
 	"github.com/charmingruby/g3/internal/common/api/api_rest"
+	"github.com/charmingruby/g3/internal/telemetry/domain/usecase"
+	v1 "github.com/charmingruby/g3/internal/telemetry/transport/rest/endpoint/v1"
 	"github.com/charmingruby/g3/pkg/postgres"
+	"github.com/charmingruby/g3/test/inmemory_repository"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -41,7 +44,7 @@ func main() {
 	router := gin.Default()
 	api_rest.SetupCORS(router)
 
-	// init dependencies
+	initDependencies(router)
 
 	server := api_rest.NewServer(router, "3000")
 
@@ -68,4 +71,14 @@ func main() {
 	}
 
 	slog.Info("Gracefully shutdown!")
+}
+
+func initDependencies(router *gin.Engine) {
+	gpsRepo := inmemory_repository.NewGPSInMemoryRepository()
+	photoRepo := inmemory_repository.NewPhotoInMemoryRepository()
+	gyroscopeRepo := inmemory_repository.NewGyroscopeInMemoryRepository()
+
+	telemetryService := usecase.NewTelemetryUseCaseRegistry(gpsRepo, gyroscopeRepo, photoRepo)
+
+	v1.NewHandler(router, &telemetryService).Register()
 }
