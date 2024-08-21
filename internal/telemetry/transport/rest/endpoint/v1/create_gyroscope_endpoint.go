@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/charmingruby/g3/internal/common/api/api_rest"
+	"github.com/charmingruby/g3/internal/common/api/rest"
 	"github.com/charmingruby/g3/internal/common/custom_err"
 	"github.com/charmingruby/g3/internal/telemetry/domain/dto"
 	"github.com/charmingruby/g3/internal/telemetry/transport/rest/endpoint/v1/presenter"
@@ -17,7 +17,7 @@ type CreateGyroscopeRequest struct {
 func (h *Handler) createGyroscopeEndpoint(c *gin.Context) {
 	var req CreateGyroscopeRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		api_rest.NewPayloadError(c, err)
+		rest.NewPayloadError(c, err)
 		return
 	}
 
@@ -31,15 +31,15 @@ func (h *Handler) createGyroscopeEndpoint(c *gin.Context) {
 	if err != nil {
 		validationErr, ok := err.(*custom_err.ErrValidation)
 		if ok {
-			api_rest.NewEntityError(c, validationErr)
+			rest.NewEntityError(c, validationErr)
 			return
 		}
 
-		api_rest.NewInternalServerError(c, err)
+		rest.NewInternalServerError(c, err)
 		return
 	}
 
 	mappedGyroscope := presenter.DomainGyroscopeToHTTP(output.Gyroscope)
 
-	api_rest.NewCreatedResponse(c, "gyroscope", mappedGyroscope)
+	rest.NewCreatedResponse(c, "gyroscope", mappedGyroscope)
 }

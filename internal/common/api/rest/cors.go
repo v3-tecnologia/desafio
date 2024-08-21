@@ -1,4 +1,4 @@
-package api_rest
+package rest
 
 import (
 	"github.com/gin-contrib/cors"

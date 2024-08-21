@@ -1,4 +1,4 @@
-package api_rest
+package rest
 
 import (
 	"log/slog"

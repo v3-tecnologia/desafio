@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/charmingruby/g3/config"
-	"github.com/charmingruby/g3/internal/common/api/api_rest"
+	"github.com/charmingruby/g3/internal/common/api/rest"
 	"github.com/charmingruby/g3/internal/telemetry/database/postgres_repository"
 	"github.com/charmingruby/g3/internal/telemetry/domain/usecase"
 	v1 "github.com/charmingruby/g3/internal/telemetry/transport/rest/endpoint/v1"
@@ -44,11 +44,11 @@ func main() {
 	}
 
 	router := gin.Default()
-	api_rest.SetupCORS(router)
+	rest.SetupCORS(router)
 
 	initDependencies(router, db)
 
-	server := api_rest.NewServer(router, "3000")
+	server := rest.NewServer(router, "3000")
 
 	go func() {
 		if err := server.Start(); err != nil && !errors.Is(err, http.ErrServerClosed) {
