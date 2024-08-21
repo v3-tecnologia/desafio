@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"github.com/charmingruby/g3/internal/telemetry/domain/dto"
+	"github.com/charmingruby/g3/internal/telemetry/domain/port"
 	"github.com/charmingruby/g3/internal/telemetry/domain/repository"
 )
 
@@ -15,11 +16,13 @@ func NewTelemetryUseCaseRegistry(
 	gpsRepo repository.GPSRepository,
 	gyroscopeRepo repository.GyroscopeRepository,
 	photoRepo repository.PhotoRepository,
+	storagePort port.StoragePort,
 ) TelemetryUseCaseRegistry {
 	return TelemetryUseCaseRegistry{
 		gpsRepo:       gpsRepo,
 		gyroscopeRepo: gyroscopeRepo,
 		photoRepo:     photoRepo,
+		storagePort:   storagePort,
 	}
 }
 
@@ -27,4 +30,5 @@ type TelemetryUseCaseRegistry struct {
 	gpsRepo       repository.GPSRepository
 	gyroscopeRepo repository.GyroscopeRepository
 	photoRepo     repository.PhotoRepository
+	storagePort   port.StoragePort
 }
