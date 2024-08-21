@@ -76,7 +76,12 @@ func main() {
 }
 
 func initDependencies(router *gin.Engine, db *sqlx.DB) {
-	gpsRepo := inmemory_repository.NewGPSInMemoryRepository()
+	gpsRepo, err := postgres_repository.NewGPSPostgresRepository(db)
+	if err != nil {
+		slog.Error(fmt.Sprintf("DATABASE REPOSITORY: %s", err.Error()))
+		os.Exit(1)
+	}
+
 	photoRepo := inmemory_repository.NewPhotoInMemoryRepository()
 
 	gyroscopeRepo, err := postgres_repository.NewGyroscopePostgresRepository(db)
