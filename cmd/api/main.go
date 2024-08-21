@@ -20,7 +20,6 @@ import (
 	v1 "github.com/charmingruby/g3/internal/telemetry/transport/rest/endpoint/v1"
 	"github.com/charmingruby/g3/pkg/aws"
 	"github.com/charmingruby/g3/pkg/postgres"
-	"github.com/charmingruby/g3/test/inmemory_repository"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
@@ -85,7 +84,11 @@ func initDependencies(router *gin.Engine, cfg config.Config, db *sqlx.DB) {
 		os.Exit(1)
 	}
 
-	photoRepo := inmemory_repository.NewPhotoInMemoryRepository()
+	photoRepo, err := postgres_repository.NewPhotoPostgresRepository(db)
+	if err != nil {
+		slog.Error(fmt.Sprintf("DATABASE REPOSITORY: %s", err.Error()))
+		os.Exit(1)
+	}
 
 	gyroscopeRepo, err := postgres_repository.NewGyroscopePostgresRepository(db)
 	if err != nil {

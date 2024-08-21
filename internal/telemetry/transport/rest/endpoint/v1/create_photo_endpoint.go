@@ -2,7 +2,6 @@ package v1
 
 import (
 	"fmt"
-	"net/http"
 	"path/filepath"
 	"strings"
 
@@ -16,7 +15,7 @@ import (
 func (h *Handler) createPhotoEndpoint(c *gin.Context) {
 	file, header, err := c.Request.FormFile("photo")
 	if err != nil {
-		c.String(http.StatusBadRequest, fmt.Sprintf("Erro ao receber o arquivo: %v", err))
+		rest.NewPayloadError(c, err)
 		return
 	}
 	defer file.Close()
