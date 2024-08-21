@@ -31,6 +31,8 @@ func Test_NewPhoto(t *testing.T) {
 
 		assert.Equal(t, imageURL, p.ImageURL)
 		assert.Equal(t, isRecognized, p.IsRecognized)
+		assert.Equal(t, 0.0, p.ConfidenceMean)
+		assert.Equal(t, 0, p.AmountOfFacesDetected)
 	})
 
 	t.Run("it should be not able to assign all fields if params are invalid", func(t *testing.T) {

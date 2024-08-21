@@ -15,10 +15,12 @@ type PhotoProps struct {
 
 func NewPhoto(props PhotoProps) (*Photo, error) {
 	p := Photo{
-		ID:           core.NewID(),
-		ImageURL:     props.Filename,
-		IsRecognized: props.IsRecognized,
-		CreatedAt:    time.Now(),
+		ID:                    core.NewID(),
+		ImageURL:              props.Filename,
+		IsRecognized:          props.IsRecognized,
+		AmountOfFacesDetected: 0,
+		ConfidenceMean:        0,
+		CreatedAt:             time.Now(),
 	}
 
 	if err := p.validate(); err != nil {
@@ -41,8 +43,10 @@ func (p *Photo) validate() error {
 }
 
 type Photo struct {
-	ID           string
-	ImageURL     string
-	IsRecognized bool
-	CreatedAt    time.Time
+	ID                    string
+	ImageURL              string
+	IsRecognized          bool
+	AmountOfFacesDetected int
+	ConfidenceMean        float64
+	CreatedAt             time.Time
 }
