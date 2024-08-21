@@ -153,4 +153,6 @@ Crie um _container_ em _Docker_ que contenha a sua aplicação e o banco de dado
 
 A cada foto recebida, deve-se utilizar o AWS Rekognition para comparar se a foto enviada é reconhecida com base nas fotos anteriores enviadas.
 
+Se a foto enviada for reconhecida, retorne como resposta do `POST` um atributo que indique isso.
+
 Utilize as fotos iniciais para realizar o treinamento da IA.
