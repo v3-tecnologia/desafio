@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "DesafioAndroidEmbarcado"
+rootProject.name = "Desafio Android Embarcado"
 include(":app")
