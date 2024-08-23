@@ -1,9 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 type db_table interface {
@@ -57,6 +61,9 @@ func makeHandler(ctor func() db_table) http.HandlerFunc {
 		r.Body.Read(content)
 		ptr := ctor()
 
+		log.Print(r)
+		log.Println(string(content[:]))
+
 		if !ptr.decode(content) {
 			http.Error(w, "Bad Request", http.StatusBadRequest)
 			return
@@ -67,6 +74,25 @@ func makeHandler(ctor func() db_table) http.HandlerFunc {
 }
 
 func main() {
+	cfg := mysql.Config{
+		User:   os.Getenv("DBUSER"),
+		Passwd: os.Getenv("DBPASS"),
+		Net:    "tcp",
+		Addr:   "localhost:3306",
+		DBName: "v3",
+	}
+
+	db, err := sql.Open("mysql", cfg.FormatDSN())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	pingErr := db.Ping()
+	if pingErr != nil {
+		log.Fatal(pingErr)
+	}
+	log.Println("Connected to the database!")
+
 	http.HandleFunc("POST /telemetry/gyroscope/", makeHandler(func() db_table { return &gyroscope{} }))
 	//http.HandleFunc("POST /telemetry/gps/", makeHandler(func() db_table { return &gps{} }))
 	//http.HandleFunc("POST /telemetry/photo/", makeHandler(func() db_table { return &photo }))
