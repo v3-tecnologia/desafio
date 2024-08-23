@@ -36,6 +36,14 @@ func NewGyroscope(name, model, macAddress string) (*Gyroscope, error) {
 	return gyroscope, nil
 }
 
+func (g *Gyroscope) SetMeasurement(x, y, z float64) error {
+	g.x = x
+	g.y = y
+	g.z = z
+	g.timestamp = time.Now()
+	return g.IsValid()
+}
+
 func (g *Gyroscope) Update(name, model, macAddress string) error {
 	g.name = name
 	g.model = model
