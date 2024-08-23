@@ -1,0 +1,93 @@
+@baseUrl = http://localhost:8080/api/v1
+@contentType = application/json
+
+### Cria um giroscópio válido
+POST {{baseUrl}}/gyroscopes
+Content-Type:{{contentType}}
+
+{
+  "mac_address": "00:1B:44:11:3A:B7",
+  "model": "XYZ-2023",
+  "name": "Gyro-X1000",
+  "x": 0.5,
+  "y": -0.3,
+  "z": 1.2
+}
+
+### Cria um giroscópio com valores mínimos
+POST {{baseUrl}}/gyroscopes
+Content-Type:{{contentType}}
+
+{
+  "mac_address": "00:1A:2B:3C:4D:5E",
+  "model": "ABC-100",
+  "name": "Gyro-Mini",
+  "x": 0,
+  "y": 0,
+  "z": 0
+}
+
+### Cria um giroscópio com valores máximos
+POST {{baseUrl}}/gyroscopes
+Content-Type:{{contentType}}
+
+{
+  "name": "Gyro-Max",
+  "model": "MAX-9999",
+  "mac_address": "FF:FF:FF:FF:FF:FF",
+  "x": 999.999,
+  "y": -999.999,
+  "z": 999.999
+}
+
+### Tentativa de criar um giroscópio com nome vazio (deve falhar)
+POST {{baseUrl}}/gyroscopes
+Content-Type:{{contentType}}
+
+{
+  "name": "",
+  "model": "Test-Model",
+  "mac_address": "00:1B:44:11:3A:B7",
+  "x": 0.5,
+  "y": -0.3,
+  "z": 1.2
+}
+
+### Tentativa de criar um giroscópio com modelo vazio (deve falhar)
+POST {{baseUrl}}/gyroscopes
+Content-Type:{{contentType}}
+
+{
+  "name": "Test-Gyro",
+  "model": "",
+  "mac_address": "00:1B:44:11:3A:B7",
+  "x": 0.5,
+  "y": -0.3,
+  "z": 1.2
+}
+
+### Tentativa de criar um giroscópio com endereço MAC vazio (deve falhar)
+POST {{baseUrl}}/gyroscopes
+Content-Type:{{contentType}}
+
+{
+  "name": "Test-Gyro",
+  "model": "Test-Model",
+  "mac_address": "",
+  "x": 0.5,
+  "y": -0.3,
+  "z": 1.2
+}
+
+### Tentativa de criar um giroscópio com endereço MAC inválido (deve falhar)
+POST {{baseUrl}}/gyroscopes
+Content-Type:{{contentType}}
+
+{
+  "name": "Test-Gyro",
+  "model": "Test-Model",
+  "mac_address": "invalid-mac",
+  "x": 0.5,
+  "y": -0.3,
+  "z": 1.2
+}

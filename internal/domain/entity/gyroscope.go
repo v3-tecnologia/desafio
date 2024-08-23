@@ -18,15 +18,15 @@ type Gyroscope struct {
 	macAddress string
 }
 
-func NewGyroscope(name, model, macAddress string) (*Gyroscope, error) {
+func NewGyroscope(name, model string, x, y, z float64, macAddress string) (*Gyroscope, error) {
 	gyroscope := &Gyroscope{
 		id:         uuid.New().String(),
 		name:       name,
 		model:      model,
 		macAddress: macAddress,
-		x:          0,
-		y:          0,
-		z:          0,
+		x:          x,
+		y:          y,
+		z:          z,
 		timestamp:  time.Now(),
 	}
 	err := gyroscope.IsValid()
@@ -34,14 +34,6 @@ func NewGyroscope(name, model, macAddress string) (*Gyroscope, error) {
 		return nil, err
 	}
 	return gyroscope, nil
-}
-
-func (g *Gyroscope) SetMeasurement(x, y, z float64) error {
-	g.x = x
-	g.y = y
-	g.z = z
-	g.timestamp = time.Now()
-	return g.IsValid()
 }
 
 func (g *Gyroscope) Update(name, model, macAddress string) error {

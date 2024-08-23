@@ -1,0 +1,65 @@
+basePath: /api/v1
+definitions:
+  dto.CreateGyroscopeInputDTO:
+    properties:
+      mac_address:
+        type: string
+      model:
+        type: string
+      name:
+        type: string
+      x:
+        type: number
+      "y":
+        type: number
+      z:
+        type: number
+    required:
+    - mac_address
+    - model
+    - name
+    - x
+    - "y"
+    - z
+    type: object
+  web.Error:
+    properties:
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a telemetry microservice API.
+  title: telemetry Service API
+  version: "1.0"
+paths:
+  /gyroscopes:
+    post:
+      consumes:
+      - application/json
+      description: "Create\tgyroscope"
+      parameters:
+      - description: gyroscope request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateGyroscopeInputDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.Error'
+      summary: "Create\tgyroscope"
+      tags:
+      - gyroscopes
+swagger: "2.0"

@@ -16,5 +16,54 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres:
+    image: postgres:13
+    container_name: telemetry_db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    image: migrate/migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./internal/infra/database/migrations:/migrations
+    command: [ "-path", "/migrations", "-database", "postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable", "up" ]
+
+  app:
+    build: .
+    container_name: telemetry_service
+    env_file: .env
+    environment:
+      DB_DRIVER: ${DB_DRIVER}
+      DB_HOST: postgres
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      WEB_SERVER_PORT: ${WEB_SERVER_PORT}
+    ports:
+      - "${WEB_SERVER_PORT}:${WEB_SERVER_PORT}"
+    volumes:
+      - ./.env:/root/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
 volumes:
+  postgres_data:
   postgres_test_data:

@@ -91,10 +91,7 @@ func (suite *GyroscopeRepositoryTestSuite) TestCreate() {
 	model := "Test Model"
 	macAddress := "00:11:22:33:44:55"
 
-	gyroscope, err := entity.NewGyroscope(name, model, macAddress)
-	assert.NoError(suite.T(), err)
-
-	err = gyroscope.SetMeasurement(1.0, 2.0, 3.0)
+	gyroscope, err := entity.NewGyroscope(name, model, 1.0, 2.0, 3.0, macAddress)
 	assert.NoError(suite.T(), err)
 
 	err = suite.Repository.Create(gyroscope)
