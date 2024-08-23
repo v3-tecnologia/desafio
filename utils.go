@@ -10,7 +10,7 @@ import (
 
 type db_table interface {
 	decode([]byte) bool
-	persist(*sql.DB) bool
+	persist(*sql.DB) error
 }
 
 func makeHandler(ctor func() db_table, db *sql.DB) http.HandlerFunc {
@@ -27,7 +27,7 @@ func makeHandler(ctor func() db_table, db *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		if !ptr.persist(db) {
+		if ptr.persist(db) != nil {
 			http.Error(w, "Database error", http.StatusInternalServerError)
 		}
 	}
