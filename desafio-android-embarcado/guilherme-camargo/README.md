@@ -19,6 +19,7 @@
     - [CustomCameraManager](#customcameramanager)
     - [GyroscopeManager](#gyroscopemanager)
     - [LocationManager](#locationmanager)
+    - [DatabaseManager](#databasemanager)
     - [LogWriter](#logwriter)
   - [Como Iniciar o Aplicativo Usando ADB](#como-iniciar-o-aplicativo-usando-adb)
     - [Iniciando o Serviço em Primeiro Plano](#iniciando-o-serviço-em-primeiro-plano)
@@ -52,11 +53,11 @@ A aplicação foi desenvolvida em níveis, cada um com seus próprios objetivos 
 
 ### Nível 1: Coleta e Armazenamento de Dados
 
-- [ ] Coletar dados de giroscópio (x, y, z) e armazená-los com TIMESTAMP.
-- [ ] Coletar dados de GPS (latitude, longitude) e armazená-los com TIMESTAMP.
-- [ ] Capturar uma foto e armazená-la com TIMESTAMP.
-- [ ] Armazenar a identificação única do dispositivo (endereço MAC).
-- [ ] Armazenar todas as informações coletadas em um banco de dados local.
+- [x] Coletar dados de giroscópio (x, y, z) e armazená-los com TIMESTAMP.
+- [x] Coletar dados de GPS (latitude, longitude) e armazená-los com TIMESTAMP.
+- [x] Capturar uma foto e armazená-la com TIMESTAMP.
+- [x] Armazenar a identificação única do dispositivo (endereço MAC ou Device ID).
+- [x] Armazenar todas as informações coletadas em um banco de dados local.
 
 ### Nível 2: Testes Unitários
 
@@ -96,19 +97,27 @@ O `AppUpdateReceiver` é um `BroadcastReceiver` que escuta as atualizações do 
 ### BackgroundService
 
 **Descrição**:
-O `BackgroundService` é um `Service` que roda em segundo plano e executa tarefas periódicas como coleta de dados do giroscópio, localização e captura de imagens. Este serviço é essencial para a coleta contínua de dados sem a necessidade de uma interface de usuário ativa.
+O `BackgroundService` é um serviço Android que roda em segundo plano e é responsável por coletar dados do giroscópio, localização GPS, e capturar imagens. Esses dados são periodicamente armazenados em um banco de dados local e podem ser utilizados para monitoramento ou análises posteriores. O serviço é projetado para rodar continuamente, mesmo após reinicializações do dispositivo.
 
-**Função Principal**:
+**Funcionalidades Principais**:
 
-- Coletar dados de sensores (giroscópio, localização) e capturar imagens enquanto roda em segundo plano.
-- Gerenciar a execução periódica dessas tarefas.
+- **Coleta de Dados do Giroscópio**: Coleta e armazena os valores das coordenadas x, y, z juntamente com o timestamp de coleta.
+- **Coleta de Dados de Localização**: Coleta e armazena a latitude e longitude juntamente com o timestamp de coleta.
+- **Captura de Imagens**: Captura uma imagem usando a câmera do dispositivo, a converte para Base64, e a armazena juntamente com o timestamp de captura.
+- **Identificação Única do Dispositivo**: Captura o `ANDROID_ID` do dispositivo para ser utilizado como um identificador único, garantindo que os dados coletados sejam associados ao dispositivo específico.
+- **Serviço em Primeiro Plano**: Pode ser executado em primeiro plano para evitar que o sistema encerre o serviço.
 
 **Métodos Principais**:
 
-- `onCreate()`: Inicializa os componentes necessários, como `GyroscopeManager`, `LocationManager`, e `CustomCameraManager`.
-- `onStartCommand(intent: Intent?, flags: Int, startId: Int)`: Inicia o serviço e garante que ele continue rodando, mesmo que o sistema o encerre temporariamente.
-- `onDestroy()`: Libera recursos e para os componentes ao encerrar o serviço.
-- `executeRoutine()`: Executa as tarefas principais do serviço, incluindo a coleta de dados de sensores e a captura de imagens.
+- `onCreate()`: Inicializa todos os gerenciadores necessários (`GyroscopeManager`, `LocationManager`, `CustomCameraManager`) e o banco de dados, e captura a identificação única do dispositivo. Inicia a coleta de dados em intervalos regulares.
+- `onStartCommand(intent: Intent?, flags: Int, startId: Int)`: Garante que o serviço continue rodando após ser iniciado.
+- `onDestroy()`: Limpa os recursos e para a coleta de dados ao encerrar o serviço.
+- `executeRoutine()`: Método que executa a rotina de coleta de dados (giroscópio, localização, e câmera) a cada 10 segundos.
+- `getDeviceId()`: Método que captura a identificação única do dispositivo utilizando o `ANDROID_ID`.
+
+**Tratamento de Exceções**:
+
+- O serviço possui tratamento de exceções robusto para capturar e registrar erros durante a inicialização dos componentes e a execução da rotina de coleta de dados. Os logs de erro são gerenciados pela classe `LogWriter`.
 
 ### BootReceiver
 
@@ -168,6 +177,33 @@ O `LocationManager` gerencia a coleta de dados de localização, utilizando o se
 - `startLocationUpdates()`: Inicia a captura contínua da localização do dispositivo.
 - `stopLocationUpdates()`: Para a captura de localização e libera os recursos.
 - `onLocationResult(locationResult: LocationResult)`: Callback que é chamado quando uma nova localização é recebida.
+
+### DatabaseManager
+
+**Descrição**:
+O `DatabaseManager` é uma classe que gerencia o banco de dados local do aplicativo. Ele é responsável por criar e manter três tabelas que armazenam os dados coletados pelo `BackgroundService`: dados do giroscópio, dados de localização e dados de imagem. Essa classe também lida com a inserção dos dados nas tabelas e a criação do banco de dados quando o aplicativo é iniciado pela primeira vez.
+
+**Tabelas Gerenciadas**:
+
+- **Tabela `GyroscopeData`**: Armazena os valores x, y, z do giroscópio juntamente com o timestamp da coleta.
+- **Tabela `LocationData`**: Armazena a latitude e longitude do dispositivo juntamente com o timestamp da coleta.
+- **Tabela `ImageData`**: Armazena a imagem capturada, em formato Base64, juntamente com o timestamp da captura.
+
+**Métodos Principais**:
+
+- `onCreate(db: SQLiteDatabase?)`: Cria as três tabelas (`GyroscopeData`, `LocationData`, `ImageData`) quando o banco de dados é criado pela primeira vez.
+- `onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int)`: Atualiza o banco de dados, caso haja uma nova versão, recriando as tabelas se necessário.
+- `insertGyroscopeData(xValue: Float, yValue: Float, zValue: Float)`: Insere dados do giroscópio na tabela `GyroscopeData`.
+- `insertLocationData(latitude: Double, longitude: Double)`: Insere dados de localização na tabela `LocationData`.
+- `insertImageData(imageBase64: String)`: Insere dados de imagem na tabela `ImageData`.
+
+**Tratamento de Exceções**:
+
+- Todos os métodos de inserção e criação de tabelas possuem tratamento de exceções para garantir que erros sejam capturados e registrados. O `LogWriter` é utilizado para armazenar logs de sucesso e falha nas operações do banco de dados.
+
+**Uso do `LogWriter`**:
+
+- Todos os erros e operações bem-sucedidas (como a criação de tabelas e a inserção de dados) são registrados usando o `LogWriter`, proporcionando uma trilha de auditoria completa para facilitar o diagnóstico de problemas.
 
 ### LogWriter
 
