@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
             requestLocationPermission()
         }
     }
-
     private fun hasLocationPermission(): Boolean {
         return ActivityCompat.checkSelfPermission(
             this,
