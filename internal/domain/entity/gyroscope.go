@@ -3,33 +3,33 @@ package entity
 import (
 	"errors"
 	"github.com/google/uuid"
-	"regexp"
-	"time"
 )
 
 type Gyroscope struct {
-	id         string
-	name       string
-	model      string
-	x          float64
-	y          float64
-	z          float64
-	timestamp  time.Time
-	macAddress string
+	id    string
+	name  string
+	model string
+	x     float64
+	y     float64
+	z     float64
+	Device
 }
 
 func NewGyroscope(name, model string, x, y, z float64, macAddress string) (*Gyroscope, error) {
-	gyroscope := &Gyroscope{
-		id:         uuid.New().String(),
-		name:       name,
-		model:      model,
-		macAddress: macAddress,
-		x:          x,
-		y:          y,
-		z:          z,
-		timestamp:  time.Now(),
+	device, err := NewDevice(macAddress)
+	if err != nil {
+		return nil, err
 	}
-	err := gyroscope.IsValid()
+	gyroscope := &Gyroscope{
+		id:     uuid.New().String(),
+		name:   name,
+		model:  model,
+		x:      x,
+		y:      y,
+		z:      z,
+		Device: *device,
+	}
+	err = gyroscope.IsValid()
 	if err != nil {
 		return nil, err
 	}
@@ -37,9 +37,13 @@ func NewGyroscope(name, model string, x, y, z float64, macAddress string) (*Gyro
 }
 
 func (g *Gyroscope) Update(name, model, macAddress string) error {
+	device, err := NewDevice(macAddress)
+	if err != nil {
+		return err
+	}
 	g.name = name
 	g.model = model
-	g.macAddress = macAddress
+	g.Device = *device
 	return g.IsValid()
 }
 
@@ -62,15 +66,7 @@ func (g *Gyroscope) IsValid() error {
 	if g.macAddress == "" {
 		return errors.New("MAC address cannot be empty")
 	}
-	if !isValidMACAddress(g.macAddress) {
-		return errors.New("invalid MAC address format")
-	}
 	return nil
-}
-
-func isValidMACAddress(mac string) bool {
-	match, _ := regexp.MatchString(`^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$`, mac)
-	return match
 }
 
 func (g *Gyroscope) GetID() string {
@@ -85,10 +81,6 @@ func (g *Gyroscope) GetModel() string {
 	return g.model
 }
 
-func (g *Gyroscope) GetMACAddress() string {
-	return g.macAddress
-}
-
 func (g *Gyroscope) GetX() float64 {
 	return g.x
 }
@@ -99,8 +91,4 @@ func (g *Gyroscope) GetY() float64 {
 
 func (g *Gyroscope) GetZ() float64 {
 	return g.z
-}
-
-func (g *Gyroscope) GetTimestamp() time.Time {
-	return g.timestamp
 }

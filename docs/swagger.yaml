@@ -1,5 +1,18 @@
-basePath: /api/v1
+basePath: /api/v1/telemetry/
 definitions:
+  dto.CreateGPSInputDTO:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+      mac_address:
+        type: string
+    required:
+    - latitude
+    - longitude
+    - mac_address
+    type: object
   dto.CreateGyroscopeInputDTO:
     properties:
       mac_address:
@@ -34,7 +47,35 @@ info:
   title: telemetry Service API
   version: "1.0"
 paths:
-  /gyroscopes:
+  /gps:
+    post:
+      consumes:
+      - application/json
+      description: "Create\tgps"
+      parameters:
+      - description: gps request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateGPSInputDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.Error'
+      summary: "Create\tgps"
+      tags:
+      - gps
+  /gyroscope:
     post:
       consumes:
       - application/json

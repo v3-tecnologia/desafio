@@ -18,12 +18,12 @@ func NewWebServer(serverPort string) *WebServer {
 		Router:        chi.NewRouter(),
 		Handlers:      make(map[string]map[string]http.HandlerFunc),
 		WebServerPort: serverPort,
-		BasePath:      "/api/v1",
+		BasePath:      "/api/v1/telemetry",
 	}
 }
 
 func (s *WebServer) AddHandler(method, path string, handler http.HandlerFunc) {
-	fullPath := "/api/v1" + path
+	fullPath := "/api/v1/telemetry" + path
 	if path == "/docs/*" {
 		fullPath = path
 	}

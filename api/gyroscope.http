@@ -1,8 +1,8 @@
-@baseUrl = http://localhost:8080/api/v1
+@baseUrl = http://localhost:8080/api/v1/telemetry
 @contentType = application/json
 
 ### Cria um giroscópio válido
-POST {{baseUrl}}/gyroscopes
+POST {{baseUrl}}/gyroscope
 Content-Type:{{contentType}}
 
 {
@@ -15,7 +15,7 @@ Content-Type:{{contentType}}
 }
 
 ### Cria um giroscópio com valores mínimos
-POST {{baseUrl}}/gyroscopes
+POST {{baseUrl}}/gyroscope
 Content-Type:{{contentType}}
 
 {
@@ -28,7 +28,7 @@ Content-Type:{{contentType}}
 }
 
 ### Cria um giroscópio com valores máximos
-POST {{baseUrl}}/gyroscopes
+POST {{baseUrl}}/gyroscope
 Content-Type:{{contentType}}
 
 {
@@ -41,7 +41,7 @@ Content-Type:{{contentType}}
 }
 
 ### Tentativa de criar um giroscópio com nome vazio (deve falhar)
-POST {{baseUrl}}/gyroscopes
+POST {{baseUrl}}/gyroscope
 Content-Type:{{contentType}}
 
 {
@@ -54,7 +54,7 @@ Content-Type:{{contentType}}
 }
 
 ### Tentativa de criar um giroscópio com modelo vazio (deve falhar)
-POST {{baseUrl}}/gyroscopes
+POST {{baseUrl}}/gyroscope
 Content-Type:{{contentType}}
 
 {
@@ -67,7 +67,7 @@ Content-Type:{{contentType}}
 }
 
 ### Tentativa de criar um giroscópio com endereço MAC vazio (deve falhar)
-POST {{baseUrl}}/gyroscopes
+POST {{baseUrl}}/gyroscope
 Content-Type:{{contentType}}
 
 {
@@ -80,7 +80,7 @@ Content-Type:{{contentType}}
 }
 
 ### Tentativa de criar um giroscópio com endereço MAC inválido (deve falhar)
-POST {{baseUrl}}/gyroscopes
+POST {{baseUrl}}/gyroscope
 Content-Type:{{contentType}}
 
 {

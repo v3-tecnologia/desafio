@@ -19,7 +19,7 @@ import (
 // @version 1.0
 // @description This is a telemetry microservice API.
 // @host localhost:8080
-// @BasePath /api/v1
+// @BasePath /api/v1/telemetry/
 func main() {
 	dir, _ := os.Getwd()
 	fmt.Println("Diretório atual:", dir)
@@ -45,10 +45,14 @@ func main() {
 	webServer := webserver.NewWebServer(":" + config.WebServerPort)
 
 	gyroscopeRepository := database.NewGyroscopeRepository(db)
+	gpsRepository := database.NewGPSRepository(db)
 	createGyroscopeUseCase := usecase.NewCreateGyroscopeUseCase(gyroscopeRepository)
+	createGPSUseCase := usecase.NewCreateGPSUseCase(gpsRepository)
 	webGyroscopeHandler := web.NewGyroscopeHandler(createGyroscopeUseCase, gyroscopeRepository)
+	webGPSHandler := web.NewGPSHandler(createGPSUseCase, gpsRepository)
 
-	webServer.AddHandler(http.MethodPost, "/gyroscopes", webGyroscopeHandler.Create)
+	webServer.AddHandler(http.MethodPost, "/gyroscope", webGyroscopeHandler.Create)
+	webServer.AddHandler(http.MethodPost, "/gps", webGPSHandler.Create)
 
 	webServer.AddHandler(http.MethodGet, "/docs/*", httpSwagger.Handler(
 		httpSwagger.URL("http://localhost:"+config.WebServerPort+"/docs/doc.json"),

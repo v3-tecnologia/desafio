@@ -1,0 +1,51 @@
+@host = http://localhost:8080/api/v1/telemetry
+@contentType = application/json
+
+### Create GPS
+POST {{host}}/gps
+Content-Type: {{contentType}}
+
+{
+    "latitude": 40.7128,
+    "longitude": -74.0060,
+    "mac_address": "00:11:22:33:44:55"
+}
+
+### Create GPS with invalid latitude
+POST {{host}}/gps
+Content-Type: {{contentType}}
+
+{
+    "latitude": 91,
+    "longitude": -74.0060,
+    "mac_address": "00:11:22:33:44:55"
+}
+
+### Create GPS with invalid longitude
+POST {{host}}/gps
+Content-Type: {{contentType}}
+
+{
+    "latitude": 40.7128,
+    "longitude": -181,
+    "mac_address": "00:11:22:33:44:55"
+}
+
+### Create GPS with invalid MAC address
+POST {{host}}/gps
+Content-Type: {{contentType}}
+
+{
+    "latitude": 40.7128,
+    "longitude": -74.0060,
+    "mac_address": "invalid_mac"
+}
+
+### Create GPS with missing field
+POST {{host}}/gps
+Content-Type: {{contentType}}
+
+{
+    "latitude": 40.7128,
+    "longitude": -74.0060
+}

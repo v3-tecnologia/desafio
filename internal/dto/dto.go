@@ -21,3 +21,17 @@ type GyroscopeOutputDTO struct {
 	Timestamp  time.Time `json:"timestamp"`
 	MacAddress string    `json:"mac_address"`
 }
+
+type CreateGPSInputDTO struct {
+	Latitude   float64 `json:"latitude" binding:"required"`
+	Longitude  float64 `json:"longitude" binding:"required"`
+	MacAddress string  `json:"mac_address" binding:"required"`
+}
+
+type GPSOutputDTO struct {
+	ID         string    `json:"id"`
+	Latitude   float64   `json:"latitude"`
+	Longitude  float64   `json:"longitude"`
+	Timestamp  time.Time `json:"timestamp"`
+	MacAddress string    `json:"mac_address"`
+}

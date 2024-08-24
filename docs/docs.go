@@ -15,7 +15,50 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/gyroscopes": {
+        "/gps": {
+            "post": {
+                "description": "Create\tgps",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "gps"
+                ],
+                "summary": "Create\tgps",
+                "parameters": [
+                    {
+                        "description": "gps request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateGPSInputDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/web.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/web.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/gyroscope": {
             "post": {
                 "description": "Create\tgyroscope",
                 "consumes": [
@@ -60,6 +103,25 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.CreateGPSInputDTO": {
+            "type": "object",
+            "required": [
+                "latitude",
+                "longitude",
+                "mac_address"
+            ],
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "mac_address": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateGyroscopeInputDTO": {
             "type": "object",
             "required": [
@@ -106,7 +168,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
+	BasePath:         "/api/v1/telemetry/",
 	Schemes:          []string{},
 	Title:            "telemetry Service API",
 	Description:      "This is a telemetry microservice API.",
