@@ -11,3 +11,9 @@ type TelemetryRepository interface {
 	CreatePhoto(photoDomain domain.PhotoDomain) *err_rest.ErrRest
 	FindDeviceByMAC(macAddress string) domain.DeviceDomain
 }
+
+type TelemetryService interface {
+	CreateGyroscopeService(gyroscopeDomain domain.GyroscopeDomain) *err_rest.ErrRest
+	CreateGpsService(gpsDomain domain.GpsDomain) *err_rest.ErrRest
+	CreatePhotoService(photoDomain domain.PhotoDomain) *err_rest.ErrRest
+}
