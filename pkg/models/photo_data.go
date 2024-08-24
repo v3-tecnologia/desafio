@@ -1,6 +1,6 @@
 package models
 
 type PhotoData struct {
-	BaseData
+	*DeviceData
 	Path string
 }

@@ -1,8 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
-type BaseData struct {
+type DeviceData struct {
 	MAC       string
 	Timestamp time.Time
 }

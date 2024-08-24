@@ -1,6 +1,6 @@
 package models
 
 type Gyroscope struct {
-	BaseData
+	*DeviceData
 	X, Y, Z float64
 }

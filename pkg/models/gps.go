@@ -1,6 +1,6 @@
 package models
 
 type GPS struct {
-	BaseData
+	*DeviceData
 	Latitude, Longitude float64
 }
