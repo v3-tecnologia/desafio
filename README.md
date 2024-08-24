@@ -54,6 +54,7 @@ object RetrofitClient {
             .build()
     }
 }
+
 Passo 6: Configuração do Room
 Configure o Room para armazenar dados localmente. Defina as entidades e o banco de dados no seu código.
 
@@ -67,7 +68,4 @@ Testes
 Adicione testes unitários e de integração para garantir que o serviço e a comunicação com o backend estão funcionando corretamente. Utilize o framework de testes do Android e ferramentas como Espresso para testes de UI.
 
 Contribuições
-Sinta-se à vontade para enviar pull requests e contribuir para o projeto. Para mais informações, consulte o arquivo CONTRIBUTING.md.
-
-Licença
-Este projeto está licenciado sob a Licença MIT.
+Sinta-se à vontade para enviar pull requests e contribuir para o projeto. 
