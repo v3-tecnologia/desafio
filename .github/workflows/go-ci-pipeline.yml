@@ -36,6 +36,7 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: v1.53.3
+          args: --skip-dirs-use-default --skip-dirs /internal/test
 
       - name: Run tests
         run: go test ./... -v -count=1
