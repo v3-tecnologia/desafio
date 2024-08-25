@@ -1,0 +1,23 @@
+{
+  "name": "v3",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "sls offline",
+    "docker": "sls offline --useDocker",
+    "infra:deploy": "sls deploy --verbose",
+    "infra:remove": "sls remove --verbose",
+    "vet": "go vet ./...",
+    "watch": "nodemon --watch . -e go,yml --ignore '**/tmp/*' --exec 'npm run vet && npm run start'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "serverless": "^3.36.0",
+    "serverless-dotenv-plugin": "^6.0.0",
+    "serverless-go-plugin": "^2.2.0",
+    "serverless-offline": "^13.3.2"
+  }
+}

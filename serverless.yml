@@ -1,0 +1,237 @@
+service: aws-golang-api
+
+frameworkVersion: "3"
+
+useDotenv: true
+provider:
+  name: aws
+  deploymentMethod: direct
+  apiGateway:
+    binaryMediaTypes:
+      - "multipart/form-data"
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "rekognition:SearchFacesByImage"
+            - "rekognition:IndexFaces"
+            - "rekognition:ListFaces"
+            - "rekognition:CreateCollection"
+            - "rekognition:DeleteCollection"
+            - "rekognition:ListCollections"
+            - "rekognition:DeleteFaces"
+
+          Resource: "arn:aws:rekognition:${opt:region, self:provider.region}:*:collection/${self:provider.environment.REKOGNITION_COLLECTION}"
+
+        - Effect: "Allow"
+          Action:
+            - "s3:PutObject"
+            - "s3:GetObject"
+            - "s3:ListBucket"
+          Resource: "arn:aws:s3:::${self:provider.environment.V3_BUCKET}/*"
+
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:PutItem"
+            - "dynamodb:GetItem"
+            - "dynamodb:Query"
+            - "dynamodb:Scan"
+            - "dynamodb:UpdateItem"
+            - "dynamodb:DeleteItem"
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/*"
+
+#  runtime: provided.al2
+  runtime: go1.x
+  architecture: x86_64
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  memorySize: 256
+  versionFunctions: false
+  environment:
+    LOG_LEVEL: ${env:LOG_LEVEL}
+    LOCATION_TABLE: ${env:LOCATION_TABLE}
+    GYROSCOPE_TABLE: ${env:GYROSCOPE_TABLE}
+    REKOGNITION_PROJECT: ${env:REKOGNITION_PROJECT}
+    REKOGNITION_COLLECTION: ${env:REKOGNITION_COLLECTION}
+    REKOGNITION_REGION: ${env:REKOGNITION_REGION}
+    V3_BUCKET: ${env:V3_BUCKET}
+
+package:
+  individually: true
+  patterns:
+    - "!./**"
+    - "./.bin/**"
+
+plugins:
+  - serverless-offline
+  - serverless-go-plugin
+  - serverless-dotenv-plugin
+
+custom:
+  go:
+    supportedRuntimes: ["provided.al2"]
+    buildProvidedRuntimeAsBootstrap: true
+
+  dotenv:
+    required:
+      env:
+        - ENV
+        - LOG_LEVEL
+        - LOCATION_TABLE
+        - GYROSCOPE_TABLE
+        - REKOGNITION_PROJECT
+        - REKOGNITION_REGION
+        - REKOGNITION_COLLECTION
+        - V3_BUCKET
+
+functions:
+  - ${file(functions/functions.yml):functions}
+
+resources:
+  Resources:
+    V3Bucket:
+      Type: "AWS::S3::Bucket"
+      Properties:
+        BucketName: ${self:provider.environment.V3_BUCKET}
+        Tags:
+          - Key: "Name"
+            Value: ${self:provider.environment.V3_BUCKET}
+
+    V3BucketRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Service: "lambda.amazonaws.com"
+              Action: "sts:AssumeRole"
+        Policies:
+          - PolicyName: "LambdaLoggingPolicy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource: "*"
+          - PolicyName: "S3UploadPolicy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - s3:PutObject
+                    - s3:GetObject
+                    - s3:ListBucket
+                  Resource:
+                    - !Sub "arn:aws:s3:::${self:provider.environment.V3_BUCKET}"
+                    - !Sub "arn:aws:s3:::${self:provider.environment.V3_BUCKET}/*"
+
+    V3BucketPolicy:
+      Type: "AWS::S3::BucketPolicy"
+      Properties:
+        Bucket: !Ref V3Bucket
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                AWS: !GetAtt V3BucketRole.Arn
+              Action:
+                - s3:PutObject
+                - s3:GetObject
+                - s3:ListBucket
+              Resource:
+                - !Sub "arn:aws:s3:::${self:provider.environment.V3_BUCKET}"
+                - !Sub "arn:aws:s3:::${self:provider.environment.V3_BUCKET}/*"
+            - Sid: "AWSRekognitionS3AclBucketRead20191011"
+              Effect: "Allow"
+              Principal:
+                Service: "rekognition.amazonaws.com"
+              Action:
+                - s3:GetBucketAcl
+                - s3:GetBucketLocation
+              Resource: !Sub "arn:aws:s3:::${self:provider.environment.V3_BUCKET}"
+            - Sid: "AWSRekognitionS3GetBucket20191011"
+              Effect: "Allow"
+              Principal:
+                Service: "rekognition.amazonaws.com"
+              Action:
+                - s3:GetObject
+                - s3:GetObjectAcl
+                - s3:GetObjectVersion
+                - s3:GetObjectTagging
+              Resource: !Sub "arn:aws:s3:::${self:provider.environment.V3_BUCKET}/*"
+            - Sid: "AWSRekognitionS3ACLBucketWrite20191011"
+              Effect: "Allow"
+              Principal:
+                Service: "rekognition.amazonaws.com"
+              Action: "s3:GetBucketAcl"
+              Resource: !Sub "arn:aws:s3:::${self:provider.environment.V3_BUCKET}"
+            - Sid: "AWSRekognitionS3PutObject20191011"
+              Effect: "Allow"
+              Principal:
+                Service: "rekognition.amazonaws.com"
+              Action: "s3:PutObject"
+              Resource: !Sub "arn:aws:s3:::${self:provider.environment.V3_BUCKET}/*"
+              Condition:
+                StringEquals:
+                  s3:x-amz-acl: "bucket-owner-full-control"
+
+    GyroscopeTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: ${self:provider.environment.GYROSCOPE_TABLE}
+        AttributeDefinitions:
+          - AttributeName: "Timestamp"
+            AttributeType: "N"
+          - AttributeName: "DeviceID"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "DeviceID"
+            KeyType: "HASH"
+          - AttributeName: "Timestamp"
+            KeyType: "RANGE"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TimeToLiveSpecification:
+          AttributeName: "TTL"
+          Enabled: true
+        SSESpecification:
+          SSEEnabled: true
+
+    LocationTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        TableName: ${self:provider.environment.LOCATION_TABLE}
+        AttributeDefinitions:
+          - AttributeName: "DeviceID"
+            AttributeType: "S"
+          - AttributeName: "Timestamp"
+            AttributeType: "N"
+        KeySchema:
+          - AttributeName: "DeviceID"
+            KeyType: "HASH"
+          - AttributeName: "Timestamp"
+            KeyType: "RANGE"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        SSESpecification:
+          SSEEnabled: true
+
+    RekognitionProject:
+      Type: "AWS::Rekognition::Project"
+      Properties:
+        ProjectName: ${self:provider.environment.REKOGNITION_PROJECT}
+
+    RekognitionCollection:
+      Type: "AWS::Rekognition::Collection"
+      Properties:
+        CollectionId: ${self:provider.environment.REKOGNITION_COLLECTION}
