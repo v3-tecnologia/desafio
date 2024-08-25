@@ -14,7 +14,7 @@ func (t telemetryHandler) CreateGyroscope(w http.ResponseWriter, r *http.Request
 	var errRest *err_rest.ErrRest
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		errRest = err_rest.NewBadRequestErr("unable read body")
+		errRest = err_rest.NewInternalServerError("unable read body")
 		w.WriteHeader(errRest.Code)
 		return
 	}
@@ -25,7 +25,7 @@ func (t telemetryHandler) CreateGyroscope(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if errRest = validateGyroscopeBody(gyroscopeRequest); err != nil {
+	if errRest = validateBodyRequired(gyroscopeRequest.FieldsRequiredTelemetry); err != nil {
 		w.WriteHeader(errRest.Code)
 		return
 	}
@@ -45,12 +45,12 @@ func (t telemetryHandler) CreateGyroscope(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusCreated)
 }
 
-func validateGyroscopeBody(gyroscopeRequest request.GyroscopeRequest) *err_rest.ErrRest {
-	if gyroscopeRequest.MacAddress == "" {
+func validateBodyRequired(fielRequired request.FieldsRequiredTelemetry) *err_rest.ErrRest {
+	if fielRequired.MacAddress == "" {
 		return err_rest.NewBadRequestErr("field mac_address is required")
 	}
 
-	if gyroscopeRequest.CollectionDate.IsZero() {
+	if fielRequired.CollectionDate.IsZero() {
 		return err_rest.NewBadRequestErr("field collection_date is required")
 	}
 
