@@ -1,14 +1,9 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/HaroldoFV/desafio/configs"
 	_ "github.com/HaroldoFV/desafio/docs"
-	"github.com/HaroldoFV/desafio/internal/infra/database"
-	"github.com/HaroldoFV/desafio/internal/infra/web"
-	"github.com/HaroldoFV/desafio/internal/infra/web/webserver"
-	"github.com/HaroldoFV/desafio/internal/usecase"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"net/http"
 	"os"
@@ -22,8 +17,6 @@ import (
 // @BasePath /api/v1/telemetry/
 func main() {
 	dir, _ := os.Getwd()
-	fmt.Println("Diretório atual:", dir)
-
 	config, err := configs.LoadConfig(dir)
 	if err != nil {
 		rootDir := filepath.Join(dir, "..", "..")
@@ -33,45 +26,22 @@ func main() {
 			panic(err)
 		}
 	}
-	fmt.Printf("Configurações carregadas: %+v\n", config)
 
-	db, err := sql.Open(config.DBDriver, fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		config.DBHost, config.DBPort, config.DBUser, config.DBPassword, config.DBName))
+	webServer, err := InitializeApplication(config)
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
 
-	webServer := webserver.NewWebServer(":" + config.WebServerPort)
-
-	gyroscopeRepository := database.NewGyroscopeRepository(db)
-	gpsRepository := database.NewGPSRepository(db)
-	photoRepository := database.NewPhotoRepository(db)
-
-	uploadDir := filepath.Join(dir, "uploads")
-	if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
-		panic(err)
-	}
-
-	createGyroscopeUseCase := usecase.NewCreateGyroscopeUseCase(gyroscopeRepository)
-	createGPSUseCase := usecase.NewCreateGPSUseCase(gpsRepository)
-	createPhotoUseCase := usecase.NewCreatePhotoUseCase(photoRepository, uploadDir)
-
-	webGyroscopeHandler := web.NewGyroscopeHandler(createGyroscopeUseCase, gyroscopeRepository)
-	webGPSHandler := web.NewGPSHandler(createGPSUseCase, gpsRepository)
-	webPhotoHandler := web.NewPhotoHandler(createPhotoUseCase)
-
-	webServer.AddHandler(http.MethodPost, "/gyroscope", webGyroscopeHandler.Create)
-	webServer.AddHandler(http.MethodPost, "/gps", webGPSHandler.Create)
-	webServer.AddHandler(http.MethodPost, "/photo", webPhotoHandler.Create)
-
-	webServer.AddHandler(http.MethodGet, "/docs/*", httpSwagger.Handler(
+	webServer.WebServer.AddHandler(http.MethodPost, "/gyroscope", webServer.GyroscopeHandler.Create)
+	webServer.WebServer.AddHandler(http.MethodPost, "/gps", webServer.GPSHandler.Create)
+	webServer.WebServer.AddHandler(http.MethodPost, "/photo", webServer.PhotoHandler.Create)
+	webServer.WebServer.AddHandler(http.MethodGet, "/docs/*", httpSwagger.Handler(
 		httpSwagger.URL("http://localhost:"+config.WebServerPort+"/docs/doc.json"),
 	))
 
 	fmt.Println("Starting web server on port", config.WebServerPort)
 	go func() {
-		err = webServer.Start()
+		err = webServer.WebServer.Start()
 		if err != nil {
 			panic(err)
 		}
