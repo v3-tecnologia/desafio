@@ -10,5 +10,5 @@ import (
 func applyRoutes(router chi.Router, ctl *handlers.ApiController) {
 	router.Post("/telemetry/gyroscope", httpcore.Handle(ctl.CreateGyroscope))
 	router.Post("/telemetry/gps", httpcore.Handle(ctl.CreateGPS))
-
+	router.Post("/telemetry/photo", httpcore.Handle(ctl.CreatePhotoData))
 }
