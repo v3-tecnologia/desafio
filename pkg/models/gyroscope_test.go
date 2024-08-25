@@ -14,25 +14,41 @@ func TestNewGyroscopeData(t *testing.T) {
 	tests := []struct {
 		name        string
 		deviceData  *DeviceData
-		x           float64
-		y           float64
-		z           float64
+		x           *float64
+		y           *float64
+		z           *float64
 		expectError bool
 	}{
 		{
 			name:        "Valid Device and Gyroscope Data",
 			deviceData:  d,
-			x:           1.0,
-			y:           0.5,
-			z:           -0.5,
+			x:           floatPtr(1.0),
+			y:           floatPtr(0.5),
+			z:           floatPtr(-0.5),
 			expectError: false,
 		},
 		{
 			name:        "Nil Device data",
 			deviceData:  nil,
-			x:           1.0,
-			y:           0.5,
-			z:           -0.5,
+			x:           floatPtr(1.0),
+			y:           floatPtr(0.5),
+			z:           floatPtr(-0.5),
+			expectError: true,
+		},
+		{
+			name:        "Missing Y value",
+			deviceData:  d,
+			x:           floatPtr(1.0),
+			y:           nil,
+			z:           floatPtr(-0.5),
+			expectError: true,
+		},
+		{
+			name:        "Missing Z value",
+			deviceData:  d,
+			x:           floatPtr(1.0),
+			y:           floatPtr(0.5),
+			z:           nil,
 			expectError: true,
 		},
 	}
@@ -52,16 +68,20 @@ func TestNewGyroscopeData(t *testing.T) {
 				if gyroData.DeviceData != tt.deviceData {
 					t.Errorf("Expected Device %v, got %v", tt.deviceData, gyroData.DeviceData)
 				}
-				if gyroData.X != tt.x {
-					t.Errorf("Expected X %f, got %f", tt.x, gyroData.X)
+				if gyroData.X != nil && *gyroData.X != *tt.x {
+					t.Errorf("Expected X %f, got %f", *tt.x, *gyroData.X)
 				}
-				if gyroData.Y != tt.y {
-					t.Errorf("Expected Y %f, got %f", tt.y, gyroData.Y)
+				if gyroData.Y != nil && *gyroData.Y != *tt.y {
+					t.Errorf("Expected Y %f, got %f", *tt.y, *gyroData.Y)
 				}
-				if gyroData.Z != tt.z {
-					t.Errorf("Expected Z %f, got %f", tt.z, gyroData.Z)
+				if gyroData.Z != nil && *gyroData.Z != *tt.z {
+					t.Errorf("Expected Z %f, got %f", *tt.z, *gyroData.Z)
 				}
 			}
 		})
 	}
+}
+
+func floatPtr(f float64) *float64 {
+	return &f
 }
