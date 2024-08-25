@@ -27,3 +27,11 @@ func NewInternalServerError(msg string) *ErrRest {
 		Err:  "Err_internal_server_error",
 	}
 }
+
+func NewUnprocessableEntityError(msg string) *ErrRest {
+	return &ErrRest{
+		Code: http.StatusUnprocessableEntity,
+		Msg:  msg,
+		Err:  "Err_status_unprocessable_entity",
+	}
+}
