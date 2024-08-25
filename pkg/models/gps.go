@@ -3,8 +3,9 @@ package models
 import "errors"
 
 type GPS struct {
-	*DeviceData
-	Latitude, Longitude float64
+	*DeviceData `json:"deviceData"`
+	Latitude    float64 `json:"latitude"`
+	Longitude   float64 `json:"longitude"`
 }
 
 func NewGPS(d *DeviceData, la, lo float64) (*GPS, error) {

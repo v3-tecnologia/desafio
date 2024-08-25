@@ -3,8 +3,8 @@ package models
 import "errors"
 
 type PhotoData struct {
-	*DeviceData
-	Path string
+	*DeviceData `json:"deviceData"`
+	Path        string `json:"path"`
 }
 
 func NewPhotoData(d *DeviceData, p string) (*PhotoData, error) {

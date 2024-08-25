@@ -3,8 +3,10 @@ package models
 import "errors"
 
 type Gyroscope struct {
-	*DeviceData
-	X, Y, Z float64
+	*DeviceData `json:"deviceData"`
+	X           float64 `json:"x"`
+	Y           float64 `json:"y"`
+	Z           float64 `json:"z"`
 }
 
 func NewGyroscope(d *DeviceData, x, y, z float64) (*Gyroscope, error) {
