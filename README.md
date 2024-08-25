@@ -1,158 +1,115 @@
-# Desafio Técnico V3
+# Telemetry Microservice
 
-## ❤️ Bem vindos
+Este projeto é um microserviço de telemetria desenvolvido em Go, seguindo os princípios de Clean Architecture,
+utilizando PostgreSQL como banco de dados.
 
-Olá, tudo certo?
+## Descrição
 
-Seja bem vindo ao teste de seleção para novos desenvolvedores na V3!
+O Telemetry Microservice é responsável por coletar e gerenciar dados de telemetria de dispositivos em um sistema
+web. Ele fornece uma API RESTful para receber e armazenar dados de giroscópio, GPS e fotos.
 
-Estamos honrados que você tenha chegado até aqui!
+## Tecnologias Utilizadas
 
-Prepare aquele ☕️ , e venha conosco codar e se divertir!
+- Go (Golang)
+- PostgreSQL
+- Docker
+- Swagger (para documentação da API)
 
-## Poxa, outro teste?
+## Arquitetura
 
-Nós sabemos que os processos de seleção podem ser ingratos! Você investe um tempão e no final pode não ser aprovado!
+Este projeto segue os princípios de Clean Architecture e Domain-Driven Design:
 
-Aqui, nós presamos pela **transparência**!
+- **Domain Layer**: Contém as entidades de negócio e regras de domínio.
+- **Use Case Layer**: Implementa a lógica de aplicação e casos de uso.
+- **Infrastructure Layer**: Fornece implementações concretas para interfaces definidas em camadas superiores.
 
-Este teste tem um **propósito** bastante simples:
+## Funcionalidades
 
-> Nós queremos avaliar como você consegue transformar problemas em soluções através de código!
+O microserviço oferece os seguintes endpoints:
 
-**🚨 IMPORTANTE!** Se você entende que já possui algum projeto pessoal, ou contribuição em um projeto _open-source_ que contemple conhecimentos equivalentes aos que existem neste desafio, então, basta submeter o repositório explicando essa correlação!
+1. `POST /telemetry/gyroscope`: Recebe dados do giroscópio (x, y, z).
+2. `POST /telemetry/gps`: Recebe dados de GPS (latitude, longitude).
+3. `POST /telemetry/photo`: Recebe uma foto.
 
-## 🚀 Bora nessa!
+Todos os endpoints requerem um campo com a identificação única do dispositivo (endereço MAC).
 
-Este é um teste para analisarmos como você desempenha ao entender, traduzir, resolver e entregar um código que resolve um problema.
+> **NOTA:** O TIMESTAMP não é recebido, mas é gerado no momento da request pela aplicação.
 
-### Dicas
+## Validação de Dados
 
-- Documente seu projeto;
-- Faça perguntas sobre os pontos que não ficaram claros para você;
-- Mostre a sua linha de raciocínio;
-- Trabalhe bem o seu README.md;
-  - Explique até onde implementou;
-  - Como o projeto pode ser executado;
-  - Como pode-se testar o projeto;
+O microserviço garante que todos os dados recebidos estejam preenchidos corretamente. Caso algum dado esteja faltando,
+uma mensagem de erro é retornada com o Status 400.
 
-### Como você deverá desenvolver?
+## Armazenamento de Dados
 
-1. Faça um _fork_ deste projeto em seu GitHub pessoal;
-2. Realize as implementações de acordo com cada um dos níveis;
-3. Faça pequenos _commits_;
-4. Depois de sentir que fez o seu máximo, faça um PR para o repositório original.
+Todos os dados são armazenados no banco de dados PostgreSQL junto com o timestamp do momento em que foram coletados.
 
-🚨 **IMPORTANTE!** Não significa que você precisa implementar **todos os níveis** para ser aprovado no processo! Faça até onde se sentir confortável.
+> **NOTA:** Para o endpoint de fotos (/telemetry/photo), os arquivos/imagens são salvos no diretório 'uploads' dentro da
+> aplicação. No banco de dados, apenas o caminho do arquivo é armazenado, seguindo uma prática comum de gestão de
+> arquivos. Em um cenário de produção real, essas imagens deveriam ser armazenadas em um repositório ou bucket na nuvem
+> para melhor escalabilidade e gerenciamento, mantendo a prática de armazenar apenas o caminho ou identificador do arquivo
+> no banco de dados.
 
-### Qual o tempo para entregar?
+## Como Executar
 
-Quanto antes você enviar, mais cuidado podemos ter na revisão do seu teste. Mas sabemos que o dia a dia é corrido, faça de forma que fique confortável para você!
+Para executar este projeto, siga os passos abaixo:
 
-**Mas não desista! Envie até onde conseguir.**
+1. Certifique-se de ter o Docker instalados em sua máquina.
 
-## 💻 O Problema
+2. Clone o repositório:
 
-Um dos nossos clientes ainda não consegue comprar o equipamento para colocar nos veículos de sua frota, mas ele quer muito utilizar a nossa solução.
+   `git clone https://github.com/HaroldoFV/desafio`
 
-Por isso, vamos fazer um MVP bastante simples para testar se, o celular do motorista poderia ser utilizado como o dispositivo de obtenção das informações.
+   `cd desafio`
 
-> Parece fazer sentido certo? Ele possui vários mecanismos parecidos com o equipamento que oferecemos!
+3. Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+   ```
+    DB_DRIVER=postgres
+    DB_HOST=postgres
+    DB_PORT=5432
+    DB_USER=seu_usuario
+    DB_PASSWORD=sua_senha
+    DB_NAME=nome_do_banco
+    WEB_SERVER_PORT=8080
+    TEST_DB_HOST=localhost
+    TEST_DB_PORT=5433
+    TEST_DB_USER=seu_usuario
+    TEST_DB_PASSWORD=sua_senha
+    TEST_DB_NAME=nome_do_banco_test
 
-Sua missão ajudar na criação deste MVP para que possamos testar as frotas deste cliente.
+> **NOTA:** Para facilitar os testes adicionei o arquivo .env ao repositório(não se deve versionar esse tipo
+> de arquivo)
 
-Essa versão do produto será bastante simplificada. Queremos apenas criar as estruturas para obter algumas informações do seu dispositivo (Android) e armazená-la em um Banco de Dados.
+4. Inicie os serviços usando Docker Compose:
 
-Essas informações, depois de armazenadas devem estar disponíveis através de uma API para que este cliente integre com um Front-end já existente!
+   `docker-compose up -d`
 
-### Quais serão as informações que deverão ser coletadas?
+   Isso irá iniciar o banco de dados PostgreSQL, executar as migrações e iniciar a aplicação.
 
-1. **Dados de Giroscópio** - Estes dados devem retornar 3 valores (`x`, `y`, `z`). E devem ser armazenados juntamente com o `TIMESTAMP` do momento em que foi coletado;
-2. **Dados de GPS** - Estes dados devem retornar 2 valores (`latitude` , `longitude`). E também devem ser armazenados juntamente com o `TIMESTAMP` do momento em que foram coletados;
-3. **Uma foto** - Obter uma foto de uma das câmeras do dispositivo e enviá-la também junto com o `TIMESTAMP` em que foi coletada;
+5. A aplicação estará disponível em `http://localhost:8080/docs/index.html`.
 
-**🚨 É importante que se envie junto à essas informações um campo adicional, contendo uma identificação única do dispositivo, que pode ser seu endereço MAC.**
+## Testes
 
-### Funcionamento
+Para executar os testes, siga estas etapas:
 
-A aplicação Android deverá rodar em Background, e coletar e enviar as informações descritas a cada 10 segundos.
+1. Certifique-se de que o container de teste do PostgreSQL(telemetry_db_test) está em execução:
 
-### Qual parte do desafio devo realizar?
+   `docker-compose ps`
 
-Você deve realizar somente o desafio para a vaga que se candidatou.
+2. Execute os testes usando o seguinte comando:
 
-Caso tenha sido a vaga de Android Embarcado, então resolva somente esta sessão.
+   `go test ./... -v`
 
-Caso tenha sido a vaga de Backend, então resolva somente esta sessão.
+Este comando executará todos os testes no projeto, incluindo testes de unidade e integração.
 
----
+> **NOTA:** Os testes de integração usarão o banco de dados de teste (postgres_test) que está configurado para rodar na
+> porta 5433.
 
-# Desafio Android Embarcado
+## Testando as Requisições
 
-Você deverá criar uma aplicação que deverá coletar os dados e enviá-los para o servidor Back-end;
+Para facilitar o teste das requisições da API, fornecemos arquivos .http na pasta `api`. Esses arquivos podem ser usados
+para testar as requisições diretamente de IDEs compatíveis (como VSCode com a extensão REST Client) ou podem ser
+convertidos para cURL ou outras ferramentas de sua preferência.
 
-Lembre-se que essa é uma aplicação Android nativa, e não deve possuir qualquer tipo de interface com o usuário.
-
-## Nível 1
-
-Deve-se coletar os dados de acordo com as especificações, e armazená-los em um banco de dados local;
-
-## Nível 2
-
-Deve-se criar testes unitários para garantir o funcionamento das estruturas criadas;
-
-## Nível 3
-
-Deve-se enviar os dados obtidos a cada 10 segundos para uma API com a seguinte rota
-
-- `POST /telemetry/gyroscope` - Dados do giroscópio;
-- `POST /telemetry/gps` - Dados do GPS;
-- `POST /telemetry/photo` - Dados da Foto;
-
-## Nível 4
-
-Deve-se realizar um _crop_ da foto obtida para que se consiga extrair somente um rosto. Caso a foto não tenha um rosto, ela não deverá ser enviada.
-
-## Nível 5
-
-Faça com que cada uma das requisições ocorra de forma paralela, e não de forma síncrona;
-
-# Desafio Backend
-
-Você deverá criar uma aplicação que irá receber os dados enviados pelo aplicativo.
-
-Lembre-se essa aplicação precisa ser em GO!
-
-## Nível 1
-
-Deve-se criar uma API que receba requisições de acordo com os endpoints:
-
-- `POST /telemetry/gyroscope` - Dados do giroscópio;
-- `POST /telemetry/gps` - Dados do GPS;
-- `POST /telemetry/photo` - Dados da Foto;
-
-Deve-se garantir que os dados recebidos estão preenchidos corretamente.
-
-Caso algum dado esteja faltando, então retorne uma mensagem de erro e um Status 400.
-
-## Nível 2
-
-Salve cada uma das informações em um banco de dados a sua escolha.
-
-Salve estes dados de forma identificável e consistente;
-
-## Nível 3
-
-Crie testes unitários para cada arquivo da aplicação. Para cada nova implementação a seguir, também deve-se criar os testes.
-
-## Nível 4
-
-Crie um _container_ em _Docker_ que contenha a sua aplicação e o banco de dados utilizado nos testes.
-
-## Nível 5
-
-A cada foto recebida, deve-se utilizar o AWS Rekognition para comparar se a foto enviada é reconhecida com base nas fotos anteriores enviadas.
-
-Se a foto enviada for reconhecida, retorne como resposta do `POST` um atributo que indique isso.
-
-Utilize as fotos iniciais para realizar o treinamento da IA.
+Os arquivos .http incluem exemplos de requisições para cada endpoint da API, permitindo que você teste rapidamente a
+funcionalidade do microserviço.
