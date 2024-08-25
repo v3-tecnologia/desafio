@@ -219,7 +219,7 @@ func TestGyroscopePersist(t *testing.T) {
 		DBName: "db_test",
 	}
 
-	db, err := connectDatabase(cfg)
+	db, err := connectDatabase("mysql", cfg.FormatDSN())
 	if err != nil {
 		log.Println(err)
 		t.Fatal("TestGyroscope failed connecting to database")

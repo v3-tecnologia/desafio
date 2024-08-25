@@ -160,6 +160,22 @@ func TestGPSMissinglongitude(t *testing.T) {
 	}
 }
 
+func TestValidateLatitude(t *testing.T) {
+	valid_result, success := validateLatitude(map[string]interface{}{"latitude": 35.0})
+	invalid_result, fail := validateLatitude(map[string]interface{}{"latitude": 94.0})
+	if !success || fail || valid_result != 35.0 || invalid_result != 94 {
+		t.Fatal(success, valid_result, fail, invalid_result)
+	}
+}
+
+func TestValidateLongitude(t *testing.T) {
+	valid_result, success := validateLongitude(map[string]interface{}{"longitude": 123.4})
+	invalid_result, fail := validateLongitude(map[string]interface{}{"longitude": 420.3})
+	if !success || fail || valid_result != 123.4 || invalid_result != 420.3 {
+		t.Fatal(success, valid_result, fail, invalid_result)
+	}
+}
+
 func TestGPSPersist(t *testing.T) {
 	roundFloat := func(val float64, precision uint) float64 {
 		ratio := math.Pow(10, float64(precision))
@@ -176,7 +192,7 @@ func TestGPSPersist(t *testing.T) {
 		DBName: "db_test",
 	}
 
-	db, err := connectDatabase(cfg)
+	db, err := connectDatabase("mysql", cfg.FormatDSN())
 	if err != nil {
 		log.Println(err)
 		t.Fatal("TestGPS failed connecting to database")

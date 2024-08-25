@@ -19,7 +19,7 @@ func TestConnectDatabase(t *testing.T) {
 		DBName: "db_test",
 	}
 
-	db, err := connectDatabase(correct_cfg)
+	db, err := connectDatabase("mysql", correct_cfg.FormatDSN())
 	if db == nil || err != nil {
 		log.Println(db, err)
 		t.Fatal("Test failed connecting with correct cfg")
@@ -32,10 +32,26 @@ func TestConnectDatabaseFail(t *testing.T) {
 		Passwd: "fake_passwd",
 	}
 
-	db, err := connectDatabase(correct_cfg)
+	db, err := connectDatabase("mysql", correct_cfg.FormatDSN())
 	if db != nil || err == nil {
 		log.Println(db, err)
 		t.Fatal("Test failed connecting with bad cfg")
+	}
+}
+
+func TestValidateDevice(t *testing.T) {
+	valid_result, success := validateDevice(map[string]interface{}{"deviceID": "Valid device"})
+	invalid_result, fail := validateDevice(map[string]interface{}{"deviceID": ""})
+	if !success || fail || valid_result != "Valid device" || invalid_result != "" {
+		t.Fatal(success, valid_result, fail, invalid_result)
+	}
+}
+
+func TestValidateTimestamp(t *testing.T) {
+	valid_result, success := validateTimestamp(map[string]interface{}{"timestamp": 420.0})
+	invalid_result, fail := validateTimestamp(map[string]interface{}{"timestamp": 420.3})
+	if !success || fail || valid_result != 420 || invalid_result != 420.0 {
+		t.Fatal(success, valid_result, fail, invalid_result)
 	}
 }
 

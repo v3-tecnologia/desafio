@@ -3,8 +3,6 @@ package main
 import (
 	"database/sql"
 	"net/http"
-
-	"github.com/go-sql-driver/mysql"
 )
 
 type db_table interface {
@@ -29,8 +27,8 @@ func makeHandler(ctor func() db_table, db *sql.DB) http.HandlerFunc {
 	}
 }
 
-func connectDatabase(cfg mysql.Config) (*sql.DB, error) {
-	db, err := sql.Open("mysql", cfg.FormatDSN())
+func connectDatabase(db_type string, dsn string) (*sql.DB, error) {
+	db, err := sql.Open(db_type, dsn)
 	if err != nil {
 		return nil, err
 	}
@@ -41,4 +39,24 @@ func connectDatabase(cfg mysql.Config) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func validateDevice(vals map[string]interface{}) (string, bool) {
+	deviceID, valid := vals["deviceID"].(string)
+
+	if valid {
+		valid = (deviceID != "")
+	}
+
+	return deviceID, valid
+}
+
+func validateTimestamp(vals map[string]interface{}) (uint64, bool) {
+	time, valid := vals["timestamp"].(float64)
+
+	if valid {
+		valid = (time == float64(uint64(time)))
+	}
+
+	return uint64(time), valid
 }

@@ -13,26 +13,35 @@ type gyroscope struct {
 
 func (g *gyroscope) decode(data []byte) bool {
 	var m map[string]interface{}
-	var valid_device, valid_x, valid_y, valid_z bool
+	var valid_device, valid_x, valid_y, valid_z, valid_time bool
 
 	err := json.Unmarshal(data, &m)
 	if err != nil {
 		return false
 	}
 
-	g.deviceID, valid_device = m["deviceID"].(string)
-	timestamp, valid_time := m["timestamp"].(float64)
-	g.x, valid_x = m["x"].(float64)
-	g.y, valid_y = m["y"].(float64)
-	g.z, valid_z = m["z"].(float64)
-
-	if valid_time {
-		valid_time = (timestamp == float64(uint64(timestamp)))
-	}
-
-	g.timestamp = uint64(timestamp)
+	g.deviceID, valid_device = validateDevice(m)
+	g.timestamp, valid_time = validateTimestamp(m)
+	g.x, valid_x = validateX(m)
+	g.y, valid_y = validateY(m)
+	g.z, valid_z = validateZ(m)
 
 	return valid_device && valid_time && valid_x && valid_y && valid_z
+}
+
+func validateX(vals map[string]interface{}) (float64, bool) {
+	x, valid := vals["x"].(float64)
+	return x, valid
+}
+
+func validateY(vals map[string]interface{}) (float64, bool) {
+	y, valid := vals["y"].(float64)
+	return y, valid
+}
+
+func validateZ(vals map[string]interface{}) (float64, bool) {
+	z, valid := vals["z"].(float64)
+	return z, valid
 }
 
 func (g *gyroscope) persist(db *sql.DB) error {
