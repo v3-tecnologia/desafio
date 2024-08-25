@@ -35,6 +35,17 @@ definitions:
     - "y"
     - z
     type: object
+  dto.PhotoOutputDTO:
+    properties:
+      file_path:
+        type: string
+      id:
+        type: string
+      mac_address:
+        type: string
+      timestamp:
+        type: string
+    type: object
   web.Error:
     properties:
       message:
@@ -103,4 +114,38 @@ paths:
       summary: "Create\tgyroscope"
       tags:
       - gyroscopes
+  /photo:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Create photo
+      parameters:
+      - description: Photo file
+        in: formData
+        name: image
+        required: true
+        type: file
+      - description: MAC Address
+        in: formData
+        name: mac_address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.PhotoOutputDTO'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.Error'
+      summary: Create photo
+      tags:
+      - photos
 swagger: "2.0"

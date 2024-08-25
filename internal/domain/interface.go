@@ -9,3 +9,7 @@ type GyroscopeRepositoryInterface interface {
 type GPSRepositoryInterface interface {
 	Create(gps *entity.GPS) error
 }
+
+type PhotoRepositoryInterface interface {
+	Create(photo *entity.Photo) error
+}

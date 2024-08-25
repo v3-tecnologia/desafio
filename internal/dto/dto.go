@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"mime/multipart"
+	"time"
+)
 
 type CreateGyroscopeInputDTO struct {
 	Name       string  `json:"name" binding:"required"`
@@ -34,4 +37,17 @@ type GPSOutputDTO struct {
 	Longitude  float64   `json:"longitude"`
 	Timestamp  time.Time `json:"timestamp"`
 	MacAddress string    `json:"mac_address"`
+}
+
+type CreatePhotoInputDTO struct {
+	Image      *multipart.FileHeader `form:"image" binding:"required"`
+	MacAddress string                `json:"mac_address" binding:"required"`
+	FileSize   int64
+}
+
+type PhotoOutputDTO struct {
+	ID         string    `json:"id"`
+	Timestamp  time.Time `json:"timestamp"`
+	MacAddress string    `json:"mac_address"`
+	FilePath   string    `json:"file_path"`
 }

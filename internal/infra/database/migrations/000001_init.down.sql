@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS gyroscopes;
 
-
 DROP TABLE IF EXISTS gps;
 
+DROP TABLE IF EXISTS photos;

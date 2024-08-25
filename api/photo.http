@@ -1,0 +1,71 @@
+@host = http://localhost:8080/api/v1/telemetry
+
+### Cria uma nova foto
+POST {{host}}/photo
+Content-Type: multipart/form-data; boundary=------------------------12345
+
+--------------------------12345
+Content-Disposition: form-data; name="image"; filename="test_photo.jpg"
+Content-Type: image/jpeg
+
+@ /Users/haroldovinente/Downloads/test_photo.jpg
+
+--------------------------12345
+Content-Disposition: form-data; name="mac_address"
+
+00:1A:2B:3C:4D:5E
+--------------------------12345--
+
+### Tenta criar uma foto sem imagem
+POST {{host}}/photo
+Content-Type: multipart/form-data; boundary=------------------------12345
+
+--------------------------12345
+Content-Disposition: form-data; name="mac_address"
+
+00:1A:2B:3C:4D:5E
+--------------------------12345--
+
+### Tenta criar uma foto sem endereço MAC
+POST {{host}}/photo
+Content-Type: multipart/form-data; boundary=------------------------12345
+
+--------------------------12345
+Content-Disposition: form-data; name="image"; filename="test_photo.jpg"
+Content-Type: image/jpeg
+
+@ /Users/haroldovinente/Downloads/test_photo.jpg
+
+--------------------------12345--
+
+### Tenta criar uma foto com endereço MAC inválido
+POST {{host}}/photo
+Content-Type: multipart/form-data; boundary=------------------------12345
+
+--------------------------12345
+Content-Disposition: form-data; name="image"; filename="test_photo.jpg"
+Content-Type: image/jpeg
+
+@ /Users/haroldovinente/Downloads/test_photo.jpg
+
+--------------------------12345
+Content-Disposition: form-data; name="mac_address"
+
+invalid_mac_address
+--------------------------12345--
+
+### Tenta criar uma foto com um arquivo grande
+POST {{host}}/photo
+Content-Type: multipart/form-data; boundary=------------------------12345
+
+--------------------------12345
+Content-Disposition: form-data; name="image"; filename="large_photo.jpg"
+Content-Type: image/jpg
+
+@ /Users/haroldovinente/Downloads/large_photo.jpg
+
+--------------------------12345
+Content-Disposition: form-data; name="mac_address"
+
+00:1A:2B:3C:4D:5F
+--------------------------12345--

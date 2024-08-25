@@ -100,6 +100,57 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/photo": {
+            "post": {
+                "description": "Create photo",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "photos"
+                ],
+                "summary": "Create photo",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Photo file",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "MAC Address",
+                        "name": "mac_address",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PhotoOutputDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/web.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/web.Error"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -150,6 +201,23 @@ const docTemplate = `{
                 },
                 "z": {
                     "type": "number"
+                }
+            }
+        },
+        "dto.PhotoOutputDTO": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mac_address": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
                 }
             }
         },

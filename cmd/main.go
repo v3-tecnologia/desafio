@@ -46,13 +46,24 @@ func main() {
 
 	gyroscopeRepository := database.NewGyroscopeRepository(db)
 	gpsRepository := database.NewGPSRepository(db)
+	photoRepository := database.NewPhotoRepository(db)
+
+	uploadDir := filepath.Join(dir, "uploads")
+	if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
+		panic(err)
+	}
+
 	createGyroscopeUseCase := usecase.NewCreateGyroscopeUseCase(gyroscopeRepository)
 	createGPSUseCase := usecase.NewCreateGPSUseCase(gpsRepository)
+	createPhotoUseCase := usecase.NewCreatePhotoUseCase(photoRepository, uploadDir)
+
 	webGyroscopeHandler := web.NewGyroscopeHandler(createGyroscopeUseCase, gyroscopeRepository)
 	webGPSHandler := web.NewGPSHandler(createGPSUseCase, gpsRepository)
+	webPhotoHandler := web.NewPhotoHandler(createPhotoUseCase)
 
 	webServer.AddHandler(http.MethodPost, "/gyroscope", webGyroscopeHandler.Create)
 	webServer.AddHandler(http.MethodPost, "/gps", webGPSHandler.Create)
+	webServer.AddHandler(http.MethodPost, "/photo", webPhotoHandler.Create)
 
 	webServer.AddHandler(http.MethodGet, "/docs/*", httpSwagger.Handler(
 		httpSwagger.URL("http://localhost:"+config.WebServerPort+"/docs/doc.json"),
