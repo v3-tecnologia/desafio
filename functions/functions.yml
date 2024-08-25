@@ -1,0 +1,32 @@
+functions:
+  gyroscope:
+    handler: functions/gyroscope/route.go
+    events:
+      - http:
+          path: /telemetry/gyroscope
+          method: post
+
+  gps:
+    handler: functions/gps/route.go
+    events:
+      - http:
+          path: /telemetry/gps
+          method: post
+
+  photo:
+    handler: functions/photo/route.go
+    events:
+      - http:
+          path: /telemetry/photo
+          method: post
+
+  llm:
+    handler: functions/llm/route.go
+    events:
+      - s3:
+          bucket: ${self:provider.environment.V3_BUCKET}
+          event: s3:ObjectCreated:Put
+          existing: true
+          forceDeploy: true
+          rules:
+            - prefix: uploads/
