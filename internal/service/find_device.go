@@ -5,8 +5,8 @@ import (
 	"github.com/ThalesMonteir0/desafio/pkg/err_rest"
 )
 
-func (t telemetryService) findDevice(macAddres string) (domain.DeviceDomain, *err_rest.ErrRest) {
-	device, err := t.repository.FindDeviceByMAC(macAddres)
+func (t telemetryService) findDevice(macAddress string) (domain.DeviceDomain, *err_rest.ErrRest) {
+	device, err := t.repository.FindDeviceByMAC(macAddress)
 	if err != nil {
 		return domain.DeviceDomain{}, err
 	}
