@@ -1,13 +1,12 @@
-package domain
+package entity
 
 import "time"
 
-type GyroscopeDomain struct {
+type Gyroscopes struct {
 	ID             int
 	X              float64
 	Y              float64
 	Z              float64
 	DeviceID       int
-	MacAddress     string
-	CollectionDate time.Time
+	CollectionDate *time.Time
 }
