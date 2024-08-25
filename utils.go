@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"log"
 	"net/http"
 
 	"github.com/go-sql-driver/mysql"
@@ -19,16 +18,13 @@ func makeHandler(ctor func() db_table, db *sql.DB) http.HandlerFunc {
 		r.Body.Read(content)
 		ptr := ctor()
 
-		log.Print(r)
-		log.Println(string(content[:]))
-
 		if !ptr.decode(content) {
 			http.Error(w, "Invalid values", http.StatusBadRequest)
 			return
 		}
 
-		if ptr.persist(db) != nil {
-			http.Error(w, "Database error", http.StatusInternalServerError)
+		if err := ptr.persist(db); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
 }

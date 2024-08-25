@@ -36,6 +36,6 @@ func (g *gyroscope) decode(data []byte) bool {
 }
 
 func (g *gyroscope) persist(db *sql.DB) error {
-	_, err := db.Exec("INSERT INTO v3.gyroscope (deviceID, x, y, z, time) VALUES (?, ?, ?, ?, ?)", g.deviceID, g.x, g.y, g.z, g.timestamp)
+	_, err := db.Exec("INSERT INTO gyroscope (deviceID, x, y, z, time) VALUES (?, ?, ?, ?, ?)", g.deviceID, g.x, g.y, g.z, g.timestamp)
 	return err
 }

@@ -8,12 +8,6 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
-//type gps struct {
-//latitude, longitude float64
-//timestamp           uint64
-//deviceID            string
-//}
-
 //type photo struct {
 //image     []byte
 //timestamp uint64
@@ -37,7 +31,7 @@ func main() {
 	}
 
 	http.HandleFunc("POST /telemetry/gyroscope/", makeHandler(func() db_table { return &gyroscope{} }, db))
-	//http.HandleFunc("POST /telemetry/gps/", makeHandler(func() db_table { return &gps{} }, db))
+	http.HandleFunc("POST /telemetry/gps/", makeHandler(func() db_table { return &gps{} }, db))
 	//http.HandleFunc("POST /telemetry/photo/", makeHandler(func() db_table { return &photo{} }, db))
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
