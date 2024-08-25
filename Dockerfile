@@ -8,13 +8,19 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/main.go
+RUN go install github.com/google/wire/cmd/wire@latest
+
+RUN cd cmd && wire
+
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd
 
 FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
+
+RUN mkdir -p uploads && chmod 777 uploads
 
 COPY --from=builder /app/main .
 COPY --from=builder /app/.env .
