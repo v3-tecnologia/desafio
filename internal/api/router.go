@@ -17,7 +17,7 @@ func InitService() http.Handler {
 	router.Use(cors.New(httpcore.DefaultCorsOptions).Handler)
 	router.Use(middleware.Timeout(200 * time.Second))
 	router.Use(middleware.Recoverer)
-
+	router.Use(httpcore.LoggerMiddleware)
 	controller := handlers.NewApiController()
 	applyRoutes(router, controller)
 

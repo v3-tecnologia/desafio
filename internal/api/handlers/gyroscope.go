@@ -5,7 +5,7 @@ import (
 	"time"
 	"v3/pkg/httpcore"
 	"v3/pkg/models"
-	"v3/pkg/utils"
+	"v3/pkg/util"
 )
 
 func (tc *ApiController) CreateGyroscope(w http.ResponseWriter, r *http.Request) (any, int) {
@@ -16,7 +16,7 @@ func (tc *ApiController) CreateGyroscope(w http.ResponseWriter, r *http.Request)
 
 	g, err := models.NewGyroscope(
 		&models.DeviceData{
-			MAC:       utils.GenerateMac(),
+			MAC:       util.GenerateMac(),
 			Timestamp: time.Now(),
 		},
 		newGyro.X,
