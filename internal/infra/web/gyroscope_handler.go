@@ -36,8 +36,6 @@ func NewGyroscopeHandler(
 // @Failure     400			{object}	Error
 // @Router      /gyroscope	[post]
 func (h *GyroscopeHandler) Create(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received request to /gyroscope")
-
 	var dto dto2.CreateGyroscopeInputDTO
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
@@ -45,11 +43,9 @@ func (h *GyroscopeHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Printf("Received Gyroscope: %+v\n", dto)
 
 	output, err := h.CreateGyroscopeUseCase.Execute(dto)
 	if err != nil {
-		fmt.Println("Error executing create gyroscope usecase: ", err)
 		validationErrors := map[string]bool{
 			"invalid id":           true,
 			"name cannot be empty": true,
@@ -74,30 +70,3 @@ func (h *GyroscopeHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Gyroscope created successfully")
 }
-
-//
-//// Error represents an error response
-//type Error struct {
-//	Message string `json:"message"`
-//}
-//
-//// HandleError handles the error response
-//func HandleError(w http.ResponseWriter, err error) {
-//	status := http.StatusInternalServerError
-//	validationErrors := map[string]bool{
-//		"invalid id":           true,
-//		"name cannot be empty": true,
-//		"name cannot be longer than 100 characters": true,
-//		"model cannot be empty":                     true,
-//		"model cannot be longer than 50 characters": true,
-//		"MAC address cannot be empty":               true,
-//		"invalid MAC address format":                true,
-//	}
-//
-//	if validationErrors[err.Error()] {
-//		status = http.StatusBadRequest
-//	}
-//
-//	w.WriteHeader(status)
-//	json.NewEncoder(w).Encode(Error{Message: err.Error()})
-//}

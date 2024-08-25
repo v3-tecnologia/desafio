@@ -36,8 +36,6 @@ func NewGPSHandler(
 // @Failure     400			{object}	Error
 // @Router      /gps	[post]
 func (h *GPSHandler) Create(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received request to /gps")
-
 	var dto dto2.CreateGPSInputDTO
 	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
@@ -45,11 +43,9 @@ func (h *GPSHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Printf("Received GPS: %+v\n", dto)
 
 	output, err := h.CreateGPSUseCase.Execute(dto)
 	if err != nil {
-		fmt.Println("Error executing create GPS usecase: ", err)
 		validationErrors := map[string]bool{
 			"invalid id":                             true,
 			"latitude must be between -90 and 90":    true,

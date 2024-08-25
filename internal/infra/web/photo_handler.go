@@ -52,8 +52,6 @@ func (h *PhotoHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	fmt.Printf("Handler - File size: %d bytes\n", fileHeader.Size)
-
 	macAddress := r.FormValue("mac_address")
 	if macAddress == "" {
 		http.Error(w, "mac_address is required", http.StatusBadRequest)

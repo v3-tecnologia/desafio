@@ -24,7 +24,6 @@ type GPSRepositoryTestSuite struct {
 
 func (suite *GPSRepositoryTestSuite) SetupSuite() {
 	dir, _ := os.Getwd()
-	fmt.Println("currently dir:", dir)
 
 	config, err := configs.LoadConfig(dir)
 	if err != nil {
@@ -36,7 +35,6 @@ func (suite *GPSRepositoryTestSuite) SetupSuite() {
 		}
 	}
 	suite.Config = config
-	fmt.Printf("Configurations loaded: %+v\n", config)
 
 	connectionString := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		config.TESTDBHost,
