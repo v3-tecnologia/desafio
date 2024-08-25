@@ -31,9 +31,10 @@ func (t telemetryHandler) CreateGPS(w http.ResponseWriter, r *http.Request) {
 	}
 
 	gpsDomain := domain.GpsDomain{
-		Latitude:   gpsRequest.Latitude,
-		Longitude:  gpsRequest.Longitude,
-		MacAddress: gpsRequest.MacAddress,
+		Latitude:       gpsRequest.Latitude,
+		Longitude:      gpsRequest.Longitude,
+		MacAddress:     gpsRequest.MacAddress,
+		CollectionDate: gpsRequest.CollectionDate,
 	}
 
 	if restErr = t.service.CreateGpsService(gpsDomain); restErr != nil {

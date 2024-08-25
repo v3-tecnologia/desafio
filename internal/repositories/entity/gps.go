@@ -1,12 +1,11 @@
-package domain
+package entity
 
 import "time"
 
-type GpsDomain struct {
+type Gps struct {
 	ID             int
 	Latitude       float64
 	Longitude      float64
 	DeviceID       int
-	MacAddress     string
-	CollectionDate time.Time
+	CollectionDate *time.Time
 }
