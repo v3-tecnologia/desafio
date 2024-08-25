@@ -9,7 +9,7 @@ type TelemetryRepository interface {
 	CreateGyroscope(gyroscopeDomain domain.GyroscopeDomain) *err_rest.ErrRest
 	CreateGps(gpsDomain domain.GpsDomain) *err_rest.ErrRest
 	CreatePhoto(photoDomain domain.PhotoDomain) *err_rest.ErrRest
-	FindDeviceByMAC(macAddress string) domain.DeviceDomain
+	FindDeviceByMAC(macAddress string) (domain.DeviceDomain, *err_rest.ErrRest)
 }
 
 type TelemetryService interface {
