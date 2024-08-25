@@ -13,7 +13,7 @@ func TestNewGyroscopeData(t *testing.T) {
 
 	tests := []struct {
 		name        string
-		device      *DeviceData
+		deviceData  *DeviceData
 		x           float64
 		y           float64
 		z           float64
@@ -21,7 +21,7 @@ func TestNewGyroscopeData(t *testing.T) {
 	}{
 		{
 			name:        "Valid Device and Gyroscope Data",
-			device:      d,
+			deviceData:  d,
 			x:           1.0,
 			y:           0.5,
 			z:           -0.5,
@@ -29,7 +29,7 @@ func TestNewGyroscopeData(t *testing.T) {
 		},
 		{
 			name:        "Nil Device data",
-			device:      nil,
+			deviceData:  nil,
 			x:           1.0,
 			y:           0.5,
 			z:           -0.5,
@@ -39,7 +39,7 @@ func TestNewGyroscopeData(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gyroData, err := NewGyroscope(tt.device, tt.x, tt.y, tt.z)
+			gyroData, err := NewGyroscope(tt.deviceData, tt.x, tt.y, tt.z)
 
 			if tt.expectError {
 				if err == nil {
@@ -49,8 +49,8 @@ func TestNewGyroscopeData(t *testing.T) {
 				if err != nil {
 					t.Errorf("Did not expect an error but got %v", err)
 				}
-				if gyroData.DeviceData != tt.device {
-					t.Errorf("Expected Device %v, got %v", tt.device, gyroData.DeviceData)
+				if gyroData.DeviceData != tt.deviceData {
+					t.Errorf("Expected Device %v, got %v", tt.deviceData, gyroData.DeviceData)
 				}
 				if gyroData.X != tt.x {
 					t.Errorf("Expected X %f, got %f", tt.x, gyroData.X)

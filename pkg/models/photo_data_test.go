@@ -13,25 +13,25 @@ func TestNewPhotoData(t *testing.T) {
 
 	tests := []struct {
 		name        string
-		device      *DeviceData
+		deviceData  *DeviceData
 		path        string
 		expectError bool
 	}{
 		{
 			name:        "Valid Device data and path to the photo",
-			device:      validDevice,
+			deviceData:  validDevice,
 			path:        "/photos/image.jpg",
 			expectError: false,
 		},
 		{
-			name:        "Nil Device",
-			device:      nil,
+			name:        "Missing Device data",
+			deviceData:  nil,
 			path:        "/photos/image.jpg",
 			expectError: true,
 		},
 		{
 			name:        "Empty path to the photo",
-			device:      validDevice,
+			deviceData:  validDevice,
 			path:        "",
 			expectError: true,
 		},
@@ -39,7 +39,7 @@ func TestNewPhotoData(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			photoData, err := NewPhotoData(tt.device, tt.path)
+			photoData, err := NewPhotoData(tt.deviceData, tt.path)
 
 			if tt.expectError {
 				if err == nil {
@@ -49,8 +49,8 @@ func TestNewPhotoData(t *testing.T) {
 				if err != nil {
 					t.Errorf("Did not expect an error but got %v", err)
 				}
-				if photoData.DeviceData != tt.device {
-					t.Errorf("Expected Device %v, got %v", tt.device, photoData.DeviceData)
+				if photoData.DeviceData != tt.deviceData {
+					t.Errorf("Expected Device %v, got %v", tt.deviceData, photoData.DeviceData)
 				}
 				if photoData.Path != tt.path {
 					t.Errorf("Expected Path %s, got %s", tt.path, photoData.Path)
