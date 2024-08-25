@@ -26,7 +26,7 @@ run:
 
   linters-settings:
     errcheck:
-      exclude-functions: false
+      ignore: fmt:.*
 
     dupl:
       threshold: 100
