@@ -3,6 +3,9 @@
 ## Setup
 A aplicação está dockerizada, desde que sua porta 3000 esteja livre você pode facilmente rodar `docker-compose up --build` e você terá a aplicação rodando. Se não, basta mudar a porta sendo exposta na configuração da aplicação.
 
+## Testando
+Para testar basta navegar até a pasta de testes que você quer executar pelo terminal e rodar `go test`
+
 ## Usando a aplicação
 Navegue até http://localhost:3000/swagger/index.html e você terá a documentação do swagger (assumindo que você não modificou a porta em que a aplicação está sendo servida), que vai te mostrar os 3 endpoints POST disponíveis.
 
