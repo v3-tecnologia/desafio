@@ -85,37 +85,8 @@ Caso tenha sido a vaga de Android Embarcado, então resolva somente esta sessão
 
 Caso tenha sido a vaga de Backend, então resolva somente esta sessão.
 
+
 ---
-
-# Desafio Android Embarcado
-
-Você deverá criar uma aplicação que deverá coletar os dados e enviá-los para o servidor Back-end;
-
-Lembre-se que essa é uma aplicação Android nativa, e não deve possuir qualquer tipo de interface com o usuário.
-
-## Nível 1
-
-Deve-se coletar os dados de acordo com as especificações, e armazená-los em um banco de dados local;
-
-## Nível 2
-
-Deve-se criar testes unitários para garantir o funcionamento das estruturas criadas;
-
-## Nível 3
-
-Deve-se enviar os dados obtidos a cada 10 segundos para uma API com a seguinte rota
-
-- `POST /telemetry/gyroscope` - Dados do giroscópio;
-- `POST /telemetry/gps` - Dados do GPS;
-- `POST /telemetry/photo` - Dados da Foto;
-
-## Nível 4
-
-Deve-se realizar um _crop_ da foto obtida para que se consiga extrair somente um rosto. Caso a foto não tenha um rosto, ela não deverá ser enviada.
-
-## Nível 5
-
-Faça com que cada uma das requisições ocorra de forma paralela, e não de forma síncrona;
 
 # Desafio Backend
 
