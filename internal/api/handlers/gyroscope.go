@@ -1,11 +1,10 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
-	"time"
 	"v3/pkg/httpcore"
 	"v3/pkg/models"
-	"v3/pkg/util"
 )
 
 func (tc *ApiController) CreateGyroscope(w http.ResponseWriter, r *http.Request) (any, int) {
@@ -14,11 +13,15 @@ func (tc *ApiController) CreateGyroscope(w http.ResponseWriter, r *http.Request)
 		return httpcore.ErrBadRequest.With(err), http.StatusBadRequest
 	}
 
+	if newGyro.DeviceData == nil {
+		return httpcore.ErrBadRequest.With(errors.New("device data cannot be nil")), http.StatusBadRequest
+	}
+	if newGyro.X == nil || newGyro.Y == nil || newGyro.Z == nil {
+		return httpcore.ErrBadRequest.With(errors.New("gyroscope data cannot have nil values")), http.StatusBadRequest
+	}
+
 	g, err := models.NewGyroscope(
-		&models.DeviceData{
-			MAC:       util.GenerateMac(),
-			Timestamp: time.Now(),
-		},
+		newGyro.DeviceData,
 		newGyro.X,
 		newGyro.Y,
 		newGyro.Z,
@@ -28,6 +31,9 @@ func (tc *ApiController) CreateGyroscope(w http.ResponseWriter, r *http.Request)
 		return httpcore.ErrBadRequest.With(err), http.StatusBadRequest
 	}
 
+	if tc.db == nil {
+		tc.db = make([]DataModel, 0)
+	}
 	tc.db = append(tc.db, g)
 
 	return g, http.StatusCreated

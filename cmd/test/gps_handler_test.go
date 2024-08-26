@@ -8,23 +8,12 @@ import (
 	"net/http/httptest"
 	"testing"
 	"time"
-	"v3/internal/api/handlers"
 	"v3/pkg/httpcore"
 	"v3/pkg/models"
-
-	"github.com/go-chi/chi/v5"
 )
 
-func setupRouter() *chi.Mux {
-	ctl := handlers.NewApiController()
-	r := chi.NewRouter()
-	r.Post("/telemetry/gps", httpcore.Handle(ctl.CreateGPS))
-
-	return r
-}
-
 func TestCreateGPS(t *testing.T) {
-	router := setupRouter()
+	router := setupRouter("/gps")
 	now := time.Now()
 
 	tests := []struct {
@@ -102,6 +91,8 @@ func TestCreateGPS(t *testing.T) {
 				if err != nil {
 					t.Fatalf("failed to decode response body: %v", err)
 				}
+
+				t.Logf("Actual Response Body: %+v", responseBody)
 
 				if responseBody != tt.expectedBody {
 					t.Errorf("expected body %+v, got %+v", tt.expectedBody, responseBody)
