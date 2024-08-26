@@ -41,7 +41,6 @@ provider:
             - "dynamodb:DeleteItem"
           Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/*"
 
-#  runtime: provided.al2
   runtime: go1.x
   architecture: x86_64
   region: us-east-1

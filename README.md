@@ -406,12 +406,113 @@ Para preparar o ambiente, é necessário instalar o `Node.js v20.12.2` e o `Serv
     ```
 
 Para hospedar a aplicação localmente, execute os seguintes comandos:
+  
+Crie um nov utilizador no IAM com as seguintes permissões:
 
-  - **Instalar dependências**: Instalar as dependências do projeto.
-      ```bash
-      npm install
-      ```
+ - ***ServerlessFrameworkCli***: Permissão para o Serverless Framework.
     
+
+  ```json
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+              "apigateway:PUT",
+              "apigateway:POST",
+              "apigateway:PATCH",
+              "apigateway:DELETE",
+              "apigateway:GET"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": "apigateway:PATCH",
+              "Resource": "*"
+            },
+            {
+              "Sid": "DelegateToCloudFormationRole",
+              "Effect": "Allow",
+              "Action": "iam:PassRole",
+              "Resource": "arn:aws:iam::522737137457:role/CloudFormationExecutionRole"
+            },
+            {
+              "Sid": "ValidateCloudFormation",
+              "Effect": "Allow",
+              "Action": "cloudformation:ValidateTemplate",
+              "Resource": "*"
+            },
+            {
+              "Sid": "ExecuteCloudFormation",
+              "Effect": "Allow",
+              "Action": [
+              "cloudformation:CreateChangeSet",
+              "cloudformation:CreateStack",
+              "cloudformation:DeleteChangeSet",
+              "cloudformation:DeleteStack",
+              "cloudformation:DescribeChangeSet",
+              "cloudformation:DescribeStackEvents",
+              "cloudformation:DescribeStackResource",
+              "cloudformation:DescribeStackResources",
+              "cloudformation:DescribeStacks",
+              "cloudformation:ExecuteChangeSet",
+              "cloudformation:ListStackResources",
+              "cloudformation:SetStackPolicy",
+              "cloudformation:UpdateStack",
+              "cloudformation:UpdateTerminationProtection",
+              "cloudformation:GetTemplate"
+              ],
+              "Resource": "arn:aws:cloudformation:us-east-1:522737137457:stack/aws-golang-api-dev/*"
+            },
+            {
+              "Sid": "ReadLambda",
+              "Effect": "Allow",
+              "Action": [
+              "lambda:Get*",
+              "lambda:List*"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Sid": "ManageSlsDeploymentBucket",
+              "Effect": "Allow",
+              "Action": [
+              "s3:CreateBucket",
+              "s3:DeleteBucket",
+              "s3:ListBucket",
+              "s3:PutObject",
+              "s3:GetObject",
+              "s3:DeleteObject",
+              "s3:GetBucketPolicy",
+              "s3:PutBucketPolicy",
+              "s3:DeleteBucketPolicy",
+              "s3:PutBucketAcl",
+              "s3:GetEncryptionConfiguration",
+              "s3:PutEncryptionConfiguration"
+              ],
+              "Resource": "arn:aws:s3:::aws-golang-api-dev-serverlessdeploymentbucket-gqzjmyfmbj4t/serverless/aws-golang-api/*"
+            },
+            {
+              "Sid": "ListS3",
+              "Effect": "Allow",
+              "Action": "s3:List*",
+              "Resource": "*"
+            }
+          ]
+        }
+```
+  - ***S3FullAccess***: Permissão para o S3, selecione a política `AmazonS3FullAccess`
+
+
+
+Configure o usuário na `AWS CLI`:
+```bash
+aws configure
+```
+---
+
   - **Definir variáveis de ambiente**: Definir as variáveis de ambiente no arquivo `.env`.
     
       ```bash
@@ -425,6 +526,11 @@ Para hospedar a aplicação localmente, execute os seguintes comandos:
 
 Para implantar a infraestrutura como código, execute os seguintes comandos:
 
+  - **Runtime**: Defina a runtime no arquivo `serverless.yml`.
+    
+      ```yaml
+      runtime: provided.al2
+      ```
 
   - **Deploy**: Implantar a infraestrutura.
       ```bash
@@ -437,6 +543,20 @@ Para implantar a infraestrutura como código, execute os seguintes comandos:
       npm run infra:remove
       ```
 Para implantar utilizando `docker` e `ssm`, execute os seguintes comandos:
+  
+
+  - **Serverless Framework**: Defina a variável de ambiente `ENV` como `local`.
+    
+      ```bash
+      export ENV=local
+      ```
+    
+
+  - **Runtime**: Defina a runtime no arquivo `serverless.yml`.
+    
+      ```yaml
+      runtime: go1.x
+      ```
 
   - **Deploy**: Implantar a infraestrutura.
       ```bash

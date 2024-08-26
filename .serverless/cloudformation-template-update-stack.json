@@ -214,7 +214,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/aws-golang-api/dev/1724525341517-2024-08-24T18:49:01.517Z/gyroscope.zip"
+          "S3Key": "serverless/aws-golang-api/dev/1724677975648-2024-08-26T13:12:55.648Z/gyroscope.zip"
         },
         "Handler": ".bin/gyroscope",
         "Runtime": "provided.al2",
@@ -254,7 +254,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/aws-golang-api/dev/1724525341517-2024-08-24T18:49:01.517Z/gps.zip"
+          "S3Key": "serverless/aws-golang-api/dev/1724677975648-2024-08-26T13:12:55.648Z/gps.zip"
         },
         "Handler": ".bin/gps",
         "Runtime": "provided.al2",
@@ -294,7 +294,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/aws-golang-api/dev/1724525341517-2024-08-24T18:49:01.517Z/photo.zip"
+          "S3Key": "serverless/aws-golang-api/dev/1724677975648-2024-08-26T13:12:55.648Z/photo.zip"
         },
         "Handler": ".bin/photo",
         "Runtime": "provided.al2",
@@ -334,7 +334,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/aws-golang-api/dev/1724525341517-2024-08-24T18:49:01.517Z/llm.zip"
+          "S3Key": "serverless/aws-golang-api/dev/1724677975648-2024-08-26T13:12:55.648Z/llm.zip"
         },
         "Handler": ".bin/llm",
         "Runtime": "provided.al2",
@@ -393,7 +393,7 @@
             ]
           }
         ],
-        "ForceDeploy": 1724525341527
+        "ForceDeploy": 1724677975662
       }
     },
     "IamRoleCustomResourcesLambdaExecution": {
@@ -492,7 +492,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/aws-golang-api/dev/1724525341517-2024-08-24T18:49:01.517Z/custom-resources.zip"
+          "S3Key": "serverless/aws-golang-api/dev/1724677975648-2024-08-26T13:12:55.648Z/custom-resources.zip"
         },
         "FunctionName": "aws-golang-api-dev-custom-resource-existing-s3",
         "Handler": "s3/handler.handler",
@@ -714,7 +714,7 @@
         "PhotoLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1724525338709": {
+    "ApiGatewayDeployment1724677892122": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
