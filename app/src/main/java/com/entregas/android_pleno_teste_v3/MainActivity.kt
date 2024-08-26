@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.entregas.android_pleno_teste_v3.services.BackgroundService
+import com.entregas.android_pleno_teste_v3.services.PhotoMonitorService
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             requestLocationPermission()
         }
+        startPhotoService()
     }
 
     private fun hasLocationPermission(): Boolean {
@@ -45,6 +47,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun startServiceAndFinish() {
         val serviceIntent = Intent(this, BackgroundService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent)
+        } else {
+            startService(serviceIntent)
+        }
+    }
+    private fun startPhotoService(){
+        val serviceIntent = Intent(this, PhotoMonitorService::class.java)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(serviceIntent)
         } else {

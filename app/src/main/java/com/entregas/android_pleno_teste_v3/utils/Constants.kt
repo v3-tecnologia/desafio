@@ -12,6 +12,7 @@ class Constants private constructor() {
         const val NOTIFICATION_ID = 1
         const val GYROSCOPE_DATA_ACTION = "com.entregas.android_pleno_teste_v3.GYROSCOPE_DATA"
         const val LOCATION_DATA_ACTION = "com.entregas.android_pleno_teste_v3.LOCATION_DATA"
+        const val CAPTURE_INTERVAL: Long = 10000 // 10 segundos
 
         const val EXTRA_X = "x"
         const val EXTRA_Y = "y"

@@ -19,13 +19,19 @@ import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.entregas.android_pleno_teste_v3.R
 import com.entregas.android_pleno_teste_v3.data.GyroscopeEntity
 import com.entregas.android_pleno_teste_v3.data.LocationEntity
 import com.entregas.android_pleno_teste_v3.data.database.AppDatabase
+import com.entregas.android_pleno_teste_v3.domain.GPSRequestDataClass
+import com.entregas.android_pleno_teste_v3.repository.GiroscopioRequestRepository
+import com.entregas.android_pleno_teste_v3.repository.GpsRequestRepository
 import com.entregas.android_pleno_teste_v3.utils.Constants
+import com.entregas.android_pleno_teste_v3.utils.Constants.Companion.CAPTURE_INTERVAL
+import com.entregas.android_pleno_teste_v3.utils.GetMacAddress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,13 +41,28 @@ class BackgroundService : Service(), LocationListener {
     private lateinit var locationManager: LocationManager
     private lateinit var sensorManager: SensorManager
     private var gyroscopeSensor: Sensor? = null
+    private val gpsRequestRepository = GpsRequestRepository()
+    private val giroscopioRequestRepository = GiroscopioRequestRepository()
 
     lateinit var dataBase: AppDatabase
 
     private lateinit var coroutineScope: CoroutineScope
 
     private val handler = Handler(Looper.getMainLooper())
-    private val captureInterval: Long = 10000 // 10 segundos
+
+    private var lastGyroscopeValues: FloatArray? = null
+
+    private val gyroscopeEventListener = object : SensorEventListener {
+        override fun onSensorChanged(event: SensorEvent?) {
+            event?.let {
+                lastGyroscopeValues = it.values.copyOf()
+            }
+        }
+
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+            // Implement this method if needed
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -52,6 +73,7 @@ class BackgroundService : Service(), LocationListener {
         initializeSensorManager()
 
         startLocationUpdates()
+        registerGyroscopeSensor()
 
         handler.post(runnableTask)
     }
@@ -95,9 +117,19 @@ class BackgroundService : Service(), LocationListener {
         ) {
             locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                captureInterval,
+                CAPTURE_INTERVAL,
                 0f,
                 this
+            )
+        }
+    }
+
+    private fun registerGyroscopeSensor() {
+        gyroscopeSensor?.let {
+            sensorManager.registerListener(
+                gyroscopeEventListener,
+                it,
+                SensorManager.SENSOR_DELAY_NORMAL
             )
         }
     }
@@ -117,34 +149,42 @@ class BackgroundService : Service(), LocationListener {
     }
 
     private fun sendLocationData(latitude: Double, longitude: Double, timestamp: Long) {
+        val localEntity = LocationEntity(
+            0,
+            latitude,
+            longitude,
+            timestamp
+        )
         coroutineScope.launch {
             dataBase.locationDao().insert(
-                LocationEntity(
-                    0,
-                    latitude,
-                    longitude,
-                    timestamp
-                )
+                localEntity
+            )
+            val gpsRequestDataClass = GPSRequestDataClass(
+                latitude,
+                longitude,
+                GetMacAddress(applicationContext).getUniqueDeviceId()
+            )
+            gpsRequestRepository.sendGpsRequest(
+                gpsRequestDataClass
             )
         }
     }
 
     private val runnableTask = object : Runnable {
         override fun run() {
-            captureSensorData() // Captura dados do giroscópio a cada 10 segundos
-            handler.postDelayed(this, captureInterval)
+            captureSensorData()
+            handler.postDelayed(this, 10000) // 10 segundos em milissegundos
         }
     }
 
     private fun captureSensorData() {
-        gyroscopeSensor?.let {
-            val values = FloatArray(3)
-            // Atualize os valores com dados reais ou fictícios conforme necessário
-            val x = 0f
-            val y = 0f
-            val z = 0f
+        lastGyroscopeValues?.let { values ->
+            val (x, y, z) = values
             val timestamp = System.currentTimeMillis()
             sendGyroscopeData(x, y, z, timestamp)
+
+            // Adicionando logs para ver os valores no Logcat
+            Log.d("GyroscopeData", "X: $x, Y: $y, Z: $z, Timestamp: $timestamp")
         }
     }
 
@@ -177,5 +217,6 @@ class BackgroundService : Service(), LocationListener {
         super.onDestroy()
         handler.removeCallbacks(runnableTask)
         locationManager.removeUpdates(this)
+        sensorManager.unregisterListener(gyroscopeEventListener) // Unregister the listener when the service is destroyed
     }
 }

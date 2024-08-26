@@ -53,6 +53,9 @@ dependencies {
     implementation(libs.gson.converter) // Gson converter
 
     implementation( "androidx.room:room-runtime:2.6.1")
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.play.services.mlkit.face.detection)
     kapt("androidx.room:room-compiler:2.6.1")
     implementation ("androidx.room:room-ktx:2.2.1")
 
