@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	"desafio-backend/internal/gyroscope"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -19,11 +21,15 @@ const (
 
 type API struct {
 	// Dependencies
-
+	gyroscopeMain gyroscope.UseCases
 }
 
-func NewAPI() *mux.Router {
-	api := API{}
+func NewAPI(
+	gyroscopeMain gyroscope.UseCases,
+) *mux.Router {
+	api := API{
+		gyroscopeMain: gyroscopeMain,
+	}
 	router := mux.NewRouter()
 	api.health(router)
 
@@ -58,7 +64,7 @@ func Start(router *mux.Router) {
 		logrus.Infof("listenning and serving on port %s", port)
 		printEndpoints(router)
 		// service connections
-		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			logrus.Fatalln(fmt.Sprintf("listen: %s\n", err))
 		}
 	}()

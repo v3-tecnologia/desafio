@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	component = "area-interpolation"
+	component = "open-mvp-telemetry"
 )
 
 type Error interface {
