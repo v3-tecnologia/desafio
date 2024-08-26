@@ -24,12 +24,12 @@ func InitService() http.Handler {
 
 	router.Use(middleware.Recoverer)
 
-	//Permitindo até 50 requests por minuto
+	//Permitindo até 60 requests por minuto
 	//antes do throttling colocar os próximos requests na fila
-	router.Use(middleware.Throttle(50))
+	router.Use(middleware.Throttle(60))
 
-	//Cada IP pode fazer 10 requests por minuto
-	router.Use(httprate.LimitByIP(10, 1*time.Minute))
+	//Cada IP pode fazer 30 requests por minuto
+	router.Use(httprate.LimitByIP(30, 1*time.Minute))
 
 	router.Use(httpcore.LoggerMiddleware)
 
