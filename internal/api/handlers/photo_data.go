@@ -8,7 +8,16 @@ import (
 	"v3/pkg/models"
 )
 
-func (tc *ApiController) CreatePhotoData(w http.ResponseWriter, r *http.Request) (any, int) {
+// CreatePhoto godoc
+// @Summary Create a new photo
+// @Description Create a new photo with device data and photo values
+// @Accept  json
+// @Produce  json
+// @Param   photo  body   models.PhotoData  true  "Photo data"
+// @Success 201 {object} models.PhotoData
+// @Failure 400 {object} httpcore.ApiError
+// @Router /telemetry/photo [post]
+func (tc *ApiController) CreatePhoto(w http.ResponseWriter, r *http.Request) (any, int) {
 	newPData, err := httpcore.DecodeBody[models.PhotoData](w, r)
 	if err != nil {
 		return httpcore.ErrBadRequest.With(err), http.StatusBadRequest

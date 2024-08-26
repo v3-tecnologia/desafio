@@ -7,6 +7,15 @@ import (
 	"v3/pkg/models"
 )
 
+// CreateGPS godoc
+// @Summary Create a new gps
+// @Description Create a new gps with device data and gps values
+// @Accept  json
+// @Produce  json
+// @Param   gps  body   models.GPS  true  "GPS data"
+// @Success 201 {object} models.GPS
+// @Failure 400 {object} httpcore.ApiError
+// @Router /telemetry/gps [post]
 func (tc *ApiController) CreateGPS(w http.ResponseWriter, r *http.Request) (any, int) {
 	newGPS, err := httpcore.DecodeBody[models.GPS](w, r)
 	if err != nil {

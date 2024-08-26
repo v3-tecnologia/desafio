@@ -1,0 +1,191 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/telemetry/gps": {
+            "post": {
+                "description": "Create a new gps with device data and gps values",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Create a new gps",
+                "parameters": [
+                    {
+                        "description": "GPS data",
+                        "name": "gps",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.GPS"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.GPS"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpcore.ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/telemetry/gyroscope": {
+            "post": {
+                "description": "Create a new gyroscope with device data and gyroscope values",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Create a new gyroscope",
+                "parameters": [
+                    {
+                        "description": "Gyroscope data",
+                        "name": "gyroscope",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Gyroscope"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Gyroscope"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpcore.ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/telemetry/photo": {
+            "post": {
+                "description": "Create a new photo with device data and photo values",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Create a new photo",
+                "parameters": [
+                    {
+                        "description": "Photo data",
+                        "name": "photo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.PhotoData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.PhotoData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpcore.ApiError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "httpcore.ApiError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "description": "Message is a human-readable string that describes the error.",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Status is the HTTP status code that should be returned with the error.",
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "Title is a short, machine-readable string that describes the error.",
+                    "type": "string"
+                }
+            }
+        },
+        "models.DeviceData": {
+            "type": "object",
+            "properties": {
+                "mac": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.GPS": {
+            "type": "object",
+            "properties": {
+                "deviceData": {
+                    "$ref": "#/definitions/models.DeviceData"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.Gyroscope": {
+            "type": "object",
+            "properties": {
+                "deviceData": {
+                    "$ref": "#/definitions/models.DeviceData"
+                },
+                "x": {
+                    "type": "number"
+                },
+                "y": {
+                    "type": "number"
+                },
+                "z": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.PhotoData": {
+            "type": "object",
+            "properties": {
+                "deviceData": {
+                    "$ref": "#/definitions/models.DeviceData"
+                },
+                "path": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

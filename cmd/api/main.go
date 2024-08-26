@@ -15,4 +15,5 @@ func main() {
 	if err != nil {
 		log.Fatal().Msgf("Could not start http server: %v\n", err)
 	}
+
 }

@@ -7,6 +7,15 @@ import (
 	"v3/pkg/models"
 )
 
+// CreateGyroscope godoc
+// @Summary Create a new gyroscope
+// @Description Create a new gyroscope with device data and gyroscope values
+// @Accept  json
+// @Produce  json
+// @Param   gyroscope  body   models.Gyroscope  true  "Gyroscope data"
+// @Success 201 {object} models.Gyroscope
+// @Failure 400 {object} httpcore.ApiError
+// @Router /telemetry/gyroscope [post]
 func (tc *ApiController) CreateGyroscope(w http.ResponseWriter, r *http.Request) (any, int) {
 	newGyro, err := httpcore.DecodeBody[models.Gyroscope](w, r)
 	if err != nil {

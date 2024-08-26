@@ -1,0 +1,125 @@
+definitions:
+  httpcore.ApiError:
+    properties:
+      message:
+        description: Message is a human-readable string that describes the error.
+        type: string
+      status:
+        description: Status is the HTTP status code that should be returned with the
+          error.
+        type: integer
+      title:
+        description: Title is a short, machine-readable string that describes the
+          error.
+        type: string
+    type: object
+  models.DeviceData:
+    properties:
+      mac:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  models.GPS:
+    properties:
+      deviceData:
+        $ref: '#/definitions/models.DeviceData'
+      latitude:
+        type: number
+      longitude:
+        type: number
+    type: object
+  models.Gyroscope:
+    properties:
+      deviceData:
+        $ref: '#/definitions/models.DeviceData'
+      x:
+        type: number
+      "y":
+        type: number
+      z:
+        type: number
+    type: object
+  models.PhotoData:
+    properties:
+      deviceData:
+        $ref: '#/definitions/models.DeviceData'
+      path:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /telemetry/gps:
+    post:
+      consumes:
+      - application/json
+      description: Create a new gps with device data and gps values
+      parameters:
+      - description: GPS data
+        in: body
+        name: gps
+        required: true
+        schema:
+          $ref: '#/definitions/models.GPS'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.GPS'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpcore.ApiError'
+      summary: Create a new gps
+  /telemetry/gyroscope:
+    post:
+      consumes:
+      - application/json
+      description: Create a new gyroscope with device data and gyroscope values
+      parameters:
+      - description: Gyroscope data
+        in: body
+        name: gyroscope
+        required: true
+        schema:
+          $ref: '#/definitions/models.Gyroscope'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Gyroscope'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpcore.ApiError'
+      summary: Create a new gyroscope
+  /telemetry/photo:
+    post:
+      consumes:
+      - application/json
+      description: Create a new photo with device data and photo values
+      parameters:
+      - description: Photo data
+        in: body
+        name: photo
+        required: true
+        schema:
+          $ref: '#/definitions/models.PhotoData'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.PhotoData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpcore.ApiError'
+      summary: Create a new photo
+swagger: "2.0"
