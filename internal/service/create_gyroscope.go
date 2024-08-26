@@ -6,7 +6,7 @@ import (
 )
 
 func (t telemetryService) CreateGyroscopeService(gyroscopeDomain domain.GyroscopeDomain) *err_rest.ErrRest {
-	device, err := t.findDevice(gyroscopeDomain.MacAddress)
+	device, err := t.repository.FindDeviceByMAC(gyroscopeDomain.MacAddress)
 	if err != nil {
 		return err
 	}

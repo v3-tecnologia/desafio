@@ -6,7 +6,7 @@ import (
 )
 
 func (t telemetryService) CreatePhotoService(photoDomain domain.PhotoDomain) *err_rest.ErrRest {
-	device, err := t.findDevice(photoDomain.MacAddress)
+	device, err := t.repository.FindDeviceByMAC(photoDomain.MacAddress)
 	if err != nil {
 		return err
 	}

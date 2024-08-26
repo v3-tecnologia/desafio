@@ -6,7 +6,7 @@ import (
 )
 
 func (t telemetryService) CreateGpsService(gpsDomain domain.GpsDomain) *err_rest.ErrRest {
-	device, err := t.findDevice(gpsDomain.MacAddress)
+	device, err := t.repository.FindDeviceByMAC(gpsDomain.MacAddress)
 	if err != nil {
 		return err
 	}
