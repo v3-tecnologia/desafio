@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"io"
 	"net/http"
 )
 
@@ -12,8 +13,12 @@ type db_table interface {
 
 func makeHandler(ctor func() db_table, db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		content := make([]byte, r.ContentLength)
-		r.Body.Read(content)
+		content, err := io.ReadAll(r.Body)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
 		ptr := ctor()
 
 		if !ptr.decode(content) {

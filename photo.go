@@ -14,9 +14,8 @@ type photo struct {
 	format    string
 	timestamp uint64
 	deviceID  string
+	directory string
 }
-
-const photo_dir = `./`
 
 func (p *photo) decode(data []byte) bool {
 	var m map[string]interface{}
@@ -34,7 +33,7 @@ func (p *photo) decode(data []byte) bool {
 
 	valid_file := valid_device && valid_time && valid_image && valid_format
 	if valid_file {
-		p.file = photo_dir + p.deviceID + "-" + strconv.FormatUint(p.timestamp, 10) + "." + p.format
+		p.file = p.directory + p.deviceID + "-" + strconv.FormatUint(p.timestamp, 10) + "." + p.format
 	}
 
 	return valid_file

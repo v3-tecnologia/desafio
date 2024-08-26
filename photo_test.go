@@ -70,10 +70,10 @@ func TestDecodeImage(t *testing.T) {
 	json := []byte(valid_input)
 	p := &photo{}
 	valid := p.decode(json)
-	result := photo{img_arr, "./Device1-420.jpg", "jpg", 420, "Device1"}
+	result := photo{img_arr, "Device1-420.jpg", "jpg", 420, "Device1", ""}
 	same := reflect.DeepEqual(p.image, result.image)
 	if !valid || p.deviceID != result.deviceID || p.file != result.file || p.format != result.format || p.timestamp != result.timestamp || !same {
-		t.Fatal(valid, *p)
+		t.Fatal(valid, p.deviceID, p.file, p.format, p.timestamp, same)
 	}
 
 	json = []byte(invalid_input)
