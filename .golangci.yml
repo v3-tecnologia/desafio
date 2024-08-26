@@ -1,0 +1,32 @@
+run:
+  concurrency: 4
+  timeout: 5m
+  issues-exit-code: 2
+  tests: true
+
+  issues:
+    skip-dirs:
+      - /internal/test
+
+  enable:
+    - staticcheck
+    - revive
+    - govet
+    - errcheck
+    - gosec
+    - dupl
+
+    - gocritic
+    - prealloc
+
+    - stylecheck
+    - goconst
+    - gofmt
+    - tagliatelle
+
+  linters-settings:
+    errcheck:
+      exclude-functions: ""
+
+    dupl:
+      threshold: 100

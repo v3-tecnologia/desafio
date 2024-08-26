@@ -1,0 +1,17 @@
+{
+  "yaml.schemas": {
+    "https://www.artillery.io/schema.json": [
+      "file:///home/lumiano/v3/artillery.yml",
+      "file:///home/lumiano/v3/.artillery/scenarios/artillery.yml",
+      "file:///home/lumiano/v3/.artillery/gps/scenarios/gps.yml",
+      "file:///home/lumiano/v3/.artillery/gps/scenarios/gyp.yml",
+      "file:///home/lumiano/v3/.artillery/gyp/common.yml",
+      "file:///home/lumiano/v3/.artillery/gyp/scenarios/gyp.yml",
+      "file:///home/lumiano/v3/.artillery/gyp/scenarios/create.yml",
+      "file:///home/lumiano/v3/.artillery/common.yml",
+      "file:///home/lumiano/v3/.artillery/gps/create.yml",
+      "file:///home/lumiano/v3/.artillery/gps/scenarios/create.yml",
+      "file:///home/lumiano/v3/.artillery/upload/create.yml"
+    ]
+  }
+}

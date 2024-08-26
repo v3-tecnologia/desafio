@@ -1,56 +1,5 @@
 # Desafio Técnico V3
 
-## ❤️ Bem vindos
-
-Olá, tudo certo?
-
-Seja bem vindo ao teste de seleção para novos desenvolvedores na V3!
-
-Estamos honrados que você tenha chegado até aqui!
-
-Prepare aquele ☕️ , e venha conosco codar e se divertir!
-
-## Poxa, outro teste?
-
-Nós sabemos que os processos de seleção podem ser ingratos! Você investe um tempão e no final pode não ser aprovado!
-
-Aqui, nós presamos pela **transparência**!
-
-Este teste tem um **propósito** bastante simples:
-
-> Nós queremos avaliar como você consegue transformar problemas em soluções através de código!
-
-**🚨 IMPORTANTE!** Se você entende que já possui algum projeto pessoal, ou contribuição em um projeto _open-source_ que contemple conhecimentos equivalentes aos que existem neste desafio, então, basta submeter o repositório explicando essa correlação!
-
-## 🚀 Bora nessa!
-
-Este é um teste para analisarmos como você desempenha ao entender, traduzir, resolver e entregar um código que resolve um problema.
-
-### Dicas
-
-- Documente seu projeto;
-- Faça perguntas sobre os pontos que não ficaram claros para você;
-- Mostre a sua linha de raciocínio;
-- Trabalhe bem o seu README.md;
-  - Explique até onde implementou;
-  - Como o projeto pode ser executado;
-  - Como pode-se testar o projeto;
-
-### Como você deverá desenvolver?
-
-1. Faça um _fork_ deste projeto em seu GitHub pessoal;
-2. Realize as implementações de acordo com cada um dos níveis;
-3. Faça pequenos _commits_;
-4. Depois de sentir que fez o seu máximo, faça um PR para o repositório original.
-
-🚨 **IMPORTANTE!** Não significa que você precisa implementar **todos os níveis** para ser aprovado no processo! Faça até onde se sentir confortável.
-
-### Qual o tempo para entregar?
-
-Quanto antes você enviar, mais cuidado podemos ter na revisão do seu teste. Mas sabemos que o dia a dia é corrido, faça de forma que fique confortável para você!
-
-**Mas não desista! Envie até onde conseguir.**
-
 ## 💻 O Problema
 
 Um dos nossos clientes ainda não consegue comprar o equipamento para colocar nos veículos de sua frota, mas ele quer muito utilizar a nossa solução.
@@ -73,86 +22,564 @@ Essas informações, depois de armazenadas devem estar disponíveis através de 
 
 **🚨 É importante que se envie junto à essas informações um campo adicional, contendo uma identificação única do dispositivo, que pode ser seu endereço MAC.**
 
-### Funcionamento
+---
 
-A aplicação Android deverá rodar em Background, e coletar e enviar as informações descritas a cada 10 segundos.
+### Estrutura do Projeto
 
-### Qual parte do desafio devo realizar?
+O projeto foi construído utilizando a linguagem `Go` e o `Serverless Framework`.
 
-Você deve realizar somente o desafio para a vaga que se candidatou.
+Os padrões de projeto utilizados foram baseados no `Clean Architecture`, `SOLID` e `DDD`.
 
-Caso tenha sido a vaga de Android Embarcado, então resolva somente esta sessão.
+- **`/functions`**: Contém as funções Lambda.
 
-Caso tenha sido a vaga de Backend, então resolva somente esta sessão.
+      |── functions.yml
+          ├── gps
+          │   └── route.go
+          ├── gyroscope
+          │   └── route.go
+          ├── llm
+          │   └── route.go
+          └── photo
+              └── route.go
+
+- **`/internal`**: Contém o código da aplicação.
+
+        internal
+
+- **`/adapter`**: Contém os adaptadores para conversão de dados, como datas, UUIDs, etc, mantendo a aplicação independente de bibliotecas externas.
+
+      ├── date
+      │   ├── adapter.go
+      │   └── adapter_test.go
+      ├── multipart
+      │   ├── adapter.go
+      │   ├── adapter_test.go
+      │   └── form
+      │       ├── form.go
+      │       └── form_test.go
+      └── uuid
+          ├── adapter.go
+          └── adapter_test.go
+
+
+
+- **`/domain`**: Contém as entidades da aplicação.
+
+      ├── domain
+      │   ├── coordinate.go
+      │   ├── faces.go
+      |   ├── gps.go
+      │   ├── gyroscope.go
+      │   └── photo.go
+
+- **`/infra`**: Contém a infraestrutura da aplicação, como banco de dados, S3, Rekognition, etc.
+
+      ├── infra
+      │   ├── database.go
+      │   ├── dynamodb.go
+      │   ├── http.go
+      │   ├── logger.go
+      │   ├── rekognition.go
+      │   └── s3.go
+
+- **`/repository`**: Contém os repositórios para acesso ao banco de dados.
+
+      ├── repository
+      │   ├── gps
+      │   │   ├── create.go
+      │   │   └── repository.go
+      │   ├── gyroscope
+      │   │   ├── create.go
+      │   │   └── repository.go
+      │   ├── photo
+      │   │   ├── create.go
+      │   │   ├── find.go
+      │   │   └── repository.go
+      │   ├── rekognition
+      │   │   ├── create.go
+      │   │   ├── find.go
+      │   │   └── repository.go
+      │   └── s3
+      │       ├── repository.go
+      │       └── upload.go
+
+- **`/route`**: Contém as rotas da aplicação.
+
+      ├── route
+      │   ├── gps
+      │   │   └── route.go
+      │   ├── gyroscope
+      │   │   └── route.go
+      │   ├── llm
+      │   │   └── route.go
+      │   └── upload
+      │       └── route.go
+
+- **`/service`**: Contém os serviços da aplicação.
+
+      ├── service
+      │   ├── gps
+      │   │   ├── create.go
+      │   │   └── service.go
+      │   ├── gyroscope
+      │   │   ├── create.go
+      │   │   └── service.go
+      │   ├── photo
+      │   │   ├── create.go
+      │   │   ├── find.go
+      │   │   └── service.go
+      │   └── rekognition
+      │       ├── create.go
+      │       ├── find.go
+      │       └── service.go
+
+- **`/shared`**: Contém o código compartilhado.
+
+      ├── shared
+      │   ├── database.go
+      │   └── http.go
+
+- **`/usecase`**: Contém os casos de uso da aplicação.
+
+      ├── gps
+      │   ├── create
+      │   │   ├── create.go
+      │   │   └── create_test.go
+      │   └── usecase.go
+      ├── gyroscope
+      │   ├── create
+      │   │   ├── create.go
+      │   │   └── create_test.go
+      │   └── usecase.go
+      ├── photo
+      │   ├── create
+      │   │   ├── create.go
+      │   │   └── create_test.go
+      │   ├── find
+      │   │   ├── find.go
+      │   │   └── find_test.go
+      │   └── usecase.go
+      └── rekognition
+          ├── create
+          │   ├── create.go
+          │   └── create_test.go
+          ├── search
+          │   ├── search.go
+          │   └── search_test.go
+          └── usecase.go
 
 ---
 
-# Desafio Android Embarcado
+# Arquitetura
 
-Você deverá criar uma aplicação que deverá coletar os dados e enviá-los para o servidor Back-end;
+Este repositório contém a infraestrutura e código para um sistema de processamento de dados utilizando diversos serviços da AWS, incluindo Lambda, DynamoDB, API Gateway, S3 e Rekognition.
 
-Lembre-se que essa é uma aplicação Android nativa, e não deve possuir qualquer tipo de interface com o usuário.
+## Visão Geral
+
+A arquitetura é composta pelos seguintes componentes principais:
+
+### Tabelas DynamoDB
+
+- **GyroscopeTable**: Armazena dados de giroscópio.
+- **LocationTable**: Armazena dados de localização.
+
+### Grupos de Log (CloudWatch)
+
+- **GypLogGroup**: Logs para eventos da função `GypLambdaFunction`.
+- **GpsLogGroup**: Logs para eventos da função `GpsLambdaFunction`.
+- **PhotoLogGroup**: Logs para eventos da função `PhotoLambdaFunction`.
+- **LmLogGroup**: Logs para eventos da função `LmLambdaFunction`.
+
+
+## IAM & Policies
+
+### Policies
+- **V3BucketPolicy**: Permissão para o bucket S3 acessar o artefacto de deployment serverless.
+
+
+#### IAM
+- **IamRoleLambdaExecution**: Permissão para as funções Lambda acessarem os serviços da AWS.
+- **GypLambdaPermissionApiGateway**: Permissão para a função `GypLambdaFunction` acessar o API Gateway.
+- **ServerlessDeploymentBucketPolicy**: Permissão para o bucket S3 acessar o artefacto de deployment serverless.
+- **GpsLambdaPermissionApiGateway**: Permissão para a função `GpsLambdaFunction` acessar o API Gateway.
+- **GpsLambdaFunctionRole**: Permissão para a função `GpsLambdaFunction` acessar o DynamoDB.
+- **LlmLambdaFunctionRole**: Permissão para a função `LmLambdaFunction` acessar o Rekognition.
+- **PhotoLambdaFunctionRole**: Permissão para a função `PhotoLambdaFunction` acessar o S3.
+- **PhotoLambdaPermissionApiGateway**: Permissão para a função `PhotoLambdaFunction` acessar o API Gateway.
+- ***IamRoleCustomResourcesLambdaExecution**: Permissão para a função `CustomResourcesLambda` acessar os serviços da AWS.
+
+
+### API Gateway
+
+**ApiGatewayRestApi**: Exposição das funções Lambda como endpoints HTTP.
+
+### Funções Lambda
+
+- **GypLambdaFunction**: Processa dados de giroscópio.
+- **GpsLambdaFunction**: Processa dados de GPS.
+- **UploadLambdaFunction**: Lida com upload de dados.
+- **LmLambdaFunction**: Processa um novo treino de modelo de reconhecimento de imagem a cada ‘upload’ de foto.
+
+### Amazon Rekognition
+
+- **RekognitionProject**: Projeto para análise de imagens.
+- **RekognitionCollection**: Coleção de imagens utilizada para comparação e análise.
+
+### Buckets S3
+
+- **V3Bucket**: armazena dados processados pelas funções Lambda.
+- **ServerlessDeploymentBucket**: Armazena artefacts de deployment serverless.
+
+
+### Diagrama de Arquitetura
+
+![Arquitetura](./.design/arquitetura.png)
+
+
+---
 
 ## Nível 1
 
-Deve-se coletar os dados de acordo com as especificações, e armazená-los em um banco de dados local;
+
+`POST /telemetry/gyroscope` - **GypLambdaFunction**
+
+* O valor de `x`, `y` e `z` deve ser um número decimal, com valor padrão de 0.
+
+  ```bash
+  curl --location --request POST 'https://v79gnfzt1h.execute-api.us-east-1.amazonaws.com/dev/telemetry/gyroscope' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+      "x": 223142,
+      "y": 21414,
+      "z": 14
+    }'
+  ```
+
+  ```json
+  {
+    "x": 223142,
+    "y": 21414,
+    "z": 14
+  }
+  ```
+
+
+---
+
+`POST /telemetry/gps` - **GpsLambdaFunction**
+
+* O valor de `latitude` e `longitude` deve ser um número decimal, com valor padrão de 0.
+
+  ```bash
+  curl --location --request POST 'https://v79gnfzt1h.execute-api.us-east-1.amazonaws.com/dev/telemetry/gps' \
+  --header 'Content-Type: application/json' \
+  --data-raw '{
+  "latitude": -81.214124,
+  "longitude": -46.614124333
+  }'
+  ```
+
+  ```json
+  {
+    "latitude": -81.214124,
+    "longitude": -46.614124333
+  }
+  ```
+
+---
+
+`POST /telemetry/photo` - **PhotoLambdaFunction**
+
+* A foto deve ser enviada como um arquivo multipart/form-data com o campo `file`.
+
+    ```bash
+    curl --location --request POST 'https://v79gnfzt1h.execute-api.us-east-1.amazonaws.com/dev/telemetry/photo' \
+  --form 'file=@"C:\\Users\\kevenmiano\\Área de Trabalho\\assets\\albert-dera-ILip77SbmOE-unsplash.jpg"'
+    ```
+
+---
 
 ## Nível 2
 
-Deve-se criar testes unitários para garantir o funcionamento das estruturas criadas;
+Para armazenar os dados, foi utilizado o DynamoDB, pois é um banco gerenciado e escalável, sendo ideal para armazenar dados de telemetria.
+
+- **GyroscopeTable**: Armazena dados de giroscópio.
+
+    - `X` - Valor de giroscópio no eixo x.
+    - `Y` - Valor de giroscópio no eixo y.
+    - `Z` - Valor de giroscópio no eixo z.
+    - `Timestamp` - Data e hora da coleta.
+    - `DeviceID` - Identificação única do dispositivo
+
+
+- **LocationTable**: Armazena dados de localização.
+
+    - `Latitude` - Valor de latitude.
+    - `Longitude` - Valor de longitude.
+    - `Timestamp` - Data e hora da coleta.
+    - `DeviceID` - Identificação única do dispositivo
+
+---
 
 ## Nível 3
 
-Deve-se enviar os dados obtidos a cada 10 segundos para uma API com a seguinte rota
+Foi utilizado o pacote `mockery` para `mock` de interfaces, `testing` para testes unitários e `gofakeit` para geração de dados falsos.
 
-- `POST /telemetry/gyroscope` - Dados do giroscópio;
-- `POST /telemetry/gps` - Dados do GPS;
-- `POST /telemetry/photo` - Dados da Foto;
+### Testes Unitários
+
+**CreateGpsUseCase**: Cria um dado de GPS.
+
+  - **TestCreateGpsUseCase_Execute**: testa a criação de um novo dado de GPS.
+  - **TestInvalidLatitude_Error**: testa a criação de um novo dado de GPS com latitude inválida.
+  - **TestInvalidLongitude_Error**: Testa a criação de um novo dado de GPS com longitude inválida.\
+  - **TestInvalidDeviceID_Error**: testa a criação de um novo dado de GPS com DeviceID inválido.
+  - **TestInvalidTimestamp_Error**: testa a criação de um novo dado de GPS com Timestamp inválido.
+
+
+
+**CreateGyroscopeUseCase**: Cria um dado de giroscópio.
+
+  - **TestCreateGyroscopeUseCase_Execute**: testa a criação de um novo dado de giroscópio.
+  - **TestInvalidDeviceID_Error**: testa a criação de um novo dado de giroscópio com DeviceID inválido.
+  - **TestInvalidTimestamp_Error**: testa a criação de um novo dado de giroscópio com Timestamp inválido.
+
+
+
+**CreatePhotoUseCase**: Cria um dado de foto.
+
+  - **TestCreatePhotoUseCase_Execute**: testa a criação de um novo dado de foto.
+  - **TestCreatePhotoUseCase_FileNameRequired_Error**: testa a criação de um novo dado de foto sem o campo `filename`.
+  - **TestCreatePhotoUseCase_ContentRequired_Error**: testa a criação de um novo dado de foto sem o campo `content`.
+  - **TestCreatePhotoUseCase_ContentTypeInvalid_Error**: testa a criação de um novo dado de foto com o campo `content` inválido.
+
+**FindPhotoUseCase**: Encontra um dado de foto.
+
+  - **TestFindPhotoUseCase_Execute**: testa a busca de um dado de foto.
+  - **TestFindPhotoUseCase_FileNameRequired_Error**: testa a busca de um dado de foto sem o campo `filename`.
+  - **TestFindPhotoUseCase_ContentRequired_Error**: testa a busca de um dado de foto sem o campo `content`.
+  - **TestFindPhotoUseCase_ContentTypeInvalid_Error**: testa a busca de um dado de foto com o campo `content` inválido.
+  - **TestFindRecognizePhotoUseCase_Execute**: testa a busca de um dado de foto com reconhecimento de imagem.\
+  - **TestFindPhotoUseCase_NotFound_Error**: testa a busca de um dado de foto não encontrado.
+  - **TestCreateJpgPhotoUseCase_Execute**: testa a criação de um novo dado de foto com extensão `jpg`.
+  - **TestCreateJpegPhotoUseCase_Execute**: testa a criação de um novo dado de foto com extensão `jpeg`.
+  - **TestCreatePngPhotoUseCase_Execute**: testa a criação de um novo dado de foto com extensão `png`.
+
+**CreateRekognitionUseCase**: cria um dado de reconhecimento de imagem.
+
+  - **TestNewCreateIndexFaceUseCase_Execute**: testa a criação de um novo dado de reconhecimento de imagem.
+  - **TestNewCreateIndexFaceUseCase_Execute_Error**: testa a criação de um novo dado de reconhecimento de imagem com erro.
+
+
+**SearchRekognitionUseCase**: pesquisa um dado de reconhecimento de imagem.
+
+  - **TestNewSearchFaceUseCase_Execute**: testa a pesquisa de um dado de reconhecimento de imagem.
+  - **TestNewSearchFaceUseCase_Execute_Error**: testa a pesquisa de um dado de reconhecimento de imagem com erro.
+
+### Executar Testes
+
+
+```bash
+go test -count=1 ./internal/usecase/...
+```
+---
 
 ## Nível 4
 
-Deve-se realizar um _crop_ da foto obtida para que se consiga extrair somente um rosto. Caso a foto não tenha um rosto, ela não deverá ser enviada.
+Foi utilizado o `Serverless Framework` para gerir a infraestrutura como código, facilitando a implantação e remoção da infraestrutura.
+
+Por padrão, o `Serverless Framework` utiliza o `CloudFormation` para gerir a infraestrutura.
+
+**Observações**:
+
+- `multipart/form-data` não é suportado nativamente para o ambiente local, utilizando o `serverless-offline`, utilize o ambiente produtivo para testar o ‘upload’ de fotos.
+
+
+Para preparar o ambiente, é necessário instalar o `Node.js v20.12.2` e o `Serverless Framework`.
+
+- **Node.js**: Instalar o Node.js.
+    ```bash
+    npm install -g serverless
+    ```
+- **Serverless Framework**: Instalar o Serverless Framework.
+    ```bash
+    npm install
+    ```
+
+Para hospedar a aplicação localmente, execute os seguintes comandos:
+
+Crie um nov utilizador no IAM com as seguintes permissões:
+
+ - ***ServerlessFrameworkCli***: Permissão para o Serverless Framework.
+
+
+  ```json
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+              "apigateway:PUT",
+              "apigateway:POST",
+              "apigateway:PATCH",
+              "apigateway:DELETE",
+              "apigateway:GET"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": "apigateway:PATCH",
+              "Resource": "*"
+            },
+            {
+              "Sid": "DelegateToCloudFormationRole",
+              "Effect": "Allow",
+              "Action": "iam:PassRole",
+              "Resource": "arn:aws:iam::522737137457:role/CloudFormationExecutionRole"
+            },
+            {
+              "Sid": "ValidateCloudFormation",
+              "Effect": "Allow",
+              "Action": "cloudformation:ValidateTemplate",
+              "Resource": "*"
+            },
+            {
+              "Sid": "ExecuteCloudFormation",
+              "Effect": "Allow",
+              "Action": [
+              "cloudformation:CreateChangeSet",
+              "cloudformation:CreateStack",
+              "cloudformation:DeleteChangeSet",
+              "cloudformation:DeleteStack",
+              "cloudformation:DescribeChangeSet",
+              "cloudformation:DescribeStackEvents",
+              "cloudformation:DescribeStackResource",
+              "cloudformation:DescribeStackResources",
+              "cloudformation:DescribeStacks",
+              "cloudformation:ExecuteChangeSet",
+              "cloudformation:ListStackResources",
+              "cloudformation:SetStackPolicy",
+              "cloudformation:UpdateStack",
+              "cloudformation:UpdateTerminationProtection",
+              "cloudformation:GetTemplate"
+              ],
+              "Resource": "arn:aws:cloudformation:us-east-1:522737137457:stack/aws-golang-api-dev/*"
+            },
+            {
+              "Sid": "ReadLambda",
+              "Effect": "Allow",
+              "Action": [
+              "lambda:Get*",
+              "lambda:List*"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Sid": "ManageSlsDeploymentBucket",
+              "Effect": "Allow",
+              "Action": [
+              "s3:CreateBucket",
+              "s3:DeleteBucket",
+              "s3:ListBucket",
+              "s3:PutObject",
+              "s3:GetObject",
+              "s3:DeleteObject",
+              "s3:GetBucketPolicy",
+              "s3:PutBucketPolicy",
+              "s3:DeleteBucketPolicy",
+              "s3:PutBucketAcl",
+              "s3:GetEncryptionConfiguration",
+              "s3:PutEncryptionConfiguration"
+              ],
+              "Resource": "arn:aws:s3:::aws-golang-api-dev-serverlessdeploymentbucket-gqzjmyfmbj4t/serverless/aws-golang-api/*"
+            },
+            {
+              "Sid": "ListS3",
+              "Effect": "Allow",
+              "Action": "s3:List*",
+              "Resource": "*"
+            }
+          ]
+        }
+```
+  - ***S3FullAccess***: Permissão para o S3, selecione a política `AmazonS3FullAccess`
+
+
+
+Configure o usuário na `AWS CLI`:
+```bash
+aws configure
+```
+---
+
+  - **Definir variáveis de ambiente**: Definir as variáveis de ambiente no arquivo `.env`.
+
+      ```bash
+      cp .env.example .env
+      ```
+  - **Executar localmente**: Executar a aplicação localmente.
+
+      ```bash
+      npm run start
+      ```
+
+Para implantar a infraestrutura como código, execute os seguintes comandos:
+
+  - **Runtime**: Defina a runtime no arquivo `serverless.yml`.
+
+      ```yaml
+      runtime: provided.al2
+      ```
+
+  - **Deploy**: Implantar a infraestrutura.
+      ```bash
+      npm run infra:deploy
+      ```
+
+  - **Remover**: Remover a infraestrutura.
+
+      ```bash
+      npm run infra:remove
+      ```
+Para implantar utilizando `docker` e `ssm`, execute os seguintes comandos:
+
+
+  - **Serverless Framework**: Defina a variável de ambiente `ENV` como `local`.
+
+      ```bash
+      export ENV=local
+      ```
+
+
+  - **Runtime**: Defina a runtime no arquivo `serverless.yml`.
+
+      ```yaml
+      runtime: go1.x
+      ```
+
+  - **Deploy**: Implantar a infraestrutura.
+      ```bash
+      npm run infra:deploy:docker
+      ```
+
+  - **Remover**: Remover a infraestrutura.
+
+      ```bash
+      npm run infra:remove:docker
+      ```
+
+---
 
 ## Nível 5
 
-Faça com que cada uma das requisições ocorra de forma paralela, e não de forma síncrona;
+As fotos enviadas para a API são armazenadas no S3 e enviadas para o Rekognition para análise.
 
-# Desafio Backend
+A análise de imagem é feita pelo Rekognition, que retorna informações sobre a imagem, como objetos detetados e confiança.
 
-Você deverá criar uma aplicação que irá receber os dados enviados pelo aplicativo.
+- **RekognitionProject**: Projeto para análise de imagens.
+- **RekognitionCollection**: Coleção de imagens utilizada para comparação e análise.
 
-Lembre-se essa aplicação precisa ser em GO!
+A cada ‘upload’ de foto, um novo treino de modelo de reconhecimento de imagem é feito automaticamente, utilizando gatilhos do S3.
 
-## Nível 1
-
-Deve-se criar uma API que receba requisições de acordo com os endpoints:
-
-- `POST /telemetry/gyroscope` - Dados do giroscópio;
-- `POST /telemetry/gps` - Dados do GPS;
-- `POST /telemetry/photo` - Dados da Foto;
-
-Deve-se garantir que os dados recebidos estão preenchidos corretamente.
-
-Caso algum dado esteja faltando, então retorne uma mensagem de erro e um Status 400.
-
-## Nível 2
-
-Salve cada uma das informações em um banco de dados a sua escolha.
-
-Salve estes dados de forma identificável e consistente;
-
-## Nível 3
-
-Crie testes unitários para cada arquivo da aplicação. Para cada nova implementação a seguir, também deve-se criar os testes.
-
-## Nível 4
-
-Crie um _container_ em _Docker_ que contenha a sua aplicação e o banco de dados utilizado nos testes.
-
-## Nível 5
-
-A cada foto recebida, deve-se utilizar o AWS Rekognition para comparar se a foto enviada é reconhecida com base nas fotos anteriores enviadas.
-
-Se a foto enviada for reconhecida, retorne como resposta do `POST` um atributo que indique isso.
-
-Utilize as fotos iniciais para realizar o treinamento da IA.
+---
