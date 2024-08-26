@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.okhttp) // okhttp
     implementation(libs.koin.core) // koin-core
     implementation(libs.koin.android) // koin-android
+    implementation(libs.gson.converter)
 
     implementation( "androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
