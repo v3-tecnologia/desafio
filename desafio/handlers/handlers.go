@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"desafio/models"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -9,33 +10,12 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type GyroscopeRequest struct {
-	Mac           string  `json:"macAddr" validate:"required,mac"`
-	X             float64 `json:"x" validate:"required,number"`
-	Y             float64 `json:"y" validate:"required,number"`
-	Z             float64 `json:"z" validate:"required,number"`
-	UnixtimeStamp int64   `json:"timeStamp" validate:"required,number"`
-}
-
-type GpsRequest struct {
-	Mac           string `json:"macAddr" validate:"required,mac"`
-	Lat           string `json:"latitude" validate:"required,latitude"`
-	Lon           string `json:"longitude" validate:"required,longitude"`
-	UnixtimeStamp int64  `json:"timeStamp" validate:"required,number"`
-}
-
-type PhotoRequest struct {
-	Mac           string `json:"macAddr" validate:"required,mac"`
-	ImageBase64   string `json:"image" validate:"required"`
-	UnixtimeStamp int64  `json:"timeStamp" validate:"required,number"`
-}
-
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("up and running...")
 }
 
 func GyroscopeHandler(w http.ResponseWriter, r *http.Request) {
-	var gyroscopeRequest GyroscopeRequest
+	var gyroscopeRequest models.GyroscopeRequest
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
 
@@ -57,7 +37,7 @@ func GyroscopeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GpsHandler(w http.ResponseWriter, r *http.Request) {
-	var gpsRequest GpsRequest
+	var gpsRequest models.GpsRequest
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
 
@@ -79,7 +59,7 @@ func GpsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PhotoHandler(w http.ResponseWriter, r *http.Request) {
-	var photoRequest PhotoRequest
+	var photoRequest models.PhotoRequest
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
 
