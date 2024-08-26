@@ -1,42 +1,50 @@
-Descrição
+# Projeto Android: Coleta de Dados e Captura de Fotos
 
-Este projeto é uma aplicação Android que opera em segundo plano para coletar dados de localização e giroscópio. Os dados são armazenados localmente usando o Room e enviados para um backend via Retrofit. O aplicativo também possui a funcionalidade de capturar fotos e verificar se essas fotos contêm rostos.
+Este projeto é uma aplicação Android que opera em segundo plano para coletar dados de localização e giroscópio, capturar fotos e verificar se essas fotos contêm rostos. Utiliza Room para persistência de dados e Retrofit para comunicação com um backend.
 
-Funcionalidades
-Serviço em Segundo Plano: Coleta dados de localização e giroscópio periodicamente.
-Persistência de Dados: Armazena dados de localização e giroscópio localmente usando o Room.
-Envio de Dados: Utiliza Retrofit para enviar dados, incluindo o endereço MAC do dispositivo, para um backend.
-Captura de Fotos: Tira fotos e verifica se elas contêm rostos.
-Notificações: Notifica o usuário que o serviço está em execução.
-Requisitos
-Android Studio
-Gradle
-Permissões de localização e acesso ao serviço em primeiro plano
-Configuração do Projeto
-Clonagem do Repositório Clone o repositório usando o comando:
+## Funcionalidades
 
-git clone https://github.com/SEU_USUARIO/NOVO_REPOSITORIO.git
+- **Serviço em Segundo Plano**: Coleta dados de localização e giroscópio periodicamente a cada 10 segundos.
+- **Persistência de Dados**: Armazena dados de localização e giroscópio localmente usando Room.
+- **Envio de Dados**: Envia dados para um backend via Retrofit, incluindo o ID único do dispositivo.
+- **Captura de Fotos**: Tira fotos e verifica se elas contêm rostos.
+- **Notificações**: Informa o usuário quando o serviço está em execução.
 
-Configuração das Permissões Certifique-se de que o seu arquivo AndroidManifest.xml inclui as permissões necessárias
+## Requisitos
 
-Configuração do Serviço O BackgroundService coleta dados de localização e giroscópio e envia para o backend. O serviço deve ser iniciado a partir da MainActivity se as permissões de localização forem concedidas.
+- **Android Studio**: Ferramenta de desenvolvimento para construir e testar o aplicativo.
+- **Gradle**: Sistema de automação de build usado para gerenciar dependências e compilar o projeto.
+- **Permissões**: O aplicativo requer permissões para acessar dados de localização, arquivos da galeria e para execução de serviços em primeiro plano.
 
-Configuração do Retrofit Configure o Retrofit para enviar dados para o backend.
+## Configuração do Projeto
 
-Configuração do Room Configure o Room para armazenar dados localmente. Defina as entidades e o banco de dados conforme necessário.
+### Clonagem do Repositório
 
-Autenticação e Autorização Se houver problemas com autenticação do GitHub, verifique suas configurações de chave SSH ou tokens de acesso pessoal.
+Clone o repositório do projeto para o seu ambiente de desenvolvimento.
 
-Execução do Projeto
-Compile o Projeto: No Android Studio, selecione Build > Rebuild Project.
-Execute o Aplicativo: Inicie o aplicativo no seu dispositivo ou emulador.
-Testes
-Testes Unitários: Foram realizados testes unitários para garantir que as funcionalidades individuais do aplicativo estão funcionando corretamente. Esses testes verificam o comportamento das classes e métodos isoladamente, garantindo que cada unidade de código execute a tarefa esperada.
+### Configuração das Permissões
 
-Testes de Integração: Testes de integração foram executados para assegurar que os diferentes componentes do aplicativo funcionam bem juntos. Isso inclui a integração do serviço em segundo plano com o banco de dados Room e a comunicação com o backend via Retrofit.
+Certifique-se de incluir as seguintes permissões no arquivo `AndroidManifest.xml` do projeto:
 
-Testes de API: Foram realizados testes de API para garantir que a comunicação com o backend esteja correta. Estes testes verificam se as requisições e respostas da API estão sendo processadas como esperado, e se os dados são enviados e recebidos corretamente.
+- **Localização**: Permissões para acessar dados de localização.
+- **Serviço em Primeiro Plano**: Permissões para garantir que o serviço de coleta de dados continue funcionando em segundo plano.
+- **Acesso a Arquivos da Galeria**: Permissões para ler e escrever arquivos na galeria, conforme a versão do Android.
 
-Contribuições
-Sinta-se à vontade para enviar pull requests e contribuir para o projeto.
+### Configuração dos Serviços
 
+- **Serviço de Localização e Giroscópio**: Um serviço dedicado coleta dados de localização e giroscópio periodicamente, a cada 10 segundos. Este serviço deve ser iniciado a partir da `MainActivity`, garantindo que as permissões necessárias sejam concedidas.
+
+- **Serviço de Captura de Fotos**: Um segundo serviço é responsável por capturar fotos e verificar se essas fotos contêm rostos. Esse serviço opera separadamente do serviço de coleta de dados de localização e giroscópio.
+
+### Configuração do Room
+
+Room é utilizado para armazenar dados de localização e giroscópio localmente a cada 10 segundos. Garanta que o Room esteja configurado para persistir esses dados, permitindo o acesso posterior conforme necessário.
+
+### Configuração do Retrofit
+
+Retrofit é utilizado para enviar dados para um backend, incluindo o ID único do dispositivo, que serve como uma identificação única. Este ID muda somente se o dispositivo for restaurado ou sofrer outras alterações significativas.
+
+## Notas Adicionais
+
+- **Permissões**: O aplicativo verifica a versão do Android e solicita permissões apropriadas para acessar arquivos da galeria, conforme a versão do sistema operacional.
+- **Serviços**: O aplicativo utiliza dois serviços distintos: um para coleta de dados de localização e giroscópio, e outro para captura de fotos.
