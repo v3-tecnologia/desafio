@@ -61,14 +61,14 @@ A aplicação foi desenvolvida em níveis, cada um com seus próprios objetivos 
 
 ### Nível 2: Testes Unitários
 
-- [ ] Criar testes unitários para garantir o funcionamento das estruturas de coleta de dados.
-- [ ] Criar testes unitários para o armazenamento no banco de dados local.
+- [Em andamento] Criar testes unitários para garantir o funcionamento das estruturas de coleta de dados.
+- [Em andamento] Criar testes unitários para o armazenamento no banco de dados local.
 
 ### Nível 3: Envio dos Dados para a API
 
-- [ ] Enviar os dados de giroscópio para a API via POST /telemetry/gyroscope a cada 10 segundos.
-- [ ] Enviar os dados de GPS para a API via POST /telemetry/gps a cada 10 segundos.
-- [ ] Enviar a foto para a API via POST /telemetry/photo a cada 10 segundos.
+- [x] Enviar os dados de giroscópio para a API via POST /telemetry/gyroscope a cada 10 segundos.
+- [x] Enviar os dados de GPS para a API via POST /telemetry/gps a cada 10 segundos.
+- [x] Enviar a foto para a API via POST /telemetry/photo a cada 10 segundos.
 
 ### Nível 4: Processamento de Imagem
 

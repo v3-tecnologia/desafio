@@ -12,15 +12,21 @@ import android.os.IBinder
 import android.os.Looper
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
+import org.json.JSONObject
 
 class BackgroundService : Service() {
 
     companion object {
         const val CHANNEL_ID = "BackgroundServiceChannel"
         const val TAG = "BackgroundService"
+        const val BASE_URL = "https://your-api-url.com/telemetry"
+        const val GYROSCOPE_ENDPOINT = "${BASE_URL}/gyroscope"
+        const val GPS_ENDPOINT = "${BASE_URL}/gps"
+        const val PHOTO_ENDPOINT = "${BASE_URL}/photo"
     }
 
     private lateinit var logWriter: LogWriter
+    private lateinit var apiClient: ApiClient
     private lateinit var databaseManager: DatabaseManager
     private lateinit var gyroscopeManager: GyroscopeManager
     private lateinit var locationManager: LocationManager
@@ -47,6 +53,14 @@ class BackgroundService : Service() {
 
         // Captura a identificação única do dispositivo
         deviceId = getAndroidId()
+
+
+        // Inicializa o ApiClient
+        try {
+            apiClient = ApiClient(this)
+        } catch (e: Exception) {
+            logWriter.writeLog(TAG, "Erro ao inicializar ApiClient: ${e.message}")
+        }
 
         // Inicializa o DatabaseManager
         try {
@@ -145,11 +159,23 @@ class BackgroundService : Service() {
             val y = gyroscopeManager.yValue
             val z = gyroscopeManager.zValue
 
+            // Gerar o timestamp
+            val timestamp = System.currentTimeMillis()
+
             // Loga os valores do giroscópio
             val messageGyroscope = "Giroscópio na rotina - X: $x, Y: $y, Z: $z"
             logWriter.writeLog(TAG, messageGyroscope)
 
-            databaseManager.insertGyroscopeData(x, y, z, deviceId)
+            if (x != null && y != null && z != null) {
+                val json = JSONObject().apply {
+                    put("timestamp", timestamp)
+                    put("x", x)
+                    put("y", y)
+                    put("z", z)
+                }
+                apiClient.postSendData(GYROSCOPE_ENDPOINT, json.toString())
+                databaseManager.insertGyroscopeData(x, y, z, timestamp, deviceId)
+            }
         } catch (e: Exception) {
             logWriter.writeLog(TAG, "Erro ao buscar dados do giroscópio: ${e.message}")
         }
@@ -161,11 +187,21 @@ class BackgroundService : Service() {
             val latitude = locationManager.latitude
             val longitude = locationManager.longitude
 
+            // Gerar o timestamp
+            val timestamp = System.currentTimeMillis()
+
             // Loga os valores de localização
             val messageLocation = "Localização na rotina - Latitude: $latitude, Longitude: $longitude"
             logWriter.writeLog(TAG, messageLocation)
 
-            databaseManager.insertLocationData(latitude!!, longitude!!, deviceId)
+            if (latitude != null && longitude != null) {val json = JSONObject().apply {
+                put("timestamp", timestamp)
+                put("latitude", latitude)
+                put("longitude", longitude)
+            }
+                apiClient.postSendData(PHOTO_ENDPOINT, json.toString())
+                databaseManager.insertLocationData(latitude!!, longitude!!, timestamp, deviceId)
+            }
         } catch (e: Exception) {
             logWriter.writeLog(TAG, "Erro ao buscar dados de localização: ${e.message}")
         }
@@ -177,7 +213,17 @@ class BackgroundService : Service() {
             val base64Image = customCameraManager.initializeCameraAndTakePicture()
             logWriter.writeLog(TAG, "Imagem capturada em Base64: $base64Image")
 
-            databaseManager.insertImageData(base64Image!!, deviceId)
+            // Gerar o timestamp
+            val timestamp = System.currentTimeMillis()
+
+            if (base64Image != null) {
+                val json = JSONObject().apply {
+                    put("timestamp", timestamp)
+                    put("image_base64", base64Image)
+                }
+                apiClient.postSendData(PHOTO_ENDPOINT, json.toString())
+                databaseManager.insertImageData(base64Image!!, timestamp, deviceId)
+            }
         } catch (e: Exception) {
             logWriter.writeLog(TAG, "Erro ao buscar dados da câmera: ${e.message}")
         }

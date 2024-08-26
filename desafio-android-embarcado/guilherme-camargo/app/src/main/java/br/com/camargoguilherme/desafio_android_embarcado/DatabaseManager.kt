@@ -8,7 +8,7 @@ import android.util.Log
 
 class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
-        private const val TAG = "DatabaseManager"
+        const val TAG = "DatabaseManager"
         private const val DATABASE_NAME = "telemetry.db"
         private const val DATABASE_VERSION = 1
 
@@ -96,10 +96,9 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
 
     // Métodos para inserir dados nas tabelas com tratamento de exceções e logs
 
-    fun insertGyroscopeData(xValue: Float, yValue: Float, zValue: Float, deviceId: String): Long {
+    fun insertGyroscopeData(xValue: Float, yValue: Float, zValue: Float, timestamp: Long, deviceId: String): Long {
         return try {
             val db = this.writableDatabase
-            val timestamp = System.currentTimeMillis() // Gerar o timestamp atual
             val values = ContentValues().apply {
                 put(COLUMN_TIMESTAMP, timestamp)
                 put(COLUMN_DEVICE_ID, deviceId)
@@ -116,10 +115,9 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         }
     }
 
-    fun insertLocationData(latitude: Double, longitude: Double, deviceId: String): Long {
+    fun insertLocationData(latitude: Double, longitude: Double, timestamp: Long, deviceId: String): Long {
         return try {
             val db = this.writableDatabase
-            val timestamp = System.currentTimeMillis() // Gerar o timestamp atual
             val values = ContentValues().apply {
                 put(COLUMN_TIMESTAMP, timestamp)
                 put(COLUMN_DEVICE_ID, deviceId)
@@ -135,10 +133,9 @@ class DatabaseManager(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         }
     }
 
-    fun insertImageData(imageBase64: String, deviceId: String): Long {
+    fun insertImageData(imageBase64: String, timestamp: Long, deviceId: String): Long {
         return try {
             val db = this.writableDatabase
-            val timestamp = System.currentTimeMillis() // Gerar o timestamp atual
             val values = ContentValues().apply {
                 put(COLUMN_TIMESTAMP, timestamp)
                 put(COLUMN_DEVICE_ID, deviceId)
