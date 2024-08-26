@@ -1,11 +1,11 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"time"
 	"v3/pkg/httpcore"
 	"v3/pkg/models"
-	"v3/pkg/util"
 )
 
 func (tc *ApiController) CreatePhotoData(w http.ResponseWriter, r *http.Request) (any, int) {
@@ -14,9 +14,13 @@ func (tc *ApiController) CreatePhotoData(w http.ResponseWriter, r *http.Request)
 		return httpcore.ErrBadRequest.With(err), http.StatusBadRequest
 	}
 
+	if newPData.DeviceData == nil {
+		return httpcore.ErrBadRequest.With(errors.New("device cannot be nil")), http.StatusBadRequest
+	}
+
 	p, err := models.NewPhotoData(
 		&models.DeviceData{
-			MAC:       util.GenerateMac(),
+			MAC:       newPData.MAC,
 			Timestamp: time.Now(),
 		},
 		newPData.Path,
