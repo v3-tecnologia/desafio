@@ -27,6 +27,7 @@ import com.entregas.android_pleno_teste_v3.data.GyroscopeEntity
 import com.entregas.android_pleno_teste_v3.data.LocationEntity
 import com.entregas.android_pleno_teste_v3.data.database.AppDatabase
 import com.entregas.android_pleno_teste_v3.domain.GPSRequestDataClass
+import com.entregas.android_pleno_teste_v3.domain.GyroscopeRequestDataClass
 import com.entregas.android_pleno_teste_v3.repository.GiroscopioRequestRepository
 import com.entregas.android_pleno_teste_v3.repository.GpsRequestRepository
 import com.entregas.android_pleno_teste_v3.utils.Constants
@@ -143,6 +144,14 @@ class BackgroundService : Service(), LocationListener {
                     y,
                     z,
                     timestamp
+                )
+            )
+            giroscopioRequestRepository.sendGyroscopeRequest(
+                GyroscopeRequestDataClass(
+                    x,
+                    y,
+                    z,
+                    GetMacAddress(applicationContext).getUniqueDeviceId()
                 )
             )
         }

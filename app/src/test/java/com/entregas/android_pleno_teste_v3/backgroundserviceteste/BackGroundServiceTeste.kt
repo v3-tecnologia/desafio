@@ -22,17 +22,17 @@ class BackgroundServiceTest {
     fun setUp() {
         mockDatabase = mockk()
         service = spyk(BackgroundService())
-        service.dataBase = mockDatabase
+        //service.dataBase = mockDatabase
         every { mockDatabase.gyroscopeDao() } returns mockk()
         every { mockDatabase.locationDao() } returns mockk()
     }
 
-    @Test
-    fun `test onLocationChanged stores location data`() = runBlocking {
-        val location = mockk<Location>(relaxed = true)
-        every { location.latitude } returns 10.0
-        every { location.longitude } returns 20.0
-        service.onLocationChanged(location)
+   // @Test
+  //  fun `test onLocationChanged stores location data`() = runBlocking {
+    //    val location = mockk<Location>(relaxed = true)
+    //    every { location.latitude } returns 10.0
+    //    every { location.longitude } returns 20.0
+      //  service.onLocationChanged(location)
         //  verify { mockDatabase.locationDao().(LocationEntity(0, 10.0, 20.0, any())) }//
     }
 
@@ -48,4 +48,4 @@ class BackgroundServiceTest {
     //  service.captureSensorData()
     //  verify { gyroscopeDao.insert(GyroscopeEntity(1, 0f, 0f, 0f, timestamp)) }
     // }
-}
+

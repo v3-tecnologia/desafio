@@ -99,9 +99,9 @@ class DataClassesTest {
     @Test
     fun `test GyroscopeRequestDataClass creation`() {
         // Arrange
-        val axlex = "0.01"
-        val axley = "0.02"
-        val axlez = "0.03"
+        val axlex = 0.01f
+        val axley =0.02f
+        val axlez = 0.03f
         val macAddress = "00:14:22:01:23:45"
 
         // Act
@@ -117,9 +117,9 @@ class DataClassesTest {
     @Test
     fun `test GyroscopeRequestDataClass toString`() {
         // Arrange
-        val axlex = "0.01"
-        val axley = "0.02"
-        val axlez = "0.03"
+        val axlex = 0.01f
+        val axley = 0.02f
+        val axlez = 0.03f
         val macAddress = "00:14:22:01:23:45"
         val gyroscopeRequest = GyroscopeRequestDataClass(axlex, axley, axlez, macAddress)
 
@@ -133,9 +133,9 @@ class DataClassesTest {
     @Test
     fun `test GyroscopeRequestDataClass equals and hashCode`() {
         // Arrange
-        val gyroscopeRequest1 = GyroscopeRequestDataClass("0.01", "0.02", "0.03", "00:14:22:01:23:45")
-        val gyroscopeRequest2 = GyroscopeRequestDataClass("0.01", "0.02", "0.03", "00:14:22:01:23:45")
-        val gyroscopeRequest3 = GyroscopeRequestDataClass("0.10", "0.20", "0.30", "00:14:22:01:23:45")
+        val gyroscopeRequest1 = GyroscopeRequestDataClass(0.01f, 0.02f, 0.03f, "00:14:22:01:23:45")
+        val gyroscopeRequest2 = GyroscopeRequestDataClass(0.01f, 0.02f, 0.03f, "00:14:22:01:23:45")
+        val gyroscopeRequest3 = GyroscopeRequestDataClass(0.10f, 0.20f, 0.30f, "00:14:22:01:23:45")
 
         // Act & Assert
         assertEquals(gyroscopeRequest1, gyroscopeRequest2) // should be equal
