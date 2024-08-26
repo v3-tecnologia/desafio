@@ -3,7 +3,6 @@ package handlers
 import (
 	"errors"
 	"net/http"
-	"time"
 	"v3/pkg/httpcore"
 	"v3/pkg/models"
 )
@@ -19,10 +18,7 @@ func (tc *ApiController) CreateGPS(w http.ResponseWriter, r *http.Request) (any,
 	}
 
 	g, err := models.NewGPS(
-		&models.DeviceData{
-			MAC:       newGPS.DeviceData.MAC,
-			Timestamp: time.Now(),
-		},
+		newGPS.DeviceData,
 		newGPS.Latitude,
 		newGPS.Longitude,
 	)
