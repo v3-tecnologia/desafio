@@ -1,7 +1,6 @@
 package com.entregas.android_pleno_teste_v3.repository
 
-
-import com.entregas.android_pleno_teste_v3.domain.data.GiroscopioRequest
+import com.entregas.android_pleno_teste_v3.domain.GyroscopeRequestDataClass
 import com.entregas.android_pleno_teste_v3.services.apiservice.RetrofitClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -11,7 +10,7 @@ import java.io.IOException
 class GiroscopioRequestRepository(private val apiService: RetrofitClient) {
 
     fun sendGyroscopeRequest(
-        gyroscopeRequest: GiroscopioRequest
+        gyroscopeRequest: GyroscopeRequestDataClass
     ): Flow<Result<Unit>> = flow {
         try {
             val response = apiService.apiService.enviarDadosGiroscopio(gyroscopeRequest)

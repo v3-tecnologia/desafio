@@ -1,6 +1,6 @@
 package com.entregas.android_pleno_teste_v3.repository
 
-import com.entregas.android_pleno_teste_v3.domain.data.GpsRequest
+import com.entregas.android_pleno_teste_v3.domain.GPSRequestDataClass
 import com.entregas.android_pleno_teste_v3.services.apiservice.RetrofitClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -10,7 +10,7 @@ import java.io.IOException
 class GpsRequestRepository(private val apiService: RetrofitClient) {
 
     fun sendGpsRequest(
-        gpsRequest: GpsRequest
+        gpsRequest: GPSRequestDataClass
     ): Flow<Result<Unit>> = flow {
         try {
             val response = apiService.apiService.enviarDadosGps(gpsRequest)
