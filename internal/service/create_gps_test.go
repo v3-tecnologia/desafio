@@ -20,6 +20,7 @@ func TestCreateGpsService(t *testing.T) {
 	gpsDomain := domain.GpsDomain{
 		Latitude:       1,
 		Longitude:      2,
+		DeviceID:       deviceID,
 		MacAddress:     macAddres,
 		CollectionDate: time.Now(),
 	}
@@ -40,13 +41,7 @@ func TestCreateGpsService(t *testing.T) {
 			Mac: macAddres,
 		}, nil)
 
-		repo.EXPECT().CreateGps(domain.GpsDomain{
-			Latitude:       1,
-			Longitude:      2,
-			DeviceID:       deviceID,
-			MacAddress:     macAddres,
-			CollectionDate: time.Time{},
-		}).Return(err_rest.NewInternalServerError("unable create gps"))
+		repo.EXPECT().CreateGps(gpsDomain).Return(err_rest.NewInternalServerError("unable create gps"))
 
 		err := service.CreateGpsService(gpsDomain)
 
@@ -62,13 +57,7 @@ func TestCreateGpsService(t *testing.T) {
 			Mac: macAddres,
 		}, nil)
 
-		repo.EXPECT().CreateGps(domain.GpsDomain{
-			Latitude:       1,
-			Longitude:      2,
-			DeviceID:       deviceID,
-			MacAddress:     macAddres,
-			CollectionDate: time.Time{},
-		}).Return(nil)
+		repo.EXPECT().CreateGps(gpsDomain).Return(nil)
 
 		err := service.CreateGpsService(gpsDomain)
 
