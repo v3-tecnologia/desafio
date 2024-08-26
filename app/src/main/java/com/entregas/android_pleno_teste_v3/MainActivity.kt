@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
             requestLocationPermission()
         }
     }
+
     private fun hasLocationPermission(): Boolean {
         return ActivityCompat.checkSelfPermission(
             this,
@@ -49,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             startService(serviceIntent)
         }
-        }
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

@@ -8,7 +8,7 @@ class Constants private constructor() {
         const val REQUEST_STORAGE_PERMISSION = 3
 
         const val CHANNEL_ID = "BackgroundServiceChannel"
-        const val BASE_URL = "example.com"
+        const val BASE_URL = "https://api.example.com/"
         const val NOTIFICATION_ID = 1
         const val GYROSCOPE_DATA_ACTION = "com.entregas.android_pleno_teste_v3.GYROSCOPE_DATA"
         const val LOCATION_DATA_ACTION = "com.entregas.android_pleno_teste_v3.LOCATION_DATA"

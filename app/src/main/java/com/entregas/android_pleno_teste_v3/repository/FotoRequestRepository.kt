@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
 
-class FotoRequestRepository(private val apiService: RetrofitClient) {
+class FotoRequestRepository() {
+    private val apiService= RetrofitClient
     fun sendPhotoRequest(
         photoRequest: FotoRequestDataClass
     ): Flow<Result<Unit>> = flow {

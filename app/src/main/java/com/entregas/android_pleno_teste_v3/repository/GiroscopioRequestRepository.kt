@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
 
-class GiroscopioRequestRepository(private val apiService: RetrofitClient) {
-
+class GiroscopioRequestRepository() {
+    private val apiService= RetrofitClient
     fun sendGyroscopeRequest(
         gyroscopeRequest: GyroscopeRequestDataClass
     ): Flow<Result<Unit>> = flow {

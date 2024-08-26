@@ -36,7 +36,7 @@ class BackgroundService : Service(), LocationListener {
     private lateinit var sensorManager: SensorManager
     private var gyroscopeSensor: Sensor? = null
 
-    private lateinit var dataBase: AppDatabase
+    lateinit var dataBase: AppDatabase
 
     private lateinit var coroutineScope: CoroutineScope
 
