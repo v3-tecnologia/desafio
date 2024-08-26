@@ -1,4 +1,5 @@
 Descrição
+
 Este projeto é uma aplicação Android que opera em segundo plano para coletar dados de localização e giroscópio. Os dados são armazenados localmente usando o Room e enviados para um backend via Retrofit. O aplicativo também possui a funcionalidade de capturar fotos e verificar se essas fotos contêm rostos.
 
 Funcionalidades
