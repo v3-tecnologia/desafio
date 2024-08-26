@@ -14,17 +14,10 @@ Permissões de localização e acesso ao serviço em primeiro plano
 Configuração do Projeto
 Clonagem do Repositório Clone o repositório usando o comando:
 
-bash
-Copy code
 git clone https://github.com/SEU_USUARIO/NOVO_REPOSITORIO.git
-Configuração das Permissões Certifique-se de que o seu arquivo AndroidManifest.xml inclui as permissões necessárias:
 
-xml
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+Configuração das Permissões Certifique-se de que o seu arquivo AndroidManifest.xml inclui as permissões necessárias
+
 Configuração do Serviço O BackgroundService coleta dados de localização e giroscópio e envia para o backend. O serviço deve ser iniciado a partir da MainActivity se as permissões de localização forem concedidas.
 
 Configuração do Retrofit Configure o Retrofit para enviar dados para o backend.
