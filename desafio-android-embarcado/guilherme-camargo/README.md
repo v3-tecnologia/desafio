@@ -61,8 +61,8 @@ A aplicação foi desenvolvida em níveis, cada um com seus próprios objetivos 
 
 ### Nível 2: Testes Unitários
 
-- [Em andamento] Criar testes unitários para garantir o funcionamento das estruturas de coleta de dados.
-- [Em andamento] Criar testes unitários para o armazenamento no banco de dados local.
+- [Pendente] Criar testes unitários para garantir o funcionamento das estruturas de coleta de dados.
+- [Pendente] Criar testes unitários para o armazenamento no banco de dados local.
 
 ### Nível 3: Envio dos Dados para a API
 
@@ -77,8 +77,8 @@ A aplicação foi desenvolvida em níveis, cada um com seus próprios objetivos 
 
 ### Nível 5: Requisições Paralelas
 
-- [ ] Implementar a execução paralela das requisições para giroscópio, GPS e foto.
-- [ ] Garantir que as requisições não sejam feitas de forma síncrona.
+- [x] Implementar a execução paralela das requisições para giroscópio, GPS e foto.
+- [x] Garantir que as requisições não sejam feitas de forma síncrona.
 
 ### AppUpdateReceiver
 
