@@ -3,6 +3,7 @@ package telemetry
 import (
 	"desafio-backend/internal/gps"
 	"desafio-backend/internal/gyroscope"
+	"desafio-backend/internal/photo"
 	"desafio-backend/web/api/util"
 	"net/http"
 )
@@ -47,8 +48,43 @@ func Gps(gpsMain gps.UseCases) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func Photo() func(w http.ResponseWriter, r *http.Request) {
+func Photo(photoMain photo.UseCases) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		util.NewResponse(w, http.StatusOK, "Dados de foto recebidos com sucesso")
+
+		// Parse the received body to the Request Photo upload
+
+		// max total file size 10Mb
+		err := r.ParseMultipartForm(10 << 20)
+		if err != nil {
+			util.NewResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		file, handler, err := r.FormFile("image")
+
+		if err != nil {
+			util.NewResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		imageFile, errImage := photoMain.ParseImage(file, handler)
+		if errImage != nil {
+			util.NewResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		request, errPhoto := photoMain.ParsePhoto(r.FormValue("request"), imageFile)
+		if errPhoto != nil {
+			util.NewResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		createdGyroscope, errSave := photoMain.SavePhoto(request)
+
+		if errSave != nil {
+			util.NewResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+		util.NewResponse(w, http.StatusCreated, createdGyroscope)
 	}
 }

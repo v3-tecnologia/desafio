@@ -4,6 +4,7 @@ import (
 	"context"
 	"desafio-backend/internal/gps"
 	"desafio-backend/internal/gyroscope"
+	"desafio-backend/internal/photo"
 	"errors"
 	"fmt"
 	"net/http"
@@ -24,15 +25,18 @@ type API struct {
 	// Dependencies
 	gyroscopeMain gyroscope.UseCases
 	gpsMain       gps.UseCases
+	photoMain     photo.UseCases
 }
 
 func NewAPI(
 	gyroscopeMain gyroscope.UseCases,
 	gpsMain gps.UseCases,
+	photoMain photo.UseCases,
 ) *mux.Router {
 	api := API{
 		gyroscopeMain: gyroscopeMain,
 		gpsMain:       gpsMain,
+		photoMain:     photoMain,
 	}
 	router := mux.NewRouter()
 	api.health(router)
