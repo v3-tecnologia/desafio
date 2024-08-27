@@ -17,8 +17,6 @@ Para rodar o projeto é necessário:
 
 ## Instalação
 
-Follow the steps below to install the project in your development environment:
-
 1. **Clone o repositório:**
 2. **Popular banco de dados:**
     ```
