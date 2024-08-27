@@ -35,7 +35,12 @@ func NewRepository() (service.IRepository, error) {
 }
 
 func newPostgresConn() (*sql.DB, error) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", os.Getenv("host"), port, user, password, dbname)
+	host := os.Getenv("host")
+	if host == "" {
+		host = "localhost"
+	}
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		println("postgres connection error: ")
@@ -54,7 +59,6 @@ func newPostgresConn() (*sql.DB, error) {
 }
 
 func (r *Repository) InsertGyroscopeData(data models.GyroscopeRequest) error {
-	defer r.db.Close()
 
 	query := `INSERT INTO public.gyroscope
 	(mac, xcoord, ycoord, zcoord, datatimestamp, created)
@@ -79,7 +83,6 @@ func (r *Repository) InsertGyroscopeData(data models.GyroscopeRequest) error {
 }
 
 func (r *Repository) InsertGpsData(data models.GpsRequest) error {
-	defer r.db.Close()
 
 	query := `INSERT INTO public.gps
 	(mac, latitude, longitude, datatimestamp, created)
@@ -104,7 +107,6 @@ func (r *Repository) InsertGpsData(data models.GpsRequest) error {
 }
 
 func (r *Repository) InsertPhotoData(data models.PhotoRequest) error {
-	defer r.db.Close()
 
 	query := `INSERT INTO public.photo
 	(mac, photo, datatimestamp, created)

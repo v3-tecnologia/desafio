@@ -2,7 +2,10 @@ package routes
 
 import (
 	"desafio/handlers"
+	"desafio/repository"
+	"desafio/service"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -12,13 +15,20 @@ import (
 func InitiateRouter() *mux.Router {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", handlers.HealthCheck).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/telemetry/gyroscope", handlers.GyroscopeHandler).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/telemetry/gps", handlers.GpsHandler).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/telemetry/photo", handlers.PhotoHandler).Methods(http.MethodPost, http.MethodOptions)
+	repository, err := repository.NewRepository()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
+	reqHandle := handlers.NewRequestHandle(service.NewService(repository))
+
+	r.HandleFunc("/", reqHandle.HealthCheck).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/telemetry/gyroscope", reqHandle.GyroscopeHandler).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/telemetry/gps", reqHandle.GpsHandler).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/telemetry/photo", reqHandle.PhotoHandler).Methods(http.MethodPost, http.MethodOptions)
 	r.Use(mux.CORSMethodMiddleware(r))
 
-	err := r.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+	err = r.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
 		pathTemplate, err := route.GetPathTemplate()
 		if err == nil {
 			fmt.Println("ROUTE:", pathTemplate)
@@ -44,7 +54,7 @@ func InitiateRouter() *mux.Router {
 	})
 
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalf(err.Error())
 	}
 
 	return r

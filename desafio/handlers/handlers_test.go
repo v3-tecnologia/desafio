@@ -1,7 +1,8 @@
 package handlers
 
 import (
-	"fmt"
+	"desafio/models"
+	"desafio/service/mocks"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -12,169 +13,196 @@ import (
 
 type HandlersTestSuite struct {
 	suite.Suite
+	requestHandle RequestHandle
+	service       *mocks.IService
 }
 
-func TestHealthCheckHandler(t *testing.T) {
-	req, err := http.NewRequest("GET", "/", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(HealthCheck)
-
-	handler.ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
+func TestHandlersTestSuite(t *testing.T) {
+	suite.Run(t, new(HandlersTestSuite))
 }
 
-func TestPhotoHandler(t *testing.T) {
-	reqBody := strings.NewReader(jsonEx)
-
-	reqInvalidBody := strings.NewReader(fmt.Sprintf(
-		`{
-	"macAddr" : "00-B0-D0-6l2.26",
-	"timeStamp" : 1724603773,`))
-
-	reqOK, err := http.NewRequest("POST", "/telemetry/photo", reqBody)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	reqNoBody, err := http.NewRequest("POST", "/telemetry/photo", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	reqInvalidData, err := http.NewRequest("POST", "/telemetry/photo", reqInvalidBody)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	recorderOK := httptest.NewRecorder()
-	recorderNoBody := httptest.NewRecorder()
-	recorderInvalidData := httptest.NewRecorder()
-	handler := http.HandlerFunc(PhotoHandler)
-
-	handler.ServeHTTP(recorderOK, reqOK)
-	if status := recorderOK.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
-
-	handler.ServeHTTP(recorderNoBody, reqNoBody)
-	if status := recorderNoBody.Code; status != http.StatusBadRequest {
-		t.Errorf("handler return wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
-
-	handler.ServeHTTP(recorderInvalidData, reqInvalidData)
-	if status := recorderInvalidData.Code; status != http.StatusBadRequest {
-		t.Errorf("handler return wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
-
-}
-func TestGpsHandler(t *testing.T) {
-	reqBody := strings.NewReader(fmt.Sprintf(
-		`{
-	"macAddr" : "00-B0-D0-63-C2-26",
-	"latitude" : "-18.909762",
-	"longitude" : "-48.232750",
-	"timeStamp" : 1724603773
-	}`))
-
-	reqInvalidBody := strings.NewReader(fmt.Sprintf(
-		`{
-	"macAddr" : "00-B0.D0-63-C226",
-	"latitude" : "-18.909762",
-	"timeStamp" : 1724603773
-	}`))
-
-	reqOK, err := http.NewRequest("POST", "/telemetry/gps", reqBody)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	reqNoBody, err := http.NewRequest("POST", "/telemetry/gps", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	reqInvalidData, err := http.NewRequest("POST", "/telemetry/gps", reqInvalidBody)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	recorderOK := httptest.NewRecorder()
-	recorderNoBody := httptest.NewRecorder()
-	recorderInvalidData := httptest.NewRecorder()
-	handler := http.HandlerFunc(GpsHandler)
-
-	handler.ServeHTTP(recorderOK, reqOK)
-	if status := recorderOK.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
-
-	handler.ServeHTTP(recorderNoBody, reqNoBody)
-	if status := recorderNoBody.Code; status != http.StatusBadRequest {
-		t.Errorf("handler return wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
-
-	handler.ServeHTTP(recorderInvalidData, reqInvalidData)
-	if status := recorderInvalidData.Code; status != http.StatusBadRequest {
-		t.Errorf("handler return wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
-
+func (ts *HandlersTestSuite) SetupTest() {
+	ts.service = &mocks.IService{}
+	ts.requestHandle.serv = ts.service
 }
 
-func TestGyroscopeHandler(t *testing.T) {
-	reqBody := strings.NewReader(fmt.Sprintf(`{
-	"macAddr" : "00-B0-D0-63-C2-26",
-	"x" : 111.2,
-	"y" : 222.3,
-	"z" : 333.4,
-	"timeStamp" : 1724603773
-	}`))
+func (ts *HandlersTestSuite) TestHealthCheckHandler() {
+	ts.Run("sucess", func() {
+		req, err := http.NewRequest("GET", "/", nil)
+		ts.Nil(err)
 
-	reqInvalidBody := strings.NewReader(fmt.Sprintf(`{
-	"macAddr" : "00-B0.D0-63-26",
-	"x" : 111.2,
-	"z" : 333.4,
-	"timeStamp" : 1724603773
-	}`))
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ts.requestHandle.HealthCheck)
 
-	reqOK, err := http.NewRequest("POST", "/telemetry/gyroscope", reqBody)
-	if err != nil {
-		t.Fatal(err)
-	}
+		handler.ServeHTTP(rr, req)
 
-	reqNoBody, err := http.NewRequest("POST", "/telemetry/gyroscope", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+		ts.Equal(http.StatusOK, rr.Code)
+	})
+}
 
-	reqInvalidData, err := http.NewRequest("POST", "/telemetry/gyroscope", reqInvalidBody)
-	if err != nil {
-		t.Fatal(err)
-	}
+func (ts *HandlersTestSuite) TestPhotoHandler() {
+	ts.Run("sucess: normal conditions", func() {
+		data := models.PhotoRequest{
+			Mac:           "00-00-00-00-00-00",
+			ImageBase64:   image,
+			UnixtimeStamp: 1724603773}
+		ts.service.On("ProcessPhotoData", data).Return(nil)
 
-	recorderOK := httptest.NewRecorder()
-	recorderNoBody := httptest.NewRecorder()
-	recorderInvalidData := httptest.NewRecorder()
-	handler := http.HandlerFunc(GyroscopeHandler)
+		reqBody := strings.NewReader(jsonEx)
 
-	handler.ServeHTTP(recorderOK, reqOK)
-	if status := recorderOK.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
+		req, err := http.NewRequest("POST", "/telemetry/photo", reqBody)
+		ts.Nil(err)
 
-	handler.ServeHTTP(recorderNoBody, reqNoBody)
-	if status := recorderNoBody.Code; status != http.StatusBadRequest {
-		t.Errorf("handler return wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ts.requestHandle.PhotoHandler)
 
-	handler.ServeHTTP(recorderInvalidData, reqInvalidData)
-	if status := recorderInvalidData.Code; status != http.StatusBadRequest {
-		t.Errorf("handler return wrong status code: got %v want %v", status, http.StatusBadRequest)
-	}
+		handler.ServeHTTP(rr, req)
+
+		ts.Equal(http.StatusOK, rr.Code)
+	})
+
+	ts.Run("fail: empty body", func() {
+		req, err := http.NewRequest("POST", "/telemetry/photo", nil)
+		ts.Nil(err)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ts.requestHandle.PhotoHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		ts.Equal(http.StatusBadRequest, rr.Code)
+	})
+
+	ts.Run("fail: invalid data", func() {
+		reqBody := strings.NewReader(
+			`{
+		"macAddr" : "00-B0-D0-6l2.26",
+		"timeStamp" : 1724603773,`)
+
+		req, err := http.NewRequest("POST", "/telemetry/photo", reqBody)
+		ts.Nil(err)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ts.requestHandle.PhotoHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		ts.Equal(http.StatusBadRequest, rr.Code)
+	})
+}
+func (ts *HandlersTestSuite) TestGpsHandler() {
+	ts.Run("sucess: normal conditions", func() {
+		data := models.GpsRequest{
+			Mac:           "00-00-00-00-00-00",
+			Lat:           "-18.909762",
+			Lon:           "-48.232750",
+			UnixtimeStamp: 1724603773}
+		ts.service.On("ProcessGpsData", data).Return(nil)
+
+		reqBody := strings.NewReader(
+			`{
+		"macAddr" : "00-00-00-00-00-00",
+		"latitude" : "-18.909762",
+		"longitude" : "-48.232750",
+		"timeStamp" : 1724603773
+		}`)
+
+		req, err := http.NewRequest("POST", "/telemetry/gps", reqBody)
+		ts.Nil(err)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ts.requestHandle.GpsHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		ts.Equal(http.StatusOK, rr.Code)
+	})
+
+	ts.Run("fail: empty body", func() {
+		req, err := http.NewRequest("POST", "/telemetry/gps", nil)
+		ts.Nil(err)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ts.requestHandle.GpsHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		ts.Equal(http.StatusBadRequest, rr.Code)
+	})
+
+	ts.Run("fail: invalid data", func() {
+		reqBody := strings.NewReader(
+			`{
+		"macAddr" : "00-B0-D0-6l2.26",
+		"timeStamp" : 1724603773,`)
+
+		req, err := http.NewRequest("POST", "/telemetry/gps", reqBody)
+		ts.Nil(err)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ts.requestHandle.GpsHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		ts.Equal(http.StatusBadRequest, rr.Code)
+	})
+}
+
+func (ts *HandlersTestSuite) TestGyroscopeHandler() {
+	ts.Run("sucess: normal conditions", func() {
+		data := models.GyroscopeRequest{
+			Mac:           "00-00-00-00-00-00",
+			X:             111.1,
+			Y:             222.2,
+			Z:             333.3,
+			UnixtimeStamp: 1724603773}
+		ts.service.On("ProcessGyroscopeData", data).Return(nil)
+
+		reqBody := strings.NewReader(`{
+			"macAddr" : "00-00-00-00-00-00",
+			"x" : 111.1,
+			"y" : 222.2,
+			"z" : 333.3,
+			"timeStamp" : 1724603773
+			}`)
+
+		req, err := http.NewRequest("POST", "/telemetry/gyroscope", reqBody)
+		ts.Nil(err)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ts.requestHandle.GyroscopeHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		ts.Equal(http.StatusOK, rr.Code)
+	})
+
+	ts.Run("fail: empty body", func() {
+		req, err := http.NewRequest("POST", "/telemetry/gyroscope", nil)
+		ts.Nil(err)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ts.requestHandle.GyroscopeHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		ts.Equal(http.StatusBadRequest, rr.Code)
+	})
+
+	ts.Run("fail: invalid data", func() {
+		reqBody := strings.NewReader(
+			`{
+		"macAddr" : "00-B0-D0-6l2.26",
+		"timeStamp" : 1724603773,`)
+
+		req, err := http.NewRequest("POST", "/telemetry/gyroscope", reqBody)
+		ts.Nil(err)
+
+		rr := httptest.NewRecorder()
+		handler := http.HandlerFunc(ts.requestHandle.GyroscopeHandler)
+
+		handler.ServeHTTP(rr, req)
+
+		ts.Equal(http.StatusBadRequest, rr.Code)
+	})
 }

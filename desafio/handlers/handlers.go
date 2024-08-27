@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"desafio/models"
-	"desafio/repository"
 	"desafio/service"
 	"encoding/json"
 	"fmt"
@@ -12,11 +11,23 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-func HealthCheck(w http.ResponseWriter, r *http.Request) {
+type RequestHandle struct {
+	serv service.IService
+}
+
+func NewRequestHandle(service *service.Service) *RequestHandle {
+	if service == nil {
+		return &RequestHandle{}
+	}
+
+	return &RequestHandle{serv: service}
+}
+
+func (rh *RequestHandle) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("up and running...")
 }
 
-func GyroscopeHandler(w http.ResponseWriter, r *http.Request) {
+func (rh *RequestHandle) GyroscopeHandler(w http.ResponseWriter, r *http.Request) {
 	var gyroscopeRequest models.GyroscopeRequest
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
@@ -41,24 +52,16 @@ func GyroscopeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo, err := repository.NewRepository()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	serv := service.NewService(repo)
-
-	err = serv.ProcessGyroscopeData(gyroscopeRequest)
+	err = rh.serv.ProcessGyroscopeData(gyroscopeRequest)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	return
 }
 
-func GpsHandler(w http.ResponseWriter, r *http.Request) {
+func (rh *RequestHandle) GpsHandler(w http.ResponseWriter, r *http.Request) {
 	var gpsRequest models.GpsRequest
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
@@ -83,24 +86,16 @@ func GpsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo, err := repository.NewRepository()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	serv := service.NewService(repo)
-
-	err = serv.ProcessGpsData(gpsRequest)
+	err = rh.serv.ProcessGpsData(gpsRequest)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	return
 }
 
-func PhotoHandler(w http.ResponseWriter, r *http.Request) {
+func (rh *RequestHandle) PhotoHandler(w http.ResponseWriter, r *http.Request) {
 	var photoRequest models.PhotoRequest
 
 	validate := validator.New(validator.WithRequiredStructEnabled())
@@ -125,19 +120,11 @@ func PhotoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo, err := repository.NewRepository()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	serv := service.NewService(repo)
-
-	err = serv.ProcessPhotoData(photoRequest)
+	err = rh.serv.ProcessPhotoData(photoRequest)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	return
 }

@@ -10,7 +10,7 @@ type Service struct {
 
 var _ IService = (*Service)(nil)
 
-func NewService(repo IRepository) IService {
+func NewService(repo IRepository) *Service {
 	return &Service{Repository: repo}
 }
 
