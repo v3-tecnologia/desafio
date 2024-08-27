@@ -11,10 +11,14 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+//Aqui estão todas as funções de handler
+
+// Essa estrutura serve para encapsular uma esrutura de serviço que é abstraida pela interface IService foi feito dessa forma para permitir testes unitarios sem integração
 type RequestHandle struct {
 	serv service.IService
 }
 
+// Contrutor para a estrutura de handle
 func NewRequestHandle(service *service.Service) *RequestHandle {
 	if service == nil {
 		return &RequestHandle{}
@@ -23,10 +27,12 @@ func NewRequestHandle(service *service.Service) *RequestHandle {
 	return &RequestHandle{serv: service}
 }
 
+// Handle da rota HealthCheck
 func (rh *RequestHandle) HealthCheck(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("up and running...")
 }
 
+// Handle da rota Gyroscope
 func (rh *RequestHandle) GyroscopeHandler(w http.ResponseWriter, r *http.Request) {
 	var gyroscopeRequest models.GyroscopeRequest
 
@@ -61,6 +67,7 @@ func (rh *RequestHandle) GyroscopeHandler(w http.ResponseWriter, r *http.Request
 	w.WriteHeader(http.StatusOK)
 }
 
+// Handle da rota Gps
 func (rh *RequestHandle) GpsHandler(w http.ResponseWriter, r *http.Request) {
 	var gpsRequest models.GpsRequest
 
@@ -95,6 +102,7 @@ func (rh *RequestHandle) GpsHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// Handle da rota Photo
 func (rh *RequestHandle) PhotoHandler(w http.ResponseWriter, r *http.Request) {
 	var photoRequest models.PhotoRequest
 

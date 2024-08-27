@@ -19,12 +19,15 @@ const (
 	dbname   = "postgres"
 )
 
+// Estrutura que contém a conexão com banco de dados
 type Repository struct {
 	db *sql.DB
 }
 
+// Validação que a estrutura assina a interface
 var _ service.IRepository = (*Repository)(nil)
 
+// Contrutor da estrutura de Repository
 func NewRepository() (service.IRepository, error) {
 	db, err := newPostgresConn()
 	if err != nil {
@@ -34,6 +37,7 @@ func NewRepository() (service.IRepository, error) {
 	return &Repository{db: db}, nil
 }
 
+// Cria conexão com o banco de dados
 func newPostgresConn() (*sql.DB, error) {
 	host := os.Getenv("host")
 	if host == "" {
@@ -58,6 +62,7 @@ func newPostgresConn() (*sql.DB, error) {
 	return db, nil
 }
 
+// Função que insere os dados de Gyroscope no banco
 func (r *Repository) InsertGyroscopeData(data models.GyroscopeRequest) error {
 
 	query := `INSERT INTO public.gyroscope
@@ -82,6 +87,7 @@ func (r *Repository) InsertGyroscopeData(data models.GyroscopeRequest) error {
 	return nil
 }
 
+// Função que insere os dados de Gps no banco
 func (r *Repository) InsertGpsData(data models.GpsRequest) error {
 
 	query := `INSERT INTO public.gps
@@ -106,6 +112,7 @@ func (r *Repository) InsertGpsData(data models.GpsRequest) error {
 	return nil
 }
 
+// Função que insere os dados de Photo no banco
 func (r *Repository) InsertPhotoData(data models.PhotoRequest) error {
 
 	query := `INSERT INTO public.photo

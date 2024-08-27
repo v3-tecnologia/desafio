@@ -12,12 +12,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Função que define as rotas utilizando o gorilla/mux e cria as estruturas requestHandle, service e repository que serão usados pelo servidor
 func InitiateRouter() *mux.Router {
 	r := mux.NewRouter()
 
 	repository, err := repository.NewRepository()
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	reqHandle := handlers.NewRequestHandle(service.NewService(repository))
@@ -54,7 +55,7 @@ func InitiateRouter() *mux.Router {
 	})
 
 	if err != nil {
-		log.Fatalf(err.Error())
+		log.Fatal(err.Error())
 	}
 
 	return r

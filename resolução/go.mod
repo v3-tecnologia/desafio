@@ -3,7 +3,6 @@ module desafio
 go 1.23.0
 
 require (
-	github.com/aws/aws-sdk-go v1.55.5
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/gorilla/mux v1.8.1
 	github.com/lib/pq v1.10.9
@@ -15,7 +14,6 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect

@@ -8,6 +8,8 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+//Aqui estão as funções para realizar os testes unitarios nos handlers foi utilizada a abordagem de testSuites com mockery
+
 type ServiceTestSuite struct {
 	suite.Suite
 	service IService
