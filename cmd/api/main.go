@@ -30,6 +30,8 @@ func main() {
 
 	routers.TelemetryRoutes(server, telemetryHandler)
 
+	fmt.Printf("projeto rodando!")
+
 	if err = http.ListenAndServe(":5000", server); err != nil {
 		log.Fatal(err.Error())
 	}
