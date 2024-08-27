@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"desafio/models"
+	"desafio/repository"
 	"desafio/service"
 	"encoding/json"
 	"fmt"
@@ -40,7 +41,14 @@ func GyroscopeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = service.ProcessGyroscopeData(gyroscopeRequest)
+	repo, err := repository.NewRepository()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	serv := service.NewService(repo)
+
+	err = serv.ProcessGyroscopeData(gyroscopeRequest)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -75,7 +83,14 @@ func GpsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = service.ProcessGpsData(gpsRequest)
+	repo, err := repository.NewRepository()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	serv := service.NewService(repo)
+
+	err = serv.ProcessGpsData(gpsRequest)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -110,7 +125,14 @@ func PhotoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = service.ProcessPhotoData(photoRequest)
+	repo, err := repository.NewRepository()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	serv := service.NewService(repo)
+
+	err = serv.ProcessPhotoData(photoRequest)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

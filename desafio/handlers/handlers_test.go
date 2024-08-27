@@ -6,7 +6,13 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
 )
+
+type HandlersTestSuite struct {
+	suite.Suite
+}
 
 func TestHealthCheckHandler(t *testing.T) {
 	req, err := http.NewRequest("GET", "/", nil)

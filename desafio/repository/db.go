@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"desafio/models"
+	"desafio/service"
 	"fmt"
 	"log"
 	"os"
@@ -17,6 +18,21 @@ const (
 	password = "password"
 	dbname   = "postgres"
 )
+
+type Repository struct {
+	db *sql.DB
+}
+
+var _ service.IRepository = (*Repository)(nil)
+
+func NewRepository() (service.IRepository, error) {
+	db, err := newPostgresConn()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Repository{db: db}, nil
+}
 
 func newPostgresConn() (*sql.DB, error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", os.Getenv("host"), port, user, password, dbname)
@@ -37,18 +53,14 @@ func newPostgresConn() (*sql.DB, error) {
 	return db, nil
 }
 
-func InsertGyroscopeData(data models.GyroscopeRequest) error {
-	db, err := newPostgresConn()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
+func (r *Repository) InsertGyroscopeData(data models.GyroscopeRequest) error {
+	defer r.db.Close()
 
 	query := `INSERT INTO public.gyroscope
 	(mac, xcoord, ycoord, zcoord, datatimestamp, created)
 	VALUES($1, $2, $3, $4, $5, $6);`
 
-	stmt, err := db.Prepare(query)
+	stmt, err := r.db.Prepare(query)
 	if err != nil {
 		println("gyroscope insert error: ")
 		log.Println(err.Error())
@@ -66,18 +78,14 @@ func InsertGyroscopeData(data models.GyroscopeRequest) error {
 	return nil
 }
 
-func InsertGpsData(data models.GpsRequest) error {
-	db, err := newPostgresConn()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
+func (r *Repository) InsertGpsData(data models.GpsRequest) error {
+	defer r.db.Close()
 
 	query := `INSERT INTO public.gps
 	(mac, latitude, longitude, datatimestamp, created)
 	VALUES($1, $2, $3, $4, $5);`
 
-	stmt, err := db.Prepare(query)
+	stmt, err := r.db.Prepare(query)
 	if err != nil {
 		println("gps insert error: ")
 		log.Println(err.Error())
@@ -95,18 +103,14 @@ func InsertGpsData(data models.GpsRequest) error {
 	return nil
 }
 
-func InsertPhotoData(data models.PhotoRequest) error {
-	db, err := newPostgresConn()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
+func (r *Repository) InsertPhotoData(data models.PhotoRequest) error {
+	defer r.db.Close()
 
 	query := `INSERT INTO public.photo
 	(mac, photo, datatimestamp, created)
 	VALUES($1, decode($2, 'base64'), $3, $4);`
 
-	stmt, err := db.Prepare(query)
+	stmt, err := r.db.Prepare(query)
 	if err != nil {
 		println("photo insert error: ")
 		log.Println(err.Error())
