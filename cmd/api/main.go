@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/ThalesMonteir0/desafio/internal/handlers"
 	"github.com/ThalesMonteir0/desafio/internal/repositories"
 	"github.com/ThalesMonteir0/desafio/internal/routers"
@@ -15,14 +16,14 @@ import (
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatal("Error loading .env.development file")
+		fmt.Printf("Error loading .env file")
 	}
 
 	server := http.NewServeMux()
 
 	db, err := postgresql.OpenConnDB()
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Default()
 	}
 
 	telemetryHandler := initDependencies(db)

@@ -25,7 +25,7 @@ func OpenConnDB() (*sql.DB, error) {
 
 	db, err := sql.Open("postgres", dsnString)
 	if err != nil {
-		panic("unable connect to db")
+		fmt.Printf("unable connect to db")
 	}
 
 	err = db.Ping()
