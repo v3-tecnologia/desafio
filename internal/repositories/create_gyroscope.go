@@ -18,11 +18,7 @@ func (t telemetryRepository) CreateGyroscope(gyroscopeDomain domain.GyroscopeDom
 	}
 
 	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return err_rest.NewInternalServerError("unable create gyroscope")
-	}
-
-	if rowsAffected != 0 {
+	if err != nil || rowsAffected == 0 {
 		return err_rest.NewInternalServerError("unable create gyroscope")
 	}
 

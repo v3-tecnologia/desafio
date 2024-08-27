@@ -31,13 +31,14 @@ func (t telemetryHandler) CreateGyroscope(w http.ResponseWriter, r *http.Request
 	}
 
 	gyroscopeDomain := domain.GyroscopeDomain{
-		X:          gyroscopeRequest.X,
-		Y:          gyroscopeRequest.Y,
-		Z:          gyroscopeRequest.Z,
-		MacAddress: gyroscopeRequest.MacAddress,
+		X:              gyroscopeRequest.X,
+		Y:              gyroscopeRequest.Y,
+		Z:              gyroscopeRequest.Z,
+		MacAddress:     gyroscopeRequest.MacAddress,
+		CollectionDate: gyroscopeRequest.CollectionDate,
 	}
 
-	if errRest = t.service.CreateGyroscopeService(gyroscopeDomain); err != nil {
+	if errRest = t.service.CreateGyroscopeService(gyroscopeDomain); errRest != nil {
 		w.WriteHeader(errRest.Code)
 		return
 	}
