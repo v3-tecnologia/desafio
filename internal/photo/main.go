@@ -2,6 +2,7 @@ package photo
 
 import (
 	"desafio-backend/pkg/errors"
+	"gorm.io/gorm"
 	"mime/multipart"
 )
 
@@ -12,8 +13,10 @@ type UseCases interface {
 	SavePhoto(photo Request) (Response, errors.Error)
 }
 
-type Main struct{}
+type Main struct {
+	db *gorm.DB
+}
 
-func NewMain() UseCases {
+func NewMain(db *gorm.DB) UseCases {
 	return Main{}
 }

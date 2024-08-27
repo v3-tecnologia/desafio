@@ -2,6 +2,7 @@ package gyroscope
 
 import (
 	"desafio-backend/pkg/errors"
+	"gorm.io/gorm"
 	"io"
 )
 
@@ -11,8 +12,10 @@ type UseCases interface {
 	SaveGyroscope(gyroscope Request) (Response, errors.Error)
 }
 
-type Main struct{}
+type Main struct {
+	db *gorm.DB
+}
 
-func NewMain() UseCases {
+func NewMain(db *gorm.DB) UseCases {
 	return Main{}
 }
