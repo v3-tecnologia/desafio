@@ -47,8 +47,46 @@ Todos os dados são armazenados no banco de dados PostgreSQL junto com o timesta
 > **NOTA:** Para o endpoint de fotos (/telemetry/photo), os arquivos/imagens são salvos no diretório 'uploads' dentro da
 > aplicação. No banco de dados, apenas o caminho do arquivo é armazenado, seguindo uma prática comum de gestão de
 > arquivos. Em um cenário de produção real, essas imagens deveriam ser armazenadas em um repositório ou bucket na nuvem
-> para melhor escalabilidade e gerenciamento, mantendo a prática de armazenar apenas o caminho ou identificador do arquivo
+> para melhor escalabilidade e gerenciamento, mantendo a prática de armazenar apenas o caminho ou identificador do
+> arquivo
 > no banco de dados.
+
+## Configuração do Amazon Rekognition para o Endpoint de Fotos
+
+Para que o endpoint `/api/v1/telemetry/photo` funcione corretamente com a detecção de faces, é necessário configurar o
+Amazon Rekognition da AWS. Siga os passos abaixo:
+
+1. Crie uma conta AWS se ainda não tiver uma.
+
+2. Crie um usuário IAM com acesso programático e atribua a seguinte política:
+
+   ```json
+   {
+       "Version": "2012-10-17",
+       "Statement": [
+           {
+               "Effect": "Allow",
+               "Action": [
+                   "rekognition:IndexFaces",
+                   "rekognition:SearchFacesByImage",
+                   "rekognition:DetectFaces"
+               ],
+               "Resource": "*"
+           }
+       ]
+   }
+3. Crie uma coleção no Amazon Rekognition. Você pode fazer isso através do console AWS ou usando o AWS CLI:
+   ``` 
+   aws rekognition create-collection --collection-id "nome-da-sua-colecao" --region sua-regiao
+
+4. Adicione as seguintes variáveis de ambiente ao seu arquivo .env:
+   ``` 
+   AWS_ACCESS_KEY_ID=sua_access_key
+   AWS_SECRET_ACCESS_KEY=sua_secret_key
+   AWS_REGION=sua_regiao
+   AWS_REKOGNITION_COLLECTION_ID=nome-da-sua-colecao
+
+Substitua os valores acima pelas suas credenciais AWS e pelo ID da coleção que você criou.
 
 ## Como Executar
 
@@ -76,6 +114,7 @@ Para executar este projeto, siga os passos abaixo:
     TEST_DB_USER=seu_usuario
     TEST_DB_PASSWORD=sua_senha
     TEST_DB_NAME=nome_do_banco_test
+    PHOTO_STORAGE_PATH=caminho-salvar-arquivo
 
 > **NOTA:** Para facilitar os testes adicionei o arquivo .env ao repositório(não se deve versionar esse tipo
 > de arquivo)
