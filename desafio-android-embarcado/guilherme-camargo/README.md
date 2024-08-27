@@ -13,6 +13,7 @@
     - [Nível 3: Envio dos Dados para a API](#nível-3-envio-dos-dados-para-a-api)
     - [Nível 4: Processamento de Imagem](#nível-4-processamento-de-imagem)
     - [Nível 5: Requisições Paralelas](#nível-5-requisições-paralelas)
+    - [ApiClient](#apiclient)
     - [AppUpdateReceiver](#appupdatereceiver)
     - [BackgroundService](#backgroundservice)
     - [BootReceiver](#bootreceiver)
@@ -80,6 +81,25 @@ A aplicação foi desenvolvida em níveis, cada um com seus próprios objetivos 
 - [x] Implementar a execução paralela das requisições para giroscópio, GPS e foto.
 - [x] Garantir que as requisições não sejam feitas de forma síncrona.
 
+### ApiClient
+
+**Descrição**:
+O `ApiClient` é uma classe responsável por gerenciar todas as requisições HTTP feitas pelo aplicativo. Ele encapsula a lógica de envio de dados para a API e oferece uma interface simples para que outras partes do aplicativo possam enviar informações sem se preocupar com os detalhes da implementação da requisição.
+
+**Funcionalidades Principais**:
+
+- **Envio de Requisições POST**: A classe permite o envio de dados em formato JSON para endpoints HTTP utilizando o método `postSendData`.
+- **Gerenciamento de Conexões HTTP**: O `ApiClient` utiliza a biblioteca OkHttp para gerenciar as conexões HTTP, com configurações de timeout e tratamento de exceções para garantir a robustez das operações de rede.
+- **Registro de Logs**: Todas as operações de rede, sejam bem-sucedidas ou falhas, são registradas utilizando a classe `LogWriter` para fornecer uma trilha de auditoria detalhada.
+
+**Método Principal**:
+
+- `postSendData(url: String, json: String)`: Envia uma requisição POST para o endpoint especificado com os dados fornecidos em formato JSON. O método lida com a criação da requisição, envio dos dados e tratamento de respostas, além de registrar logs do processo.
+
+**Tratamento de Exceções**:
+
+- A classe captura e registra qualquer exceção que ocorra durante a execução das requisições, garantindo que problemas de conectividade ou outros erros sejam adequadamente tratados e documentados.
+
 ### AppUpdateReceiver
 
 **Descrição**:
@@ -135,19 +155,29 @@ O `BootReceiver` é um `BroadcastReceiver` que inicia o `BackgroundService` auto
 ### CustomCameraManager
 
 **Descrição**:
-O `CustomCameraManager` gerencia as operações da câmera, incluindo a captura de imagens em segundo plano. Ele é usado pelo `BackgroundService` para capturar imagens sem a necessidade de interação do usuário ou uma pré-visualização.
+O `CustomCameraManager` é uma classe que gerencia a captura de imagens usando a câmera do dispositivo. Ela foi projetada para funcionar em segundo plano e, recentemente, foi aprimorada para incluir funcionalidades de reconhecimento de rosto utilizando a biblioteca Google ML Kit.
 
-**Função Principal**:
+**Funcionalidades Principais**:
 
-- Abrir a câmera, capturar imagens, e retornar os dados da imagem em formato Base64.
-- Fechar a câmera corretamente após a captura.
+- **Captura de Imagens**: A classe é capaz de abrir a câmera do dispositivo, capturar uma imagem, e converter essa imagem para o formato Base64 para posterior envio ou armazenamento.
+- **Reconhecimento de Rosto**: Antes de enviar ou processar a imagem capturada, a classe verifica se a imagem contém um rosto. Essa verificação é feita utilizando a biblioteca Google ML Kit.
+- **Crop da Imagem**: Se um rosto for detectado, a imagem é automaticamente cortada para focar apenas na área do rosto antes de ser convertida para Base64.
+- **Gerenciamento da Câmera**: A classe também cuida do ciclo de vida da câmera, incluindo a inicialização, captura e fechamento da câmera, garantindo que os recursos do dispositivo sejam liberados adequadamente.
 
-**Métodos Principais**:
+**Processo de Reconhecimento de Rosto**:
 
-- `initializeCameraAndTakePicture()`: Inicializa a câmera, captura uma imagem, e retorna a imagem capturada em formato Base64.
-- `captureImage()`: Configura a captura da imagem e chama o método que converte a imagem para Base64.
-- `saveImageAsBase64()`: Converte a imagem capturada em uma string Base64 para fácil manipulação.
-- `stopCamera()`: Fecha a sessão da câmera e libera os recursos.
+- **Detecção**: Após capturar uma imagem, o `CustomCameraManager` utiliza o ML Kit para verificar se a imagem contém um rosto.
+- **Crop**: Se um rosto for detectado, a imagem é cortada para focar apenas na área do rosto detectado.
+- **Conversão para Base64**: A imagem cortada é então convertida para Base64 para ser utilizada conforme necessário.
+- **Falha de Detecção**: Caso nenhum rosto seja detectado, a imagem não é processada para envio, e o sistema registra a ausência de rostos.
+
+**Exemplo de Uso**:
+
+- A captura de imagens com foco em rostos é ideal para aplicações que precisam garantir que apenas imagens contendo rostos sejam enviadas ou processadas, como em sistemas de segurança, autenticação ou monitoramento.
+
+**Tratamento de Exceções**:
+
+- A classe captura e registra exceções durante o processo de captura de imagem e detecção de rosto, garantindo que falhas sejam documentadas e tratadas apropriadamente.
 
 ### GyroscopeManager
 
