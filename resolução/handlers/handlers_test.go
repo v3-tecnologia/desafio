@@ -28,20 +28,6 @@ func (ts *HandlersTestSuite) SetupTest() {
 	ts.requestHandle.serv = ts.service
 }
 
-func (ts *HandlersTestSuite) TestHealthCheckHandler() {
-	ts.Run("sucess", func() {
-		req, err := http.NewRequest("GET", "/", nil)
-		ts.Nil(err)
-
-		rr := httptest.NewRecorder()
-		handler := http.HandlerFunc(ts.requestHandle.HealthCheck)
-
-		handler.ServeHTTP(rr, req)
-
-		ts.Equal(http.StatusOK, rr.Code)
-	})
-}
-
 func (ts *HandlersTestSuite) TestPhotoHandler() {
 	ts.Run("sucess: normal conditions", func() {
 		data := models.PhotoRequest{

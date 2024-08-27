@@ -39,7 +39,7 @@ Recebe dados do giroscópio. O corpo da requisição deve conter:
         "timeStamp" : 1724603773 //int timestamp em formato UNIX
     }
 
-3. **POST /telemetry/gps**
+2. **POST /telemetry/gps**
 
 Recebe dados de GPS. O corpo da requisição deve conter:
 
@@ -50,7 +50,7 @@ Recebe dados de GPS. O corpo da requisição deve conter:
         "timeStamp" : 1724603773 //int timestamp em formato UNIX
     }
 
-4. **POST /telemetry/photo**
+3. **POST /telemetry/photo**
 
 Recebe dados da foto. O corpo da requisição deve conter:
 

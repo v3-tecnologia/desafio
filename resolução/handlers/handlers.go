@@ -4,7 +4,6 @@ import (
 	"desafio/models"
 	"desafio/service"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -25,11 +24,6 @@ func NewRequestHandle(service *service.Service) *RequestHandle {
 	}
 
 	return &RequestHandle{serv: service}
-}
-
-// Handle da rota HealthCheck
-func (rh *RequestHandle) HealthCheck(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("up and running...")
 }
 
 // Handle da rota Gyroscope

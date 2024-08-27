@@ -23,7 +23,6 @@ func InitiateRouter() *mux.Router {
 
 	reqHandle := handlers.NewRequestHandle(service.NewService(repository))
 
-	r.HandleFunc("/", reqHandle.HealthCheck).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/telemetry/gyroscope", reqHandle.GyroscopeHandler).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/telemetry/gps", reqHandle.GpsHandler).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/telemetry/photo", reqHandle.PhotoHandler).Methods(http.MethodPost, http.MethodOptions)
