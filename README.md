@@ -2,7 +2,7 @@
 
 Este projeto consiste em uma api para cadastro de informações sobre itens de um determinado device (gps, gyroscope e photo).
 
-## Information
+## Informação
 
 - **Versão**: 1.0
 - **Host**: localhost:5000
