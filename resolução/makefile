@@ -5,3 +5,6 @@ build-mocks:
 
 tests: 
 	go test -v -cover ./...
+
+run:
+	@sudo docker compose up --build

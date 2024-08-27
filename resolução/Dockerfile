@@ -1,7 +1,5 @@
 FROM golang:1.23-alpine AS build-env
 
-ENV host=go-db
-
 WORKDIR /app
 
 COPY . .

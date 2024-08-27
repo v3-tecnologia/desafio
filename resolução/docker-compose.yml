@@ -1,4 +1,14 @@
 services:
+  go-app:
+    container_name: go-app
+    build: .
+    environment:
+      host: "go_db"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - go_db
+      
   go_db:
     container_name: go_db
     image: postgres:15
@@ -9,18 +19,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
  
-  go-app:
-    container_name: go-app
-    build: .
-    environment:
-      host: "go_db"
-    ports:
-      - "8080:8080"
-    depends_on:
-      - go_db
-  
-
 volumes:
-  pgdata: {}
+   postgres_data:
