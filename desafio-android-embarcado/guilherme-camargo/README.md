@@ -72,8 +72,8 @@ A aplicação foi desenvolvida em níveis, cada um com seus próprios objetivos 
 
 ### Nível 4: Processamento de Imagem
 
-- [ ] Realizar um crop da foto para extrair somente o rosto.
-- [ ] Verificar se a foto contém um rosto; caso contrário, não enviar a foto.
+- [x] Realizar um crop da foto para extrair somente o rosto.
+- [x] Verificar se a foto contém um rosto; caso contrário, não enviar a foto.
 
 ### Nível 5: Requisições Paralelas
 

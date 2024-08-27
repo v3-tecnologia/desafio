@@ -51,6 +51,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
 
+    // ML Kit para Detecção de Rosto
+    implementation("com.google.mlkit:face-detection:17.0.2")
+
     // JUnit para testes unitários
     testImplementation("junit:junit:4.13.2")
 

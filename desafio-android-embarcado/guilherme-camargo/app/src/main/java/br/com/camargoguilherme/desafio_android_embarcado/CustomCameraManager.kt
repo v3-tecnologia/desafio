@@ -1,10 +1,14 @@
 package br.com.camargoguilherme.desafio_android_embarcado
 
 import android.content.Context
-import android.graphics.ImageFormat
+import android.graphics.*
 import android.hardware.camera2.*
 import android.media.ImageReader
 import android.util.Base64
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.Face
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetectorOptions
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
@@ -24,12 +28,6 @@ class CustomCameraManager(private val context: Context) {
             val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
             val cameraId = cameraManager.cameraIdList[1] // Assumindo que a primeira câmera é a traseira
 
-            logWriter.writeLog(TAG, "Total de cameras no dispositivo: ${cameraManager.cameraIdList.size}")
-
-            for(cameraId: String in cameraManager.cameraIdList) {
-                logWriter.writeLog(TAG, "Camera Id: $cameraId")
-            }
-
             val cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraId)
             val streamConfigurationMap = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
             val imageDimension = streamConfigurationMap?.getOutputSizes(ImageFormat.JPEG)?.get(0)
@@ -40,7 +38,7 @@ class CustomCameraManager(private val context: Context) {
                 override fun onOpened(camera: CameraDevice) {
                     cameraDevice = camera
                     logWriter.writeLog(TAG, "Câmera aberta com sucesso")
-                    // Iniciar a captura de imagem
+                    base64Image = captureImage()
                 }
 
                 override fun onDisconnected(camera: CameraDevice) {
@@ -55,7 +53,6 @@ class CustomCameraManager(private val context: Context) {
                     when (error) {
                         ERROR_CAMERA_DISABLED -> {
                             logWriter.writeLog(TAG, "Erro ao abrir a câmera: Câmera desativada pelo sistema (Código de erro $error)")
-                            // Mostrar uma mensagem apropriada ao usuário
                         }
                         ERROR_CAMERA_DEVICE -> {
                             logWriter.writeLog(TAG, "Erro ao abrir a câmera: Falha do dispositivo (Código de erro $error)")
@@ -72,7 +69,6 @@ class CustomCameraManager(private val context: Context) {
                     }
                 }
             }, null)
-
 
         } catch (e: CameraAccessException) {
             logWriter.writeLog(TAG, "Erro de acesso à câmera: ${e.message}")
@@ -102,7 +98,7 @@ class CustomCameraManager(private val context: Context) {
                         session.capture(captureRequestBuilder!!.build(), object : CameraCaptureSession.CaptureCallback() {
                             override fun onCaptureCompleted(session: CameraCaptureSession, request: CaptureRequest, result: TotalCaptureResult) {
                                 logWriter.writeLog(TAG, "Foto capturada com sucesso")
-                                base64Image = saveImageAsBase64()
+                                base64Image = processImageForFaceDetection()
                             }
 
                             override fun onCaptureFailed(session: CameraCaptureSession, request: CaptureRequest, failure: CaptureFailure) {
@@ -128,30 +124,65 @@ class CustomCameraManager(private val context: Context) {
         return base64Image
     }
 
-    private fun saveImageAsBase64(): String? {
-        val image = imageReader?.acquireLatestImage() ?: run {
-            logWriter.writeLog(TAG, "Nenhuma imagem foi capturada")
-            return null
-        }
+    private fun processImageForFaceDetection(): String? {
+        val image = imageReader?.acquireLatestImage() ?: return null
 
+        val buffer = image.planes[0].buffer
+        val bytes = ByteArray(buffer.remaining())
+        buffer.get(bytes)
+
+        val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+
+        // Configura o detector de rostos
+        val options = FaceDetectorOptions.Builder()
+            .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_FAST)
+            .setLandmarkMode(FaceDetectorOptions.LANDMARK_MODE_NONE)
+            .setClassificationMode(FaceDetectorOptions.CLASSIFICATION_MODE_NONE)
+            .build()
+
+        val detector = FaceDetection.getClient(options)
+        val inputImage = InputImage.fromBitmap(bitmap, 0)
+
+        var base64Image: String? = null
+
+        detector.process(inputImage)
+            .addOnSuccessListener { faces ->
+                if (faces.isNotEmpty()) {
+                    val croppedBitmap = cropFaceFromImage(bitmap, faces[0])
+                    base64Image = bitmapToBase64(croppedBitmap)
+                    logWriter.writeLog(TAG, "Rosto detectado e imagem processada")
+                } else {
+                    logWriter.writeLog(TAG, "Nenhum rosto detectado na imagem")
+                }
+            }
+            .addOnFailureListener { e ->
+                logWriter.writeLog(TAG, "Erro ao processar imagem para detecção de rosto: ${e.message}")
+            }
+
+        image.close()
+        return base64Image
+    }
+
+    private fun cropFaceFromImage(bitmap: Bitmap, face: Face): Bitmap {
+        val bounds = face.boundingBox
+        return Bitmap.createBitmap(
+            bitmap,
+            bounds.left.coerceAtLeast(0),
+            bounds.top.coerceAtLeast(0),
+            bounds.width().coerceAtMost(bitmap.width - bounds.left),
+            bounds.height().coerceAtMost(bitmap.height - bounds.top)
+        )
+    }
+
+    private fun bitmapToBase64(bitmap: Bitmap): String? {
         return try {
-            val buffer = image.planes[0].buffer
-            val bytes = ByteArray(buffer.remaining())
-            buffer.get(bytes)
-
-            // Converte a imagem em Base64
-            val outputStream = ByteArrayOutputStream()
-            outputStream.write(bytes)
-            val base64Image = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
-
-            logWriter.writeLog(TAG, "Imagem convertida para Base64 com sucesso")
-            base64Image
-
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            val byteArray = byteArrayOutputStream.toByteArray()
+            Base64.encodeToString(byteArray, Base64.DEFAULT)
         } catch (e: IOException) {
             logWriter.writeLog(TAG, "Erro ao converter a imagem para Base64: ${e.message}")
             null
-        } finally {
-            image.close()
         }
     }
 
