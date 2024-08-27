@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"desafio-backend/internal/gps"
 	"desafio-backend/internal/gyroscope"
 	"errors"
 	"fmt"
@@ -22,13 +23,16 @@ const (
 type API struct {
 	// Dependencies
 	gyroscopeMain gyroscope.UseCases
+	gpsMain       gps.UseCases
 }
 
 func NewAPI(
 	gyroscopeMain gyroscope.UseCases,
+	gpsMain gps.UseCases,
 ) *mux.Router {
 	api := API{
 		gyroscopeMain: gyroscopeMain,
+		gpsMain:       gpsMain,
 	}
 	router := mux.NewRouter()
 	api.health(router)

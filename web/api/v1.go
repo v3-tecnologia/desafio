@@ -11,7 +11,7 @@ func (api *API) newV1Api(router *mux.Router) {
 	{
 		pathTelemetry := "/telemetry"
 		s.HandleFunc(fmt.Sprintf("%s/gyroscope", pathTelemetry), telemetry.Gyroscope(api.gyroscopeMain)).Methods("POST")
-		s.HandleFunc(fmt.Sprintf("%s/gps", pathTelemetry), telemetry.Gps()).Methods("POST")
+		s.HandleFunc(fmt.Sprintf("%s/gps", pathTelemetry), telemetry.Gps(api.gpsMain)).Methods("POST")
 		s.HandleFunc(fmt.Sprintf("%s/photo", pathTelemetry), telemetry.Photo()).Methods("POST")
 	}
 }

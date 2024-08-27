@@ -1,6 +1,7 @@
 package telemetry
 
 import (
+	"desafio-backend/internal/gps"
 	"desafio-backend/internal/gyroscope"
 	"desafio-backend/web/api/util"
 	"net/http"
@@ -26,9 +27,23 @@ func Gyroscope(gyroscopeMain gyroscope.UseCases) func(w http.ResponseWriter, r *
 	}
 }
 
-func Gps() func(w http.ResponseWriter, r *http.Request) {
+func Gps(gpsMain gps.UseCases) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		util.NewResponse(w, http.StatusOK, "Dados de gps recebidos com sucesso")
+		// Parse the received body to the Request gyroscope struct
+		request, err := gpsMain.ParseGps(r.Body)
+
+		if err != nil {
+			util.NewResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		createdGyroscope, err := gpsMain.SaveGps(request)
+
+		if err != nil {
+			util.NewResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+		util.NewResponse(w, http.StatusCreated, createdGyroscope)
 	}
 }
 
