@@ -9,6 +9,12 @@ import (
 	"time"
 )
 
+// Gyroscope limit in  (°/s) - ±2000°/s is an example value for high sensibility gyroscopes
+const (
+	minValue = -2000.0
+	maxValue = 2000.0
+)
+
 type Request struct {
 	MacAddress string    `json:"macAddress"`
 	Timestamp  time.Time `json:"timestamp"`
@@ -43,8 +49,48 @@ func (main Main) SaveGyroscope(gyroscope Request) (Response, errors.Error) {
 }
 
 func (main Main) ValidateGyroscope(gyroscope Request) errors.ErrorList {
-	// TODO validate data received
-	return nil
+	ers := errors.NewErrorList()
+
+	if gyroscope.MacAddress == "" {
+		ers.Append(errors.NewError("Missing MacAddress", "MacAddress is required").
+			WithMeta("field", "macAddress").
+			WithOperations("ValidateGyroscope.MacAddress"))
+	}
+
+	macErr := util.IsValidateMacAddress(gyroscope.MacAddress)
+	if macErr != nil {
+		ers.Append(errors.NewError("Invalid MacAddress format", "MacAddress is not valid").
+			WithMeta("field", "macAddress").
+			WithOperations("ValidateGyroscope.MacAddressFormat"))
+	}
+
+	if gyroscope.Timestamp.IsZero() {
+		ers.Append(errors.NewError("Missing Timestamp", "Timestamp is required").
+			WithMeta("field", "timestamp").
+			WithOperations("ValidateGyroscope.Timestamp"))
+	}
+
+	if gyroscope.XAxis == 0 && gyroscope.YAxis == 0 && gyroscope.ZAxis == 0 {
+		ers.Append(errors.NewError("Invalid Gyroscope Data", "At least one axis value must be non-zero").
+			WithOperations("ValidateGyroscope.GyroscopeData"))
+	}
+
+	if gyroscope.XAxis < minValue || gyroscope.XAxis > maxValue {
+		ers.Append(errors.NewError("Invalid X axis", "X axis value must be within defined range").
+			WithOperations("ValidateGyroscope.XAxis"))
+	}
+
+	if gyroscope.YAxis < minValue || gyroscope.YAxis > maxValue {
+		ers.Append(errors.NewError("Invalid Y axis", "Y axis value must be within defined range").
+			WithOperations("ValidateGyroscope.YAxis"))
+	}
+
+	if gyroscope.ZAxis < minValue || gyroscope.ZAxis > maxValue {
+		ers.Append(errors.NewError("Invalid Z axis", "Z axis value must be within defined range").
+			WithOperations("ValidateGyroscope.ZAxis"))
+	}
+
+	return ers
 }
 
 func (entity Request) toResponse() Response {

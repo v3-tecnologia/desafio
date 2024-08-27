@@ -96,8 +96,30 @@ func (main Main) SavePhoto(photo Request) (Response, errors.Error) {
 }
 
 func (main Main) ValidatePhoto(photo Request) errors.ErrorList {
-	// TODO validate data received
-	return nil
+	ers := errors.NewErrorList()
+
+	if photo.MacAddress == "" {
+		err := errors.NewError("Missing MacAddress", "MacAddress is required").
+			WithMeta("field", "macAddress").
+			WithOperations("ValidatePhoto.CheckMacAddress")
+		ers.Append(err)
+	}
+
+	macErr := util.IsValidateMacAddress(photo.MacAddress)
+	if macErr != nil {
+		ers.Append(errors.NewError("Invalid MacAddress format", "MacAddress is not valid").
+			WithMeta("field", "macAddress").
+			WithOperations("ValidatePhoto.MacAddressFormat"))
+	}
+
+	if photo.Timestamp.IsZero() {
+		err := errors.NewError("Missing Timestamp", "Timestamp is required").
+			WithMeta("field", "timestamp").
+			WithOperations("ValidateGps.CheckTimestamp")
+		ers.Append(err)
+	}
+
+	return ers
 }
 
 func (entity Request) toResponse() Response {

@@ -41,8 +41,44 @@ func (main Main) SaveGps(gps Request) (Response, errors.Error) {
 }
 
 func (main Main) ValidateGps(gps Request) errors.ErrorList {
-	// TODO validate data received
-	return nil
+	ers := errors.NewErrorList()
+
+	if gps.MacAddress == "" {
+		err := errors.NewError("Missing MacAddress", "MacAddress is required").
+			WithMeta("field", "macAddress").
+			WithOperations("ValidateGps.CheckMacAddress")
+		ers.Append(err)
+	}
+
+	macErr := util.IsValidateMacAddress(gps.MacAddress)
+	if macErr != nil {
+		ers.Append(errors.NewError("Invalid MacAddress format", "MacAddress is not valid").
+			WithMeta("field", "macAddress").
+			WithOperations("ValidateGps.MacAddressFormat"))
+	}
+
+	if gps.Latitude == 0.0 {
+		err := errors.NewError("Missing Latitude", "Latitude is required").
+			WithMeta("field", "latitude").
+			WithOperations("ValidateGps.CheckLatitude")
+		ers.Append(err)
+	}
+
+	if gps.Longitude == 0.0 {
+		err := errors.NewError("Missing Longitude", "Longitude is required").
+			WithMeta("field", "longitude").
+			WithOperations("ValidateGps.CheckLongitude")
+		ers.Append(err)
+	}
+
+	if gps.Timestamp.IsZero() {
+		err := errors.NewError("Missing Timestamp", "Timestamp is required").
+			WithMeta("field", "timestamp").
+			WithOperations("ValidateGps.CheckTimestamp")
+		ers.Append(err)
+	}
+
+	return ers
 }
 
 func (entity Request) toResponse() Response {

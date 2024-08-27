@@ -18,6 +18,11 @@ func Gyroscope(gyroscopeMain gyroscope.UseCases) func(w http.ResponseWriter, r *
 			return
 		}
 
+		if err := gyroscopeMain.ValidateGyroscope(request); len(err.GetErrors()) > 0 {
+			util.NewResponse(w, http.StatusBadRequest, err)
+			return
+		}
+
 		createdGyroscope, err := gyroscopeMain.SaveGyroscope(request)
 
 		if err != nil {
@@ -35,6 +40,11 @@ func Gps(gpsMain gps.UseCases) func(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			util.NewResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		if err := gpsMain.ValidateGps(request); len(err.GetErrors()) > 0 {
+			util.NewResponse(w, http.StatusBadRequest, err)
 			return
 		}
 
@@ -76,6 +86,11 @@ func Photo(photoMain photo.UseCases) func(w http.ResponseWriter, r *http.Request
 		request, errPhoto := photoMain.ParsePhoto(r.FormValue("request"), imageFile)
 		if errPhoto != nil {
 			util.NewResponse(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		if err := photoMain.ValidatePhoto(request); len(err.GetErrors()) > 0 {
+			util.NewResponse(w, http.StatusBadRequest, err)
 			return
 		}
 
