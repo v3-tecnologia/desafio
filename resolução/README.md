@@ -71,6 +71,8 @@ Para execução dos teste via terminal use o comando:
                                                 
     go test -v -cover ./...
 
+Alternativamente esse diretorio possui um makefile com os comandos **build-mocks** que gera os mocks e depencias das ferramentas de teste e o comando **tests** que executa o comando citado a acima.
+
 ### Ferramentas de Teste
 
     testing
