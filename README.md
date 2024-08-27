@@ -6,6 +6,7 @@ Este projeto consiste em uma api para cadastro de informações sobre itens de u
 
 - **Versão**: 1.0
 - **Host**: localhost:5000
+- **Etapas**: Foi implementado até a 4 etapa.
 
 ## Pré-requisitos
 
