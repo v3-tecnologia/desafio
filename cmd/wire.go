@@ -4,14 +4,21 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"github.com/HaroldoFV/desafio/configs"
 	"github.com/HaroldoFV/desafio/internal/domain"
+	"github.com/HaroldoFV/desafio/internal/gateway"
+	"github.com/HaroldoFV/desafio/internal/infra/aws"
 	"github.com/HaroldoFV/desafio/internal/infra/database"
 	"github.com/HaroldoFV/desafio/internal/infra/web"
 	"github.com/HaroldoFV/desafio/internal/infra/web/webserver"
 	"github.com/HaroldoFV/desafio/internal/usecase"
+	awssdk "github.com/aws/aws-sdk-go-v2/aws"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/rekognition"
 	"github.com/google/wire"
 )
 
@@ -28,13 +35,15 @@ func InitializeApplication(config *configs.Conf) (*Application, error) {
 		provideGyroscopeRepository,
 		provideGPSRepository,
 		providePhotoRepository,
-		providePhotoStoragePath,
-		usecase.NewCreateGyroscopeUseCase,
-		usecase.NewCreateGPSUseCase,
-		usecase.NewCreatePhotoUseCase,
-		web.NewGyroscopeHandler,
-		web.NewGPSHandler,
-		web.NewPhotoHandler,
+		provideAWSConfig,
+		NewRekognitionClient,
+		provideRekognitionFaceRecognizer,
+		provideCreateGyroscopeUseCase,
+		provideCreateGPSUseCase,
+		provideCreatePhotoUseCase,
+		provideGyroscopeHandler,
+		provideGPSHandler,
+		providePhotoHandler,
 		provideWebServer,
 		wire.Struct(new(Application), "*"),
 	)
@@ -62,6 +71,45 @@ func providePhotoRepository(db *sql.DB) domain.PhotoRepositoryInterface {
 	return database.NewPhotoRepository(db)
 }
 
-func providePhotoStoragePath(config *configs.Conf) string {
-	return config.PhotoStoragePath
+func provideAWSConfig(conf *configs.Conf) (awssdk.Config, error) {
+	return awsconfig.LoadDefaultConfig(context.TODO(),
+		awsconfig.WithRegion(conf.AWSRegion),
+		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
+			conf.AWSAccessKeyID,
+			conf.AWSSecretAccessKey,
+			"",
+		)),
+	)
+}
+
+func NewRekognitionClient(cfg awssdk.Config) *rekognition.Client {
+	return rekognition.NewFromConfig(cfg)
+}
+
+func provideRekognitionFaceRecognizer(client *rekognition.Client, config *configs.Conf) gateway.FaceRecognizerInterface {
+	return aws.NewRekognitionFaceRecognizer(client, config.AWSRekognitionCollectionID)
+}
+
+func provideCreateGyroscopeUseCase(repo domain.GyroscopeRepositoryInterface) usecase.CreateGyroscopeUseCaseInterface {
+	return usecase.NewCreateGyroscopeUseCase(repo)
+}
+
+func provideCreateGPSUseCase(repo domain.GPSRepositoryInterface) usecase.CreateGPSUseCaseInterface {
+	return usecase.NewCreateGPSUseCase(repo)
+}
+
+func provideCreatePhotoUseCase(repo domain.PhotoRepositoryInterface, faceRecognizer gateway.FaceRecognizerInterface, config *configs.Conf) usecase.CreatePhotoUseCaseInterface {
+	return usecase.NewCreatePhotoUseCase(repo, faceRecognizer, config)
+}
+
+func provideGyroscopeHandler(useCase usecase.CreateGyroscopeUseCaseInterface) *web.GyroscopeHandler {
+	return web.NewGyroscopeHandler(useCase)
+}
+
+func provideGPSHandler(useCase usecase.CreateGPSUseCaseInterface) *web.GPSHandler {
+	return web.NewGPSHandler(useCase)
+}
+
+func providePhotoHandler(useCase usecase.CreatePhotoUseCaseInterface) *web.PhotoHandler {
+	return web.NewPhotoHandler(useCase)
 }

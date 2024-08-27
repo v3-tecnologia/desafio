@@ -3,9 +3,11 @@ package usecase
 import (
 	"errors"
 	"fmt"
+	"github.com/HaroldoFV/desafio/configs"
 	domain "github.com/HaroldoFV/desafio/internal/domain"
 	entity "github.com/HaroldoFV/desafio/internal/domain/entity"
 	"github.com/HaroldoFV/desafio/internal/dto"
+	"github.com/HaroldoFV/desafio/internal/gateway"
 	"github.com/google/uuid"
 	"io"
 	"log"
@@ -18,16 +20,19 @@ import (
 
 type CreatePhotoUseCase struct {
 	PhotoRepository domain.PhotoRepositoryInterface
-	UploadDir       string
+	FaceRecognizer  gateway.FaceRecognizerInterface
+	Config          *configs.Conf
 }
 
 func NewCreatePhotoUseCase(
 	photoRepository domain.PhotoRepositoryInterface,
-	uploadDir string,
+	faceRecognizer gateway.FaceRecognizerInterface,
+	config *configs.Conf,
 ) *CreatePhotoUseCase {
 	return &CreatePhotoUseCase{
 		PhotoRepository: photoRepository,
-		UploadDir:       uploadDir,
+		FaceRecognizer:  faceRecognizer,
+		Config:          config,
 	}
 }
 
@@ -36,23 +41,30 @@ func (c *CreatePhotoUseCase) Execute(input dto.CreatePhotoInputDTO) (dto.PhotoOu
 		return dto.PhotoOutputDTO{}, errors.New("invalid image type")
 	}
 
-	if input.FileSize > 10<<20 { // 10 MB
-		return dto.PhotoOutputDTO{}, fmt.Errorf("file is too large. Maximum size is 10MB")
+	if input.FileSize > 5<<20 { // 5 MB
+		return dto.PhotoOutputDTO{}, fmt.Errorf("file is too large. Maximum size is 5MB")
 	}
 
 	fileName := generateUniqueFileName(input.Image.Filename)
-	filePath := filepath.Join(c.UploadDir, fileName)
+	filePath := filepath.Join(c.Config.PhotoStoragePath, fileName)
 
 	err := saveFile(input.Image, filePath)
 	if err != nil {
 		return dto.PhotoOutputDTO{}, err
 	}
 
+	// Perform face recognition
+	recognized, err := c.FaceRecognizer.RecognizeFace(filePath)
+	if err != nil {
+		log.Printf("Error in face recognition: %v", err)
+		recognized = false
+	}
+
 	photo, err := entity.NewPhoto(filePath, input.MacAddress)
 	if err != nil {
 		removeErr := os.Remove(filePath)
 		if removeErr != nil {
-			log.Printf("error: %v", removeErr)
+			log.Printf("error removing file: %v", removeErr)
 		}
 		return dto.PhotoOutputDTO{}, err
 	}
@@ -60,7 +72,7 @@ func (c *CreatePhotoUseCase) Execute(input dto.CreatePhotoInputDTO) (dto.PhotoOu
 	if err = c.PhotoRepository.Create(photo); err != nil {
 		removeErr := os.Remove(filePath)
 		if removeErr != nil {
-			log.Printf("error: %v", removeErr)
+			log.Printf("error removing file: %v", removeErr)
 		}
 		return dto.PhotoOutputDTO{}, err
 	}
@@ -69,6 +81,7 @@ func (c *CreatePhotoUseCase) Execute(input dto.CreatePhotoInputDTO) (dto.PhotoOu
 		Timestamp:  photo.GetTimestamp(),
 		MacAddress: photo.GetMACAddress(),
 		FilePath:   photo.GetFilePath(),
+		Recognized: recognized,
 	}
 	return outputDTO, nil
 }

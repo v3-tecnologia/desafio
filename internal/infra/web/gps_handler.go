@@ -3,24 +3,20 @@ package web
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/HaroldoFV/desafio/internal/domain"
 	dto2 "github.com/HaroldoFV/desafio/internal/dto"
 	"github.com/HaroldoFV/desafio/internal/usecase"
 	"net/http"
 )
 
 type GPSHandler struct {
-	CreateGPSUseCase *usecase.CreateGPSUseCase
-	GPSRepository    domain.GPSRepositoryInterface
+	CreateGPSUseCase usecase.CreateGPSUseCaseInterface
 }
 
 func NewGPSHandler(
-	createGPSUsecase *usecase.CreateGPSUseCase,
-	gpsRepository domain.GPSRepositoryInterface,
+	createGPSUsecase usecase.CreateGPSUseCaseInterface,
 ) *GPSHandler {
 	return &GPSHandler{
 		CreateGPSUseCase: createGPSUsecase,
-		GPSRepository:    gpsRepository,
 	}
 }
 

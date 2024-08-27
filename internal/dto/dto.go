@@ -50,4 +50,5 @@ type PhotoOutputDTO struct {
 	Timestamp  time.Time `json:"timestamp"`
 	MacAddress string    `json:"mac_address"`
 	FilePath   string    `json:"file_path"`
+	Recognized bool      `json:"recognized"`
 }

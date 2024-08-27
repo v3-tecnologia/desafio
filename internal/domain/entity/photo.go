@@ -45,3 +45,7 @@ func (p *Photo) GetID() string {
 func (p *Photo) GetFilePath() string {
 	return p.filePath
 }
+
+func (p *Photo) SetID(id string) {
+	p.id = id
+}

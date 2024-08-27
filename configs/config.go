@@ -7,19 +7,23 @@ import (
 )
 
 type Conf struct {
-	DBDriver         string `mapstructure:"DB_DRIVER"`
-	DBHost           string `mapstructure:"DB_HOST"`
-	DBPort           string `mapstructure:"DB_PORT"`
-	DBUser           string `mapstructure:"DB_USER"`
-	DBPassword       string `mapstructure:"DB_PASSWORD"`
-	DBName           string `mapstructure:"DB_NAME"`
-	TESTDBHost       string `mapstructure:"TEST_DB_HOST"`
-	TESTDBPort       string `mapstructure:"TEST_DB_PORT"`
-	TESTDBUser       string `mapstructure:"TEST_DB_USER"`
-	TESTDBPassword   string `mapstructure:"TEST_DB_PASSWORD"`
-	TESTDBName       string `mapstructure:"TEST_DB_NAME"`
-	WebServerPort    string `mapstructure:"WEB_SERVER_PORT"`
-	PhotoStoragePath string `mapstructure:"PHOTO_STORAGE_PATH"`
+	DBDriver                   string `mapstructure:"DB_DRIVER"`
+	DBHost                     string `mapstructure:"DB_HOST"`
+	DBPort                     string `mapstructure:"DB_PORT"`
+	DBUser                     string `mapstructure:"DB_USER"`
+	DBPassword                 string `mapstructure:"DB_PASSWORD"`
+	DBName                     string `mapstructure:"DB_NAME"`
+	TESTDBHost                 string `mapstructure:"TEST_DB_HOST"`
+	TESTDBPort                 string `mapstructure:"TEST_DB_PORT"`
+	TESTDBUser                 string `mapstructure:"TEST_DB_USER"`
+	TESTDBPassword             string `mapstructure:"TEST_DB_PASSWORD"`
+	TESTDBName                 string `mapstructure:"TEST_DB_NAME"`
+	WebServerPort              string `mapstructure:"WEB_SERVER_PORT"`
+	PhotoStoragePath           string `mapstructure:"PHOTO_STORAGE_PATH"`
+	AWSAccessKeyID             string `mapstructure:"AWS_ACCESS_KEY_ID"`
+	AWSSecretAccessKey         string `mapstructure:"AWS_SECRET_ACCESS_KEY"`
+	AWSRegion                  string `mapstructure:"AWS_REGION"`
+	AWSRekognitionCollectionID string `mapstructure:"AWS_REKOGNITION_COLLECTION_ID"`
 }
 
 func LoadConfig(path string) (*Conf, error) {

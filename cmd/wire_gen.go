@@ -7,14 +7,21 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"github.com/HaroldoFV/desafio/configs"
 	"github.com/HaroldoFV/desafio/internal/domain"
+	"github.com/HaroldoFV/desafio/internal/gateway"
+	aws2 "github.com/HaroldoFV/desafio/internal/infra/aws"
 	"github.com/HaroldoFV/desafio/internal/infra/database"
 	"github.com/HaroldoFV/desafio/internal/infra/web"
 	"github.com/HaroldoFV/desafio/internal/infra/web/webserver"
 	"github.com/HaroldoFV/desafio/internal/usecase"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/rekognition"
 )
 
 import (
@@ -30,15 +37,20 @@ func InitializeApplication(config *configs.Conf) (*Application, error) {
 		return nil, err
 	}
 	gyroscopeRepositoryInterface := provideGyroscopeRepository(db)
-	createGyroscopeUseCase := usecase.NewCreateGyroscopeUseCase(gyroscopeRepositoryInterface)
-	gyroscopeHandler := web.NewGyroscopeHandler(createGyroscopeUseCase, gyroscopeRepositoryInterface)
+	createGyroscopeUseCaseInterface := provideCreateGyroscopeUseCase(gyroscopeRepositoryInterface)
+	gyroscopeHandler := provideGyroscopeHandler(createGyroscopeUseCaseInterface)
 	gpsRepositoryInterface := provideGPSRepository(db)
-	createGPSUseCase := usecase.NewCreateGPSUseCase(gpsRepositoryInterface)
-	gpsHandler := web.NewGPSHandler(createGPSUseCase, gpsRepositoryInterface)
+	createGPSUseCaseInterface := provideCreateGPSUseCase(gpsRepositoryInterface)
+	gpsHandler := provideGPSHandler(createGPSUseCaseInterface)
 	photoRepositoryInterface := providePhotoRepository(db)
-	string2 := providePhotoStoragePath(config)
-	createPhotoUseCase := usecase.NewCreatePhotoUseCase(photoRepositoryInterface, string2)
-	photoHandler := web.NewPhotoHandler(createPhotoUseCase)
+	awsConfig, err := provideAWSConfig(config)
+	if err != nil {
+		return nil, err
+	}
+	client := NewRekognitionClient(awsConfig)
+	faceRecognizerInterface := provideRekognitionFaceRecognizer(client, config)
+	createPhotoUseCaseInterface := provideCreatePhotoUseCase(photoRepositoryInterface, faceRecognizerInterface, config)
+	photoHandler := providePhotoHandler(createPhotoUseCaseInterface)
 	application := &Application{
 		WebServer:        webServer,
 		GyroscopeHandler: gyroscopeHandler,
@@ -78,6 +90,43 @@ func providePhotoRepository(db *sql.DB) domain.PhotoRepositoryInterface {
 	return database.NewPhotoRepository(db)
 }
 
-func providePhotoStoragePath(config *configs.Conf) string {
-	return config.PhotoStoragePath
+func provideAWSConfig(conf *configs.Conf) (aws.Config, error) {
+	return config.LoadDefaultConfig(context.TODO(), config.WithRegion(conf.AWSRegion), config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
+		conf.AWSAccessKeyID,
+		conf.AWSSecretAccessKey,
+		"",
+	)),
+	)
+}
+
+func NewRekognitionClient(cfg aws.Config) *rekognition.Client {
+	return rekognition.NewFromConfig(cfg)
+}
+
+func provideRekognitionFaceRecognizer(client *rekognition.Client, config2 *configs.Conf) gateway.FaceRecognizerInterface {
+	return aws2.NewRekognitionFaceRecognizer(client, config2.AWSRekognitionCollectionID)
+}
+
+func provideCreateGyroscopeUseCase(repo domain.GyroscopeRepositoryInterface) usecase.CreateGyroscopeUseCaseInterface {
+	return usecase.NewCreateGyroscopeUseCase(repo)
+}
+
+func provideCreateGPSUseCase(repo domain.GPSRepositoryInterface) usecase.CreateGPSUseCaseInterface {
+	return usecase.NewCreateGPSUseCase(repo)
+}
+
+func provideCreatePhotoUseCase(repo domain.PhotoRepositoryInterface, faceRecognizer gateway.FaceRecognizerInterface, config2 *configs.Conf) usecase.CreatePhotoUseCaseInterface {
+	return usecase.NewCreatePhotoUseCase(repo, faceRecognizer, config2)
+}
+
+func provideGyroscopeHandler(useCase usecase.CreateGyroscopeUseCaseInterface) *web.GyroscopeHandler {
+	return web.NewGyroscopeHandler(useCase)
+}
+
+func provideGPSHandler(useCase usecase.CreateGPSUseCaseInterface) *web.GPSHandler {
+	return web.NewGPSHandler(useCase)
+}
+
+func providePhotoHandler(useCase usecase.CreatePhotoUseCaseInterface) *web.PhotoHandler {
+	return web.NewPhotoHandler(useCase)
 }

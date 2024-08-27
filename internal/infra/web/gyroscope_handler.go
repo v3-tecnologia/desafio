@@ -3,24 +3,20 @@ package web
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/HaroldoFV/desafio/internal/domain"
 	dto2 "github.com/HaroldoFV/desafio/internal/dto"
 	"github.com/HaroldoFV/desafio/internal/usecase"
 	"net/http"
 )
 
 type GyroscopeHandler struct {
-	CreateGyroscopeUseCase *usecase.CreateGyroscopeUseCase
-	GyroscopeRepository    domain.GyroscopeRepositoryInterface
+	CreateGyroscopeUseCase usecase.CreateGyroscopeUseCaseInterface
 }
 
 func NewGyroscopeHandler(
-	createGyroscopeUsecase *usecase.CreateGyroscopeUseCase,
-	gyroscopeRepository domain.GyroscopeRepositoryInterface,
+	createGyroscopeUsecase usecase.CreateGyroscopeUseCaseInterface,
 ) *GyroscopeHandler {
 	return &GyroscopeHandler{
 		CreateGyroscopeUseCase: createGyroscopeUsecase,
-		GyroscopeRepository:    gyroscopeRepository,
 	}
 }
 

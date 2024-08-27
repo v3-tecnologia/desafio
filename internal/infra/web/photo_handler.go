@@ -9,21 +9,23 @@ import (
 )
 
 type PhotoHandler struct {
-	CreatePhotoUseCase *usecase.CreatePhotoUseCase
+	CreatePhotoUseCase usecase.CreatePhotoUseCaseInterface
 }
 
-func NewPhotoHandler(createPhotoUseCase *usecase.CreatePhotoUseCase) *PhotoHandler {
-	return &PhotoHandler{CreatePhotoUseCase: createPhotoUseCase}
+func NewPhotoHandler(createPhotoUseCase usecase.CreatePhotoUseCaseInterface) *PhotoHandler {
+	return &PhotoHandler{
+		CreatePhotoUseCase: createPhotoUseCase,
+	}
 }
 
 var validationErrors = map[string]bool{
-	"invalid id":                              true,
-	"file path is required":                   true,
-	"longitude must be between -180 and 180":  true,
-	"MAC address cannot be empty":             true,
-	"invalid MAC address format":              true,
-	"invalid image type":                      true,
-	"file is too large. Maximum size is 10MB": true,
+	"invalid id":                             true,
+	"file path is required":                  true,
+	"longitude must be between -180 and 180": true,
+	"MAC address cannot be empty":            true,
+	"invalid MAC address format":             true,
+	"invalid image type":                     true,
+	"file is too large. Maximum size is 5MB": true,
 }
 
 // Create photo godoc
@@ -39,7 +41,7 @@ var validationErrors = map[string]bool{
 // @Failure     400 {object} Error
 // @Router      /photo [post]
 func (h *PhotoHandler) Create(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(10 << 20) // 10 MB max
+	err := r.ParseMultipartForm(5 << 20) // 5 MB max
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
