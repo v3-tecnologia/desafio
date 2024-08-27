@@ -2,6 +2,7 @@ package main
 
 import (
 	"desafio-backend/internal/configuration"
+	"desafio-backend/internal/device"
 	"desafio-backend/internal/gps"
 	"desafio-backend/internal/gyroscope"
 	"desafio-backend/internal/photo"
@@ -22,9 +23,10 @@ func main() {
 	sqlDB, err := db.DB()
 	defer sqlDB.Close()
 
-	gyroscopeMain := gyroscope.NewMain(db)
-	gpsMain := gps.NewMain(db)
-	photoMain := photo.NewMain(db)
+	deviceMain := device.NewMain(db)
+	gyroscopeMain := gyroscope.NewMain(db, deviceMain)
+	gpsMain := gps.NewMain(db, deviceMain)
+	photoMain := photo.NewMain(db, deviceMain)
 
 	router := api.NewAPI(gyroscopeMain, gpsMain, photoMain)
 

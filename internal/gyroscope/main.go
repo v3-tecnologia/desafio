@@ -1,6 +1,7 @@
 package gyroscope
 
 import (
+	"desafio-backend/internal/device"
 	"desafio-backend/pkg/errors"
 	"gorm.io/gorm"
 	"io"
@@ -13,9 +14,10 @@ type UseCases interface {
 }
 
 type Main struct {
-	db *gorm.DB
+	db         *gorm.DB
+	deviceMain device.UseCases
 }
 
-func NewMain(db *gorm.DB) UseCases {
-	return Main{}
+func NewMain(db *gorm.DB, deviceMain device.UseCases) UseCases {
+	return Main{db, deviceMain}
 }
