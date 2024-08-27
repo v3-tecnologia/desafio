@@ -1,6 +1,6 @@
 package com.entregas.android_pleno_teste_v3.dataclasstest
 
-import com.entregas.android_pleno_teste_v3.domain.FotoRequestDataClass
+import com.entregas.android_pleno_teste_v3.domain.PhotoRequestDataClass
 import com.entregas.android_pleno_teste_v3.domain.GPSRequestDataClass
 import com.entregas.android_pleno_teste_v3.domain.GyroscopeRequestDataClass
 import org.junit.Assert.assertEquals
@@ -16,7 +16,7 @@ class DataClassesTest {
         val macAddress = "00:14:22:01:23:45"
 
         // Act
-        val fotoRequest = FotoRequestDataClass(pictureBase64, macAddress)
+        val fotoRequest = PhotoRequestDataClass(pictureBase64, macAddress)
 
         // Assert
         assertEquals(pictureBase64, fotoRequest.pictureBase64)
@@ -28,7 +28,7 @@ class DataClassesTest {
         // Arrange
         val pictureBase64 = "exampleBase64String"
         val macAddress = "00:14:22:01:23:45"
-        val fotoRequest = FotoRequestDataClass(pictureBase64, macAddress)
+        val fotoRequest = PhotoRequestDataClass(pictureBase64, macAddress)
 
         // Act
         val expectedToString = "FotoRequestDataClass(pictureBase64=$pictureBase64, macAddress=$macAddress)"
@@ -40,9 +40,9 @@ class DataClassesTest {
     @Test
     fun `test FotoRequestDataClass equals and hashCode`() {
         // Arrange
-        val fotoRequest1 = FotoRequestDataClass("exampleBase64String", "00:14:22:01:23:45")
-        val fotoRequest2 = FotoRequestDataClass("exampleBase64String", "00:14:22:01:23:45")
-        val fotoRequest3 = FotoRequestDataClass("differentBase64String", "00:14:22:01:23:45")
+        val fotoRequest1 = PhotoRequestDataClass("exampleBase64String", "00:14:22:01:23:45")
+        val fotoRequest2 = PhotoRequestDataClass("exampleBase64String", "00:14:22:01:23:45")
+        val fotoRequest3 = PhotoRequestDataClass("differentBase64String", "00:14:22:01:23:45")
 
         // Act & Assert
         assertEquals(fotoRequest1, fotoRequest2) // should be equal

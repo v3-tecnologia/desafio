@@ -1,4 +1,5 @@
 package com.entregas.android_pleno_teste_v3.services
+
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -7,29 +8,43 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.BitmapFactory
 import android.os.Build
+import android.os.Environment
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.entregas.android_pleno_teste_v3.R
+import com.entregas.android_pleno_teste_v3.data.PhotoEntity
+import com.entregas.android_pleno_teste_v3.data.database.AppDatabase
+import com.entregas.android_pleno_teste_v3.domain.PhotoRequestDataClass
+import com.entregas.android_pleno_teste_v3.repository.FotoRequestRepository
 import com.entregas.android_pleno_teste_v3.utils.Constants.Companion.CAPTURE_INTERVAL
+import com.entregas.android_pleno_teste_v3.utils.GetMacAddress
+import com.entregas.android_pleno_teste_v3.utils.ImageConverter
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
+
 class PhotoMonitorService : Service() {
 
     private val handler = Handler()
     private val checkInterval = CAPTURE_INTERVAL
-    private lateinit var photoDirectory: File
     private var lastProcessedFile: File? = null
+    private lateinit var dataBase: AppDatabase
+    private lateinit var  coroutineScope: CoroutineScope
+    private val fotoRequestRepository = FotoRequestRepository()
 
     override fun onCreate() {
         super.onCreate()
         startForegroundService()
-        setupPhotoDirectory()
         startMonitoringForNewPhotos()
+        dataBase = AppDatabase.getDatabase(applicationContext)
+        coroutineScope = CoroutineScope(Dispatchers.IO)
     }
 
     private fun startForegroundService() {
@@ -57,17 +72,6 @@ class PhotoMonitorService : Service() {
         }
     }
 
-    private fun setupPhotoDirectory() {
-        photoDirectory = getOutputDirectory()
-    }
-
-    private fun getOutputDirectory(): File {
-        val mediaDir = externalMediaDirs.firstOrNull()?.let {
-            File(it, resources.getString(R.string.app_name)).apply { mkdirs() }
-        }
-        return if (mediaDir != null && mediaDir.exists()) mediaDir else filesDir
-    }
-
     private fun startMonitoringForNewPhotos() {
         val runnable = object : Runnable {
             override fun run() {
@@ -79,22 +83,29 @@ class PhotoMonitorService : Service() {
     }
 
     private fun processNewPhotos() {
-        val newPhotoFile = getNewPhotoFile()
+        val newPhotoFile = getLastPhotoFromGallery()
         newPhotoFile?.let {
-            Log.d("com.entregas.android_pleno_teste_v3.services.PhotoMonitorService", "Processing new photo: ${it.absolutePath}")
-            showToast("New photo found: ${it.absolutePath}")
+            Log.d("PhotoMonitorService", "Processing new photo: ${it.absolutePath}")
+
             checkForFacesInPhoto(it)
             lastProcessedFile = it
         } ?: run {
-            Log.d("com.entregas.android_pleno_teste_v3.services.PhotoMonitorService", "No new photos found.")
-            showToast("No new photos found.${newPhotoFile}")
+            Log.d("PhotoMonitorService", "No new photos found.")
+
         }
     }
 
-    private fun getNewPhotoFile(): File? {
-        val files = photoDirectory.listFiles { _, name -> name.endsWith(".jpg") || name.endsWith(".png") }
-        return files?.filter { it.lastModified() > (lastProcessedFile?.lastModified() ?: 0) }
-            ?.maxByOrNull { it.lastModified() }
+    private fun getLastPhotoFromGallery(): File? {
+        val directory =
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString()
+        val photoDirectory = File(directory)
+        if (photoDirectory.exists()) {
+            val files = photoDirectory.listFiles { _, name ->
+                name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".png")
+            }
+            return files?.maxByOrNull { it.lastModified() }
+        }
+        return null
     }
 
     private fun checkForFacesInPhoto(photoFile: File) {
@@ -112,16 +123,35 @@ class PhotoMonitorService : Service() {
         detector.process(image)
             .addOnSuccessListener { faces ->
                 if (faces.isNotEmpty()) {
-                    showToast("Faces detected in the photo!")
-                    Log.d("com.entregas.android_pleno_teste_v3.services.PhotoMonitorService", "Faces detected: ${faces.size}")
+                    coroutineScope.launch {
+                        dataBase.photoScopeDao().insert(
+                            PhotoEntity(
+                                2,
+                                ImageConverter.convertImageToBase64(bitmap),
+                            )
+                        )
+                        fotoRequestRepository.sendPhotoRequest(
+                            PhotoRequestDataClass(
+                                ImageConverter.convertImageToBase64(bitmap),
+                                GetMacAddress(applicationContext).getUniqueDeviceId()
+                            )
+                        ).collect{
+                            if(it.isSuccess){
+
+                            }else{
+
+                            }
+                        }
+                    }
+                    Log.d("PhotoMonitorService", "Faces detected: ${faces.size}")
                 } else {
-                    showToast("No faces detected.")
-                    Log.d("com.entregas.android_pleno_teste_v3.services.PhotoMonitorService", "No faces detected.")
+
+                    Log.d("PhotoMonitorService", "No faces detected.")
                 }
             }
             .addOnFailureListener { e ->
                 showToast("Face detection failed.")
-                Log.e("com.entregas.android_pleno_teste_v3.services.PhotoMonitorService", "Face detection failed", e)
+                Log.e("PhotoMonitorService", "Face detection failed", e)
             }
     }
 

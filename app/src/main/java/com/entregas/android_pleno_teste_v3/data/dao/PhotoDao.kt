@@ -8,8 +8,8 @@ import com.entregas.android_pleno_teste_v3.data.PhotoEntity
 @Dao
 interface PhotoDao {
     @Insert
-    suspend fun insert(location: PhotoEntity)
+    suspend fun insert(photoEntity: PhotoEntity)
 
     @Query("SELECT * FROM photo_data")
-    suspend fun getAllLocations(): List<PhotoEntity>
+    suspend fun getAllPhotos(): List<PhotoEntity>
 }

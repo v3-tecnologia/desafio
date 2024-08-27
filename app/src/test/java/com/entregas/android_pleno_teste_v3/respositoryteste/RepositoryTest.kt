@@ -1,6 +1,6 @@
 package com.entregas.android_pleno_teste_v3.respositoryteste
 
-import com.entregas.android_pleno_teste_v3.domain.FotoRequestDataClass
+import com.entregas.android_pleno_teste_v3.domain.PhotoRequestDataClass
 import com.entregas.android_pleno_teste_v3.repository.FotoRequestRepository
 import com.entregas.android_pleno_teste_v3.services.apiservice.ApiService
 import com.entregas.android_pleno_teste_v3.services.apiservice.RetrofitClient
@@ -33,7 +33,7 @@ class FotoRequestRepositoryTest {
 
     @Test
     fun `test sendPhotoRequest success`() = runTest {
-        val fotoRequest = FotoRequestDataClass("","")
+        val fotoRequest = PhotoRequestDataClass("","")
         val response = Result.success(Unit) // Create a successful response
         coEvery { mockApiService.enviarFoto(fotoRequest) } returns response
 
@@ -45,7 +45,7 @@ class FotoRequestRepositoryTest {
 
     @Test
     fun `test sendPhotoRequest HTTP exception`() = runTest {
-        val fotoRequest = FotoRequestDataClass("","")
+        val fotoRequest = PhotoRequestDataClass("","")
         val httpException = HttpException(Response.error<Any>(500, okhttp3.ResponseBody.create(null, "Error")))
         coEvery { mockApiService.enviarFoto(fotoRequest) } throws httpException
 
@@ -57,7 +57,7 @@ class FotoRequestRepositoryTest {
 
     @Test
     fun `test sendPhotoRequest IO exception`() = runTest {
-        val fotoRequest = FotoRequestDataClass("","")
+        val fotoRequest = PhotoRequestDataClass("","")
         coEvery { mockApiService.enviarFoto(fotoRequest) } throws IOException()
 
         val result = fotoRequestRepository.sendPhotoRequest(fotoRequest).first()

@@ -8,7 +8,13 @@
       <SelectionState runConfigName="testeSalvarLocationNoBancoLocalmente()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testeParaSaberSeKoinEstaInjetandoOsParametrosNaClasseCorretamente()">
+      <SelectionState runConfigName="testeSalvarDadosDaFoto()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testeSalvarLocationNoBancoLocalmente() (1)">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="DataTestClass">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

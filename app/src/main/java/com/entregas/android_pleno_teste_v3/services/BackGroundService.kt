@@ -20,6 +20,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.entregas.android_pleno_teste_v3.R
@@ -153,7 +154,13 @@ class BackgroundService : Service(), LocationListener {
                     z,
                     GetMacAddress(applicationContext).getUniqueDeviceId()
                 )
-            )
+            ).collect {
+                if (it.isSuccess) {
+                    Log.d("GyroscopeData", "Giroscópio enviado com sucesso")
+                } else {
+                    Log.e("GyroscopeData", "Erro ao enviar Giroscópio")
+                }
+            }
         }
     }
 
@@ -175,7 +182,13 @@ class BackgroundService : Service(), LocationListener {
             )
             gpsRequestRepository.sendGpsRequest(
                 gpsRequestDataClass
-            )
+            ).collect {
+                if (it.isSuccess) {
+                    Log.d("LocationData", "Localização enviada com sucesso")
+                } else {
+                    Log.e("LocationData", "Erro ao enviar Localização")
+                }
+            }
         }
     }
 
