@@ -9,6 +9,9 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+// Aqui estão as funções para testes unitários nas funções do service
+// Foram utilizadas test suite em conjunto com o mockery
+
 type ServiceTestSuite struct {
 	suite.Suite
 	service service.ProcessData

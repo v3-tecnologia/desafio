@@ -11,10 +11,13 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// Estrutura para encapsular a abstração pela interface ProcessData. 
+// Isso foi feito para realizar os testes unitários sem integração com partes externas
 type Handle struct {
 	Service service.ProcessData
 }
 
+// Função que serve como construtor da estrutura de handle
 func NewHandle(service *service.Service) *Handle {
 	if service == nil {
 		return &Handle{}
@@ -23,6 +26,7 @@ func NewHandle(service *service.Service) *Handle {
 	return &Handle{Service: service}
 }
 
+// Handler para o endpoint que recebe os dados do giroscópio
 func (h *Handle) GyroscopeData(w http.ResponseWriter, r *http.Request) {
 	var gyroData models.Gyroscope
 	if r.Body == nil {
@@ -54,6 +58,7 @@ func (h *Handle) GyroscopeData(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// Handler para o endpoint que recebe os dados de GPS
 func (h *Handle) GPSData(w http.ResponseWriter, r *http.Request) {
 	var gpsData models.GPS
 
@@ -86,6 +91,7 @@ func (h *Handle) GPSData(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// Handler para o endpoint que recebe os dados da foto
 func (h *Handle) PhotoData(w http.ResponseWriter, r *http.Request) {
 	var photo models.Photo
 	if r.Body == nil {

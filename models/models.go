@@ -1,5 +1,6 @@
 package models
 
+// Modelo utiizado na requisição dos dados de giroscópio
 type Gyroscope struct {
 	MacAddress string  `json:"macAddress" validate:"mac,required"`
 	Timestamp  int     `json:"timestamp" validate:"required,number"`
@@ -8,6 +9,7 @@ type Gyroscope struct {
 	Z          float64 `json:"z" validate:"required,number"`
 }
 
+// Modelo utiizado na requisição dos dados de GPS
 type GPS struct {
 	MacAddress string `json:"macAddress" validate:"mac,required"`
 	Timestamp  int    `json:"timestamp" validate:"required,number"`
@@ -15,6 +17,7 @@ type GPS struct {
 	Longitude  string `json:"longitude" validate:"required,longitude"`
 }
 
+// Modelo utiizado na requisição dos dados da foto
 type Photo struct {
 	MacAddress string `json:"macAddress" validate:"mac,required"`
 	Photo      string `json:"photo" validate:"base64,required"`

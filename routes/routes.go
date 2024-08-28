@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+//Função que inicia as rotas da API
 func InitializeRoutes(router *mux.Router) {
 
 	repository, err := repository.NewRepository()
@@ -24,6 +25,7 @@ func InitializeRoutes(router *mux.Router) {
 	mux.CORSMethodMiddleware(router)
 }
 
+//Função para verificar se há a conexão com o servidor
 func health(router *mux.Router) {
 	router.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		_, err := w.Write([]byte(":)"))

@@ -25,12 +25,11 @@ func main() {
 	server := &http.Server{
 		Handler: router,
 		Addr:    port,
-		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
-	// run http server
+	// Executa o servidor http
 	go func() {
 		fmt.Printf("Listening and serving on port %s\n", port)
 		logrus.Info("API routes")
@@ -46,7 +45,6 @@ func main() {
 		logrus.Info(fmt.Sprintf("%v %s", methods, path))
 		return nil
 	})
-		// service connections
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logrus.Fatalln(fmt.Sprintf("listen: %s\n", err))
 		}

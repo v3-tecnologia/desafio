@@ -19,12 +19,15 @@ const (
 	dbname   = "postgres"
 )
 
+//Estrutura que contém as informações do banco de dados
 type Repo struct {
 	db *sql.DB
 }
 
+// Validação qua a estrutura Repo assina a interface Repository
 var _ service.Repository = (*Repo)(nil)
 
+// Função que serve como construtor da estrutura de repositório
 func NewRepository() (service.Repository, error) {
 	db, err := DBConnection()
 	if err != nil {
@@ -33,6 +36,7 @@ func NewRepository() (service.Repository, error) {
 	return &Repo{db: db}, nil
 }
 
+// Função que cria a conexão com o banco de dados
 func DBConnection() (*sql.DB, error) {
 	host := os.Getenv("host")
 	if host == "" {
@@ -55,6 +59,7 @@ func DBConnection() (*sql.DB, error) {
 	return db, nil
 }
 
+// Função para inserir os dados do giroscópio no banco
 func (r *Repo) InsertGyroscopeData(data models.Gyroscope) error {
 
 	insertQuery := `INSERT INTO public.gyroscope_data
@@ -77,7 +82,7 @@ func (r *Repo) InsertGyroscopeData(data models.Gyroscope) error {
 	return nil
 }
 
-
+// Função para inserir os dados de GPS no banco
 func (r *Repo) InsertGPSData(data models.GPS) error {
 
 	insertQuery := `INSERT INTO public.gps_data
@@ -102,7 +107,7 @@ func (r *Repo) InsertGPSData(data models.GPS) error {
 	return nil
 }
 
-
+// Função para inserir os dados da foto no banco
 func (r *Repo) InsertPhoto(data models.Photo) error {
 
 	insertQuery := `INSERT INTO public.photo
