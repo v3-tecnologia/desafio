@@ -1,14 +1,26 @@
 services:
-  postgres:
-    image: "postgres"
+  app:
+    build: .
+    container_name: go_app
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=desafio
-      - POSTGRES_DB=postgres      
+      host: postgres
+    ports: 
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: postgres
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: desafio
+      POSTGRES_DB: postgres     
     ports:
       - "5432:5432"
     volumes:
-      - ./migration/init.sql:/docker-entrypoint-initdb.d/docker-database-initial.sql   
+      - ./migration/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
    postgres_data:
