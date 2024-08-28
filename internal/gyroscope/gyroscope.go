@@ -68,17 +68,6 @@ func (main Main) SaveGyroscope(gyroscope Request) (Response, errors.Error) {
 
 	return main.findGyroscopeById(ID)
 }
-func (main Main) findGyroscopeById(ID int64) (Response, errors.Error) {
-	response := Response{}
-	row := main.db.Set("gorm:auto_preload", true).Raw(queryGyroscopeById, ID).Row()
-
-	if errScan := row.Scan(&response.MacAddress, &response.Timestamp, &response.XAxis, &response.YAxis, &response.ZAxis); errScan != nil {
-		return Response{}, errors.NewError("Scan GPS data error", errScan.Error()).
-			WithOperations("SaveGps.ScanRows")
-	}
-
-	return response, nil
-}
 
 func (main Main) ValidateGyroscope(gyroscope Request) errors.ErrorList {
 	ers := errors.NewErrorList()
@@ -149,5 +138,16 @@ func (main Main) processAndSaveDevice(macAddress string) (*device.Device, errors
 	}
 
 	return foundDevice, nil
+}
 
+func (main Main) findGyroscopeById(ID int64) (Response, errors.Error) {
+	response := Response{}
+	row := main.db.Set("gorm:auto_preload", true).Raw(queryGyroscopeById, ID).Row()
+
+	if errScan := row.Scan(&response.MacAddress, &response.Timestamp, &response.XAxis, &response.YAxis, &response.ZAxis); errScan != nil {
+		return Response{}, errors.NewError("Scan GPS data error", errScan.Error()).
+			WithOperations("SaveGps.ScanRows")
+	}
+
+	return response, nil
 }
