@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "25db6363-ff85-4b55-81cd-a4783570b49e",
+		"name": "Api desafio-backend V3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "32996535"
+	},
+	"item": [
+		{
+			"name": "Photo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "request",
+							"value": "{\n \"timestamp\" : \"2024-12-26T18:00:05Z\",\n \"macAddress\" : \"99:98:ca:89:be:fe\"\n}",
+							"type": "text"
+						},
+						{
+							"key": "image",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": "http://localhost:7001/api/v1/telemetry/photo"
+			},
+			"response": []
+		},
+		{
+			"name": "Giroscópio",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"timestamp\" : \"2024-08-26T18:00:05Z\",\r\n \"macAddress\" : \"99:98:ca:89:be:fe\",\r\n \"xAxis\": 0.245422,\r\n \"yAxis\": 1.233254,\r\n \"zAxis\": 0.213234    \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:7001/api/v1/telemetry/gyroscope"
+			},
+			"response": []
+		},
+		{
+			"name": "GPS",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n \"timestamp\" : \"2024-12-26T18:00:05Z\",\r\n \"macAddress\" : \"99:98:ca:89:be:ce\",\r\n \"latitude\": 4.245422,\r\n \"longitude\": 3.233254\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:7001/api/v1/telemetry/gps"
+			},
+			"response": []
+		}
+	]
+}

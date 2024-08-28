@@ -1,129 +1,149 @@
-# Desafio Técnico V3
+# MVP-Telemetria-V3
 
-## ❤️ Bem vindos
-
-Olá, tudo certo?
-
-Seja bem vindo ao teste de seleção para novos desenvolvedores na V3!
-
-Estamos honrados que você tenha chegado até aqui!
-
-Prepare aquele ☕️ , e venha conosco codar e se divertir!
-
-## Poxa, outro teste?
-
-Nós sabemos que os processos de seleção podem ser ingratos! Você investe um tempão e no final pode não ser aprovado!
-
-Aqui, nós presamos pela **transparência**!
-
-Este teste tem um **propósito** bastante simples:
-
-> Nós queremos avaliar como você consegue transformar problemas em soluções através de código!
-
-**🚨 IMPORTANTE!** Se você entende que já possui algum projeto pessoal, ou contribuição em um projeto _open-source_ que contemple conhecimentos equivalentes aos que existem neste desafio, então, basta submeter o repositório explicando essa correlação!
-
-## 🚀 Bora nessa!
-
-Este é um teste para analisarmos como você desempenha ao entender, traduzir, resolver e entregar um código que resolve um problema.
-
-### Dicas
-
-- Documente seu projeto;
-- Faça perguntas sobre os pontos que não ficaram claros para você;
-- Mostre a sua linha de raciocínio;
-- Trabalhe bem o seu README.md;
-  - Explique até onde implementou;
-  - Como o projeto pode ser executado;
-  - Como pode-se testar o projeto;
-
-### Como você deverá desenvolver?
-
-1. Faça um _fork_ deste projeto em seu GitHub pessoal;
-2. Realize as implementações de acordo com cada um dos níveis;
-3. Faça pequenos _commits_;
-4. Depois de sentir que fez o seu máximo, faça um PR para o repositório original.
-
-🚨 **IMPORTANTE!** Não significa que você precisa implementar **todos os níveis** para ser aprovado no processo! Faça até onde se sentir confortável.
-
-### Qual o tempo para entregar?
-
-Quanto antes você enviar, mais cuidado podemos ter na revisão do seu teste. Mas sabemos que o dia a dia é corrido, faça de forma que fique confortável para você!
-
-**Mas não desista! Envie até onde conseguir.**
-
-## 💻 O Problema
-
-Um dos nossos clientes ainda não consegue comprar o equipamento para colocar nos veículos de sua frota, mas ele quer muito utilizar a nossa solução.
-
-Por isso, vamos fazer um MVP bastante simples para testar se, o celular do motorista poderia ser utilizado como o dispositivo de obtenção das informações.
-
-> Parece fazer sentido certo? Ele possui vários mecanismos parecidos com o equipamento que oferecemos!
-
-Sua missão ajudar na criação deste MVP para que possamos testar as frotas deste cliente.
-
-Essa versão do produto será bastante simplificada. Queremos apenas criar as estruturas para obter algumas informações do seu dispositivo (Android) e armazená-la em um Banco de Dados.
-
-Essas informações, depois de armazenadas devem estar disponíveis através de uma API para que este cliente integre com um Front-end já existente!
-
-### Quais serão as informações que deverão ser coletadas?
-
-1. **Dados de Giroscópio** - Estes dados devem retornar 3 valores (`x`, `y`, `z`). E devem ser armazenados juntamente com o `TIMESTAMP` do momento em que foi coletado;
-2. **Dados de GPS** - Estes dados devem retornar 2 valores (`latitude` , `longitude`). E também devem ser armazenados juntamente com o `TIMESTAMP` do momento em que foram coletados;
-3. **Uma foto** - Obter uma foto de uma das câmeras do dispositivo e enviá-la também junto com o `TIMESTAMP` em que foi coletada;
-
-**🚨 É importante que se envie junto à essas informações um campo adicional, contendo uma identificação única do dispositivo, que pode ser seu endereço MAC.**
-
-### Funcionamento
-
-A aplicação Android deverá rodar em Background, e coletar e enviar as informações descritas a cada 10 segundos.
-
-### Qual parte do desafio devo realizar?
-
-Você deve realizar somente o desafio para a vaga que se candidatou.
-
-Caso tenha sido a vaga de Android Embarcado, então resolva somente esta sessão.
-
-Caso tenha sido a vaga de Backend, então resolva somente esta sessão.
+Este repositório contém a implementação do desafio Backend da V3, em Golang. Ele contempla um MVP para uma venda a um cliente fictício, que recebe dados de telemetria de um celular Android.
 
 
----
+## Índice
 
-# Desafio Backend
+- [Desafio](#desafio)
+- [Arquitetura](#arquitetura)
+- [Bancos de dados](#bancos de dados)
+- [Instalação e execução](#Instalação e execução)
+- [Endpoints REST](#endpoints-rest)
+- [Testes](#testes)
 
-Você deverá criar uma aplicação que irá receber os dados enviados pelo aplicativo.
+## Índice
+As informações coletadas são:
 
-Lembre-se essa aplicação precisa ser em GO!
+1. **Dados de Giroscópio** 
+2. **Dados de GPS** 
+3. **Uma foto**
 
-## Nível 1
+Este desafio foi implementado até o nível 4, na parte de containerização.
 
-Deve-se criar uma API que receba requisições de acordo com os endpoints:
+## Arquitetura
 
-- `POST /telemetry/gyroscope` - Dados do giroscópio;
-- `POST /telemetry/gps` - Dados do GPS;
-- `POST /telemetry/photo` - Dados da Foto;
+Para este desafio, foi pensada a utilização da implementação de chamadas por casos de uso, pensando nos conceitos de SOLID, e também facilitando no entendimenton de cada etapa do projeto. 
 
-Deve-se garantir que os dados recebidos estão preenchidos corretamente.
+## Bancos de dados
 
-Caso algum dado esteja faltando, então retorne uma mensagem de erro e um Status 400.
+Foi escolhido o trabalho com o banco de dados relacional, tendo em vista que todas as informações enviadas, tem um ponton em comum:
+O dispositivo, que será identificado pelo MacAddress. O banco relacional facilida para manter os dados enviados pelo mesmo dispositivo, ligados de forma concisa.
 
-## Nível 2
+o modelo utilizado foi o que está abaixo representado:
 
-Salve cada uma das informações em um banco de dados a sua escolha.
+![database-diagram.png](resources%2Fdatabase-diagram.png)
 
-Salve estes dados de forma identificável e consistente;
 
-## Nível 3
+## Instalação e execução
 
-Crie testes unitários para cada arquivo da aplicação. Para cada nova implementação a seguir, também deve-se criar os testes.
+Clone o repositório para sua máquina local:
 
-## Nível 4
+```bash
+git clone https://github.com/icaromarques/desafio-backend.git
+```
 
-Crie um _container_ em _Docker_ que contenha a sua aplicação e o banco de dados utilizado nos testes.
+Execute o projeto utilizando o Docker compose
 
-## Nível 5
+```bash
+cd desafio-backend
+docker compose up
+```
 
-A cada foto recebida, deve-se utilizar o AWS Rekognition para comparar se a foto enviada é reconhecida com base nas fotos anteriores enviadas.
+## Endpoints REST
 
-Se a foto enviada for reconhecida, retorne como resposta do `POST` um atributo que indique isso.
+### Dados enviados por GPS
 
-Utilize as fotos iniciais para realizar o treinamento da IA.
+`POST: /telemetry/gps`
+#### Request:
+
+```json
+{
+ "timestamp" : "2024-12-26T18:00:05Z",
+ "macAddress" : "99:98:ca:89:be:ce",
+ "latitude": 4.245422,
+ "longitude": 3.233254
+}
+```
+
+
+#### Response:
+
+```json
+{
+  "macAddress": "99:98:ca:89:be:ce",
+  "timestamp": "2024-12-26T18:00:05Z",
+  "coordinates": "{\"type\":\"Point\",\"coordinates\":[4.245422,3.233254]}"
+}
+```
+
+
+### Dados enviados por Giroscópio
+
+`POST: /telemetry/gyroscope`
+#### Request:
+
+```json
+{
+  "timestamp" : "2024-08-26T18:00:05Z",
+  "macAddress" : "99:98:ca:89:be:fe",
+  "xAxis": 0.245422,
+  "yAxis": 1.233254,
+  "zAxis": 0.213234
+}
+```
+
+
+#### Response:
+
+```json
+{
+    "macAddress": "99:98:ca:89:be:fe",
+    "timestamp": "2024-08-26T18:00:05Z",
+    "xAxis": 0.245422,
+    "yAxis": 1.233254,
+    "zAxis": 0.213234
+}
+```
+
+
+### Dados enviados de fotos
+
+`POST: /telemetry/photo`
+#### Request:
+
+```json
+request (type= text) :{
+  "timestamp" : "2024-12-26T18:00:05Z",
+ "macAddress" : "99:98:ca:89:be:fe"
+}
+
+immage (type= file): selected image 
+```
+
+
+#### Response:
+
+```json
+{
+  "macAddress": "99:98:ca:89:be:fe",
+  "timestamp": "2024-12-26T18:00:05Z",
+  "latitude": {
+    "Name": "uploaded-image-2547156884.jpg",
+    "FullPath": "C:\\Users\\Zeus\\Documents\\workspace\\desafio-backend\\resources\\temp-files\\uploaded-image-2547156884.jpg",
+    "MimeType": "",
+    "Bytes": null
+  }
+}
+```
+
+obs.: no diretório 
+```resources``` encontra-se a collection Postman que pode ser usada para testar todos os endpoints.  
+## Testes
+
+Para rodar os testes unitários do projeto, utilize o comando:
+
+```bash
+go test ./...
+```
+
