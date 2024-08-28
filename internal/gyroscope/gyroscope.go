@@ -38,7 +38,7 @@ func (main Main) ParseGyroscope(gyroscope io.ReadCloser) (Request, errors.Error)
 	err := json.NewDecoder(gyroscope).Decode(&nGyroscope)
 	if err != nil {
 		logger.Error(util.GeneralParseError, "ParseGyroscope", err, gyroscope)
-		return Request{}, errors.NewError("Connot decode data", err.Error()).
+		return Request{}, errors.NewError("Cannot decode data", err.Error()).
 			WithOperations("ParseGyroscope.Decode")
 	}
 	return *nGyroscope, nil

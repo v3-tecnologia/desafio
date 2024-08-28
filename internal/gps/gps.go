@@ -29,7 +29,7 @@ func (main Main) ParseGps(gps io.ReadCloser) (Request, errors.Error) {
 	err := json.NewDecoder(gps).Decode(&nGps)
 	if err != nil {
 		logger.Error(util.GeneralParseError, "ParseGps", err, gps)
-		return Request{}, errors.NewError("Connot decode data", err.Error()).
+		return Request{}, errors.NewError("Cannot decode data", err.Error()).
 			WithOperations("ParseGps.Decode")
 	}
 	return *nGps, nil

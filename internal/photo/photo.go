@@ -85,7 +85,7 @@ func (main Main) ParsePhoto(photo string, file ImageFile) (Request, errors.Error
 
 	if err != nil {
 		logger.Error(util.GeneralParseError, "ParsePhoto", err, photo)
-		return Request{}, errors.NewError("Connot decode data", err.Error()).
+		return Request{}, errors.NewError("Cannot decode data", err.Error()).
 			WithOperations("ParsePhoto.Decode")
 	}
 	return *nPhoto, nil
