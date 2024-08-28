@@ -27,10 +27,6 @@ type LogResponseWriter struct {
 	buf        bytes.Buffer
 }
 
-func NewLogResponseWriter(w http.ResponseWriter) *LogResponseWriter {
-	return &LogResponseWriter{ResponseWriter: w}
-}
-
 func (w *LogResponseWriter) WriteHeader(code int) {
 	w.statusCode = code
 	w.ResponseWriter.WriteHeader(code)
@@ -43,17 +39,17 @@ func (w *LogResponseWriter) Write(body []byte) (int, error) {
 
 //-------------------------------------------------------------------------------------
 
-// Middleware to set a requestID.
+// TraceIDMiddleware Middleware to set a requestID.
 func TraceIDMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// create uuid for request
-		uuid, err := uuid.NewUUID()
+		// create newUUID for request
+		newUUID, err := uuid.NewUUID()
 		if err != nil {
 			logrus.Errorf("traceID middleware error: %v", err)
 			http.Error(w, "", http.StatusInternalServerError)
 		}
 
-		ctx := context.WithValue(r.Context(), ctxKey, uuid.String())
+		ctx := context.WithValue(r.Context(), ctxKey, newUUID.String())
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

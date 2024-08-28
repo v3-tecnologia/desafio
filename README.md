@@ -5,14 +5,14 @@ Este repositório contém a implementação do desafio Backend da V3, em Golang.
 
 ## Índice
 
-- [Desafio](#desafio)
+- [Desafio](#Desafio)
 - [Arquitetura](#arquitetura)
 - [Bancos de dados](#bancos de dados)
 - [Instalação e execução](#Instalação e execução)
 - [Endpoints REST](#endpoints-rest)
 - [Testes](#testes)
 
-## Índice
+## Desafio
 As informações coletadas são:
 
 1. **Dados de Giroscópio** 

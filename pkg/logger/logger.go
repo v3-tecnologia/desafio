@@ -20,15 +20,6 @@ func Error(msg string, functionName string, err error, data interface{}) {
 		"err":   err,
 	}).WithTime(time.Now()).Errorln(msg)
 }
-func Panic(msg string, functionName string, err error, data interface{}) {
-
-	logrus.WithFields(logrus.Fields{
-		"level":        "fatal",
-		"Error":        err,
-		"FunctionName": functionName,
-		"Data":         data,
-	}).WithTime(time.Now()).Panicln(msg)
-}
 
 func Fatal(msg string, err error) {
 	logrus.Fatalln(msg, err)

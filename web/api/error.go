@@ -23,10 +23,6 @@ type Errors struct {
 	Errors []Error `json:"errors"`
 }
 
-func NewAPIErrors() *Errors {
-	return &Errors{}
-}
-
 func (apiErrors *Errors) ToAPIErrors(status string, link string, ers ...errors.Error) *Errors {
 	for _, err := range ers {
 		apiError := Error{
