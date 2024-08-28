@@ -3,12 +3,27 @@ package handlers
 import (
 	"encoding/json"
 	"github/desafio/models"
+	"github/desafio/service"
 	"net/http"
 
 	"log"
+
+	"github.com/go-playground/validator/v10"
 )
 
-func GyroscopeData(w http.ResponseWriter, r *http.Request) {
+type Handle struct {
+	service service.ProcessData
+}
+
+func NewHandle(service *service.Service) *Handle {
+	if service == nil {
+		return &Handle{}
+	}
+
+	return &Handle{service: service}
+}
+
+func (h *Handle) GyroscopeData(w http.ResponseWriter, r *http.Request) {
 	var gyroData models.Gyroscope
 	if r.Body == nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -21,9 +36,17 @@ func GyroscopeData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := models.ValidateGyroscopeData(&gyroData); err != nil {
+	validate := validator.New()
+	if err := validate.Struct(gyroData); err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = h.service.ProcessGyroscopeData(gyroData)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -31,7 +54,7 @@ func GyroscopeData(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GPSData(w http.ResponseWriter, r *http.Request) {
+func (h *Handle) GPSData(w http.ResponseWriter, r *http.Request) {
 	var gpsData models.GPS
 
 	if r.Body == nil {
@@ -45,9 +68,17 @@ func GPSData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := models.ValidateGPSData(&gpsData); err != nil {
+	validate := validator.New()
+	if err := validate.Struct(gpsData); err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = h.service.ProcessGPSData(gpsData)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -55,23 +86,31 @@ func GPSData(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func PhotoData(w http.ResponseWriter, r *http.Request) {
-	var photoData models.Photo
+func (h *Handle) PhotoData(w http.ResponseWriter, r *http.Request) {
+	var photo models.Photo
 	if r.Body == nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	err := json.NewDecoder(r.Body).Decode(&photoData)
+	err := json.NewDecoder(r.Body).Decode(&photo)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if err := models.ValidatePhotoData(&photoData); err != nil {
+	validate := validator.New()
+	if err := validate.Struct(photo); err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = h.service.ProcessPhoto(photo)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
