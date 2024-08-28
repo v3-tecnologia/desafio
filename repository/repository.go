@@ -63,7 +63,7 @@ func DBConnection() (*sql.DB, error) {
 func (r *Repo) InsertGyroscopeData(data models.Gyroscope) error {
 
 	insertQuery := `INSERT INTO public.gyroscope_data
-	(macaddress, x_coord, y_coord, z_coord, data_timestamp, created)
+	(macaddress, data_timestamp x_coord, y_coord, z_coord, created)
 	VALUES($1, $2, $3, $4, $5, $6);`
 
 	sqlStatement, err := r.db.Prepare(insertQuery)
@@ -73,7 +73,7 @@ func (r *Repo) InsertGyroscopeData(data models.Gyroscope) error {
 	}
 	defer sqlStatement.Close()
 
-	_, err = sqlStatement.Exec(data.MacAddress, data.X, data.Y, data.Z, data.Timestamp, time.Now().Unix())
+	_, err = sqlStatement.Exec(data.MacAddress, data.Timestamp, data.X, data.Y, data.Z, time.Now().Unix())
 	if err != nil {
 		log.Println(err.Error())
 		return err
@@ -86,7 +86,7 @@ func (r *Repo) InsertGyroscopeData(data models.Gyroscope) error {
 func (r *Repo) InsertGPSData(data models.GPS) error {
 
 	insertQuery := `INSERT INTO public.gps_data
-	(macaddress, latitude, longitude, data_timestamp, created)
+	(macaddress, data_timestamp, latitude, longitude, created)
 	VALUES($1, $2, $3, $4, $5);`
 
 	sqlStatement, err := r.db.Prepare(insertQuery)
@@ -97,7 +97,7 @@ func (r *Repo) InsertGPSData(data models.GPS) error {
 	}
 	defer sqlStatement.Close()
 
-	_, err = sqlStatement.Exec(data.MacAddress, data.Latitude, data.Longitude, data.Timestamp, time.Now().Unix())
+	_, err = sqlStatement.Exec(data.MacAddress, data.Timestamp, data.Latitude, data.Longitude, time.Now().Unix())
 	if err != nil {
 		println("gps insert error: ")
 		log.Println(err.Error())
