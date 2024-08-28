@@ -1,6 +1,7 @@
 package gps
 
 import (
+	"desafio-backend/internal/device"
 	"desafio-backend/pkg/errors"
 	"desafio-backend/pkg/logger"
 	"desafio-backend/util"
@@ -17,10 +18,9 @@ type Request struct {
 }
 
 type Response struct {
-	MacAddress string    `json:"macAddress"`
-	Timestamp  time.Time `json:"timestamp"`
-	Latitude   float64   `json:"latitude"`
-	Longitude  float64   `json:"longitude"`
+	MacAddress  string    `json:"macAddress"`
+	Timestamp   time.Time `json:"timestamp"`
+	Coordinates string    `json:"coordinates"`
 }
 
 func (main Main) ParseGps(gps io.ReadCloser) (Request, errors.Error) {
@@ -36,8 +36,67 @@ func (main Main) ParseGps(gps io.ReadCloser) (Request, errors.Error) {
 }
 
 func (main Main) SaveGps(gps Request) (Response, errors.Error) {
-	// TODO save the data received into a database
-	return gps.toResponse(), nil
+	var ID int64
+
+	processedDevice, deviceErr := main.processAndSaveDevice(gps.MacAddress)
+	if deviceErr != nil {
+		return Response{}, deviceErr
+	}
+
+	rows, err := main.db.Raw(Insert(processedDevice.ID, gps.Timestamp.Format(time.RFC3339), gps.Latitude, gps.Longitude)).Rows()
+
+	if err != nil {
+		return Response{}, errors.NewError("Save GPS error", err.Error()).
+			WithOperations("SaveGps.Raw")
+	}
+
+	defer rows.Close()
+
+	if errScan := main.db.ScanRows(rows, &ID); err != nil {
+		return Response{}, errors.NewError("Scan GPS data error", errScan.Error()).
+			WithOperations("SaveGps.ScanRows")
+	}
+
+	return main.findGpsById(ID)
+}
+
+func (main Main) findGpsById(ID int64) (Response, errors.Error) {
+	response := Response{}
+	row := main.db.Set("gorm:auto_preload", true).Raw(queryGpsById, ID).Row()
+
+	if errScan := row.Scan(&response.MacAddress, &response.Timestamp, &response.Coordinates); errScan != nil {
+		return Response{}, errors.NewError("Scan GPS data error", errScan.Error()).
+			WithOperations("SaveGps.ScanRows")
+	}
+
+	return response, nil
+}
+
+func (main Main) processAndSaveDevice(macAddress string) (*device.Device, errors.Error) {
+	// try to find a foundDevice with the macAddress
+	foundDevice, deviceErr := main.deviceMain.FindByMacAddress(macAddress)
+
+	if deviceErr != nil {
+		return &device.Device{}, deviceErr
+	}
+
+	// if a device is not found, then insert it
+	if foundDevice == nil {
+		var insertDevice = device.Device{}
+
+		insertDevice.Timestamp = time.Now()
+		insertDevice.MacAddress = macAddress
+		insertDevice, err := main.deviceMain.SaveDevice(insertDevice)
+
+		if err != nil {
+			return &device.Device{}, err
+		}
+
+		return &insertDevice, nil
+	}
+
+	return foundDevice, nil
+
 }
 
 func (main Main) ValidateGps(gps Request) errors.ErrorList {
@@ -79,13 +138,4 @@ func (main Main) ValidateGps(gps Request) errors.ErrorList {
 	}
 
 	return ers
-}
-
-func (entity Request) toResponse() Response {
-	return Response{
-		MacAddress: entity.MacAddress,
-		Timestamp:  entity.Timestamp,
-		Latitude:   entity.Latitude,
-		Longitude:  entity.Longitude,
-	}
 }

@@ -3,6 +3,7 @@ package device
 import (
 	"desafio-backend/pkg/errors"
 	"desafio-backend/util"
+	"time"
 )
 
 type Device struct {
@@ -10,35 +11,43 @@ type Device struct {
 	MacAddress string `json:"macAddress"`
 }
 
-func (main Main) FindByMacAddress(macAddress string) (Device, errors.Error) {
-	var device Device
+func (main Main) FindByMacAddress(macAddress string) (*Device, errors.Error) {
+	var nDevice Device
 
 	rows, err := main.db.Set("gorm:auto_preload", true).Raw(queryDeviceByMacAddress, macAddress).Rows()
 	if err != nil {
-		return Device{}, errors.NewError("Find Device data error", err.Error()).
+		return &Device{}, errors.NewError("Find Device data error", err.Error()).
 			WithOperations("FindByMacAddress.Raw")
 	}
 
 	defer rows.Close()
 
 	if !rows.Next() {
-		return Device{}, errors.NewError("Device not found", "Device with mac address "+macAddress+" not found").
-			WithOperations("FindByMacAddress.Rows.Next")
+		return nil, nil
 	}
 
-	if errScan := main.db.ScanRows(rows, &device); err != nil {
-		return Device{}, errors.NewError("Scan Device data error", errScan.Error()).
+	if errScan := main.db.ScanRows(rows, &nDevice); err != nil {
+		return &Device{}, errors.NewError("Scan Device data error", errScan.Error()).
 			WithOperations("FindByMacAddress.ScanRows")
 	}
 
-	return device, nil
+	return &nDevice, nil
 
 }
 
 func (main Main) SaveDevice(device Device) (Device, errors.Error) {
-	if err := main.db.Create(&device).Error; err != nil {
-		return Device{}, errors.NewError("Save Device data error", err.Error()).
-			WithOperations("SaveDevice.Create")
+	entity := Device{}
+
+	row := main.db.Exec(Insert(device.Timestamp.Format(time.RFC3339), device.MacAddress)).
+		Raw(queryDeviceByMacAddress, device.MacAddress).
+		Row()
+
+	dbError := row.Scan(&entity.ID, &entity.MacAddress, &entity.Timestamp)
+
+	if dbError != nil {
+		return Device{}, errors.NewError("Save error", dbError.Error()).
+			WithOperations("Save.Scan")
 	}
-	return device, nil
+
+	return entity, nil
 }

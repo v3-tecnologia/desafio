@@ -6,7 +6,7 @@ import (
 )
 
 type UseCases interface {
-	FindByMacAddress(macAddress string) (Device, errors.Error)
+	FindByMacAddress(macAddress string) (*Device, errors.Error)
 	SaveDevice(device Device) (Device, errors.Error)
 }
 
@@ -15,5 +15,5 @@ type Main struct {
 }
 
 func NewMain(db *gorm.DB) UseCases {
-	return Main{}
+	return Main{db}
 }
