@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"desafio-backend/pkg/logger"
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -9,7 +10,7 @@ import (
 var initialValues = map[string]string{
 	"DB_USER":     "postgres",
 	"DB_PASSWORD": "desafiobackend",
-	"DB_HOST":     "localhost",
+	"DB_HOST":     "postgres",
 	"DB_NAME":     "postgres",
 	"DB_SSL":      "disable",
 	"DB_PORT":     "5432",
@@ -25,6 +26,7 @@ func GetDBConnection() (*gorm.DB, error) {
 		GetConfiguration("DB_PASSWORD"),
 		GetConfiguration("DB_SSL"),
 	)
+	logger.Info(fmt.Sprintf("Connection string"), dsn)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {

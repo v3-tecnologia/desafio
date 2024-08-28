@@ -1,0 +1,55 @@
+version: "2"
+
+services:
+    app:
+        container_name: desafio_backend_v3
+        command: [ "go", "run", "cmd/main.go" ]
+        privileged: true
+        environment:
+            DB_USER: postgres
+            DB_PASSWORD: desafiobackend
+            DB_HOST: postgres
+            DB_NAME: postgres
+            DB_SSL: disable
+            DB_PORT: 5432
+        build: .
+        restart: on-failure
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /usr/local/bin/docker:/bin/docker
+            - .:/go/src/app/
+        ports:
+            - "7001:7001"
+        depends_on:
+            postgres:
+                condition: service_healthy
+        links:
+            - postgres
+        networks:
+            - development
+
+
+    postgres:
+        container_name: postgres_container
+        image: postgis/postgis
+        ports:
+            - "5432:5432"
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: desafiobackend
+            POSTGRES_DB: postgres
+            DATABASE_HOST: postgres
+        networks:
+            - development
+        volumes:
+            - ./resources/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+
+networks:
+    development:
+        driver: bridge
