@@ -27,6 +27,7 @@ import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -36,7 +37,7 @@ class PhotoMonitorService : Service() {
     private val checkInterval = CAPTURE_INTERVAL
     private var lastProcessedFile: File? = null
     private lateinit var dataBase: AppDatabase
-    private lateinit var  coroutineScope: CoroutineScope
+    private lateinit var coroutineScope: CoroutineScope
     private val fotoRequestRepository = FotoRequestRepository()
 
     override fun onCreate() {
@@ -124,28 +125,41 @@ class PhotoMonitorService : Service() {
             .addOnSuccessListener { faces ->
                 if (faces.isNotEmpty()) {
                     coroutineScope.launch {
-                        dataBase.photoScopeDao().insert(
-                            PhotoEntity(
-                                2,
-                                ImageConverter.convertImageToBase64(bitmap),
+                        try {
+                            dataBase.photoScopeDao().insert(
+                                PhotoEntity(
+                                    2,
+                                    ImageConverter.convertImageToBase64(bitmap),
+                                )
                             )
-                        )
-                        fotoRequestRepository.sendPhotoRequest(
-                            PhotoRequestDataClass(
-                                ImageConverter.convertImageToBase64(bitmap),
-                                GetMacAddress(applicationContext).getUniqueDeviceId()
-                            )
-                        ).collect{
-                            if(it.isSuccess){
 
-                            }else{
-
+                            fotoRequestRepository.sendPhotoRequest(
+                                PhotoRequestDataClass(
+                                    ImageConverter.convertImageToBase64(bitmap),
+                                    GetMacAddress(applicationContext).getUniqueDeviceId()
+                                )
+                            ).catch { exception ->
+                                Log.d(
+                                    "PhotoMonitorService",
+                                    "Erro ao enviar requisição de foto",
+                                    exception
+                                )
+                            }.collect { result ->
+                                if (result.isSuccess) {
+                                    Log.d(
+                                        "PhotoMonitorService",
+                                        "Requisição de foto enviada com sucesso."
+                                    )
+                                } else {
+                                    Log.d("PhotoMonitorService", "Falha na requisição de foto.")
+                                }
                             }
+                        } catch (e: Exception) {
+                            Log.d("PhotoMonitorService", "Erro ao processar a foto", e)
                         }
                     }
                     Log.d("PhotoMonitorService", "Faces detected: ${faces.size}")
                 } else {
-
                     Log.d("PhotoMonitorService", "No faces detected.")
                 }
             }

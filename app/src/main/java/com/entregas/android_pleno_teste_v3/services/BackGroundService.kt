@@ -20,7 +20,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.entregas.android_pleno_teste_v3.R
@@ -37,6 +36,7 @@ import com.entregas.android_pleno_teste_v3.utils.GetMacAddress
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.catch
 
 class BackgroundService : Service(), LocationListener {
 
@@ -138,56 +138,67 @@ class BackgroundService : Service(), LocationListener {
 
     private fun sendGyroscopeData(x: Float, y: Float, z: Float, timestamp: Long) {
         coroutineScope.launch {
-            dataBase.gyroscopeDao().insert(
-                GyroscopeEntity(
-                    1,
-                    x,
-                    y,
-                    z,
-                    timestamp
+            try {
+                dataBase.gyroscopeDao().insert(
+                    GyroscopeEntity(
+                        1,
+                        x,
+                        y,
+                        z,
+                        timestamp
+                    )
                 )
-            )
-            giroscopioRequestRepository.sendGyroscopeRequest(
-                GyroscopeRequestDataClass(
-                    x,
-                    y,
-                    z,
-                    GetMacAddress(applicationContext).getUniqueDeviceId()
-                )
-            ).collect {
-                if (it.isSuccess) {
-                    Log.d("GyroscopeData", "Giroscópio enviado com sucesso")
-                } else {
-                    Log.e("GyroscopeData", "Erro ao enviar Giroscópio")
+                giroscopioRequestRepository.sendGyroscopeRequest(
+                    GyroscopeRequestDataClass(
+                        x,
+                        y,
+                        z,
+                        GetMacAddress(applicationContext).getUniqueDeviceId()
+                    )
+                ).catch { exception ->
+                    Log.d("GyroscopeData", "Erro ao enviar Giroscópio", exception)
+                }.collect { result ->
+                    if (result.isSuccess) {
+                        Log.d("GyroscopeData", "Giroscópio enviado com sucesso")
+                    } else {
+                        Log.d("GyroscopeData", "Falha ao enviar Giroscópio")
+                    }
                 }
+            } catch (e: Exception) {
+                Log.d("GyroscopeData", "Erro ao processar Giroscópio", e)
             }
         }
     }
 
     private fun sendLocationData(latitude: Double, longitude: Double, timestamp: Long) {
-        val localEntity = LocationEntity(
-            0,
-            latitude,
-            longitude,
-            timestamp
-        )
         coroutineScope.launch {
-            dataBase.locationDao().insert(
-                localEntity
-            )
-            val gpsRequestDataClass = GPSRequestDataClass(
-                latitude,
-                longitude,
-                GetMacAddress(applicationContext).getUniqueDeviceId()
-            )
-            gpsRequestRepository.sendGpsRequest(
-                gpsRequestDataClass
-            ).collect {
-                if (it.isSuccess) {
-                    Log.d("LocationData", "Localização enviada com sucesso")
-                } else {
-                    Log.e("LocationData", "Erro ao enviar Localização")
+            try {
+                dataBase.locationDao().insert(
+                    LocationEntity(
+                        0,
+                        latitude,
+                        longitude,
+                        timestamp
+                    )
+                )
+                val gpsRequestDataClass = GPSRequestDataClass(
+                    latitude,
+                    longitude,
+                    GetMacAddress(applicationContext).getUniqueDeviceId()
+                )
+                gpsRequestRepository.sendGpsRequest(
+                    gpsRequestDataClass
+                ).catch { exception ->
+                    Log.d("LocationData", "Erro ao enviar Localização", exception)
+                }.collect { result ->
+                    if (result.isSuccess) {
+                        Log.d("LocationData", "Localização enviada com sucesso")
+                    } else {
+                        Log.d("LocationData", "Falha ao enviar Localização")
+                    }
                 }
+            } catch (e: Exception) {
+                Log.d("LocationData", "Erro ao processar Localização", e)
             }
         }
     }
@@ -195,8 +206,7 @@ class BackgroundService : Service(), LocationListener {
     private val runnableTask = object : Runnable {
         override fun run() {
             captureSensorData()
-            handler.postDelayed(this, 10000) // 10 segundos em milissegundos
-        }
+            handler.postDelayed(this, CAPTURE_INTERVAL)  }
     }
 
     private fun captureSensorData() {
@@ -205,7 +215,6 @@ class BackgroundService : Service(), LocationListener {
             val timestamp = System.currentTimeMillis()
             sendGyroscopeData(x, y, z, timestamp)
 
-            // Adicionando logs para ver os valores no Logcat
             Log.d("GyroscopeData", "X: $x, Y: $y, Z: $z, Timestamp: $timestamp")
         }
     }
