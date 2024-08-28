@@ -12,7 +12,7 @@ import (
 )
 
 type Handle struct {
-	service service.ProcessData
+	Service service.ProcessData
 }
 
 func NewHandle(service *service.Service) *Handle {
@@ -20,7 +20,7 @@ func NewHandle(service *service.Service) *Handle {
 		return &Handle{}
 	}
 
-	return &Handle{service: service}
+	return &Handle{Service: service}
 }
 
 func (h *Handle) GyroscopeData(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +43,7 @@ func (h *Handle) GyroscopeData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.ProcessGyroscopeData(gyroData)
+	err = h.Service.ProcessGyroscopeData(gyroData)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
@@ -75,7 +75,7 @@ func (h *Handle) GPSData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.ProcessGPSData(gpsData)
+	err = h.Service.ProcessGPSData(gpsData)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
@@ -107,7 +107,7 @@ func (h *Handle) PhotoData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.service.ProcessPhoto(photo)
+	err = h.Service.ProcessPhoto(photo)
 	if err != nil {
 		log.Println(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)

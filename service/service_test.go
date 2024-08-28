@@ -1,7 +1,8 @@
-package service
+package service_test
 
 import (
 	"github/desafio/models"
+	"github/desafio/service"
 	"github/desafio/service/mocks"
 	"testing"
 
@@ -10,7 +11,7 @@ import (
 
 type ServiceTestSuite struct {
 	suite.Suite
-	service ProcessData
+	service service.ProcessData
 	repo    *mocks.Repository
 }
 
@@ -20,11 +21,11 @@ func TestServiceTestSuite(t *testing.T) {
 
 func (ts *ServiceTestSuite) SetupTest() {
 	ts.repo = &mocks.Repository{}
-	ts.service = NewService(ts.repo)
+	ts.service = service.NewService(ts.repo)
 }
 
 func (ts *ServiceTestSuite) TestProcessGyroscopeData() {
-	ts.Run("success: normal conditions", func() {
+	ts.Run("Success: all data", func() {
 		data := models.Gyroscope{
 			MacAddress: "00:00:00:00:00:00",
 			X:          123.1,
@@ -38,7 +39,7 @@ func (ts *ServiceTestSuite) TestProcessGyroscopeData() {
 }
 
 func (ts *ServiceTestSuite) TestProcessGPSData() {
-	ts.Run("success: normal conditions", func() {
+	ts.Run("Success: all data", func() {
 		data := models.GPS{
 			MacAddress: "00:00:00:00:00:00",
 			Latitude:   "-5.088889",
@@ -51,10 +52,10 @@ func (ts *ServiceTestSuite) TestProcessGPSData() {
 }
 
 func (ts *ServiceTestSuite) TestProcessPhotoData() {
-	ts.Run("success: normal conditions", func() {
+	ts.Run("Success: all data", func() {
 		data := models.Photo{
 			MacAddress: "00:00:00:00:00:00",
-			Photo:      photo,
+			Photo:      service.Photo,
 			Timestamp:  1724855500}
 		ts.repo.On("InsertPhoto", data).Return(nil)
 		err := ts.service.ProcessPhoto(data)
