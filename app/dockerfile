@@ -1,0 +1,20 @@
+FROM golang:latest AS build
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+RUN ["go", "build", "-o", "build/app"]
+RUN ["mv", "database.cfg", "build/database.cfg"]
+
+FROM golang:latest
+
+WORKDIR /usr/app
+
+COPY --from=build /usr/src/app/build .
+
+EXPOSE 8080
+
+RUN ["mkdir", "images"]
+
+CMD ["./app", "database.cfg", "./images"]

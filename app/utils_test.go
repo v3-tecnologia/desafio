@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 	"testing"
@@ -73,7 +74,7 @@ func (f *fake_db_table) persist(db *sql.DB) error {
 
 type fake_reader struct{}
 
-func (f fake_reader) Read(b []byte) (int, error) { return 0, nil }
+func (f fake_reader) Read(b []byte) (int, error) { return 0, io.EOF }
 func (f fake_reader) Close() error               { return nil }
 
 type fake_response_writer struct {

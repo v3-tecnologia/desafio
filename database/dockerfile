@@ -1,0 +1,5 @@
+FROM mysql:latest
+
+ENV MYSQL_DATABASE=v3
+
+COPY *.sql /docker-entrypoint-initdb.d/
