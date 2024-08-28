@@ -4,14 +4,25 @@ import (
 	"encoding/json"
 	"github/desafio/models"
 	"net/http"
+
+	"log"
 )
 
 func GyroscopeData(w http.ResponseWriter, r *http.Request) {
 	var gyroData models.Gyroscope
-	json.NewDecoder(r.Body).Decode(&gyroData)
+	if r.Body == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err := json.NewDecoder(r.Body).Decode(&gyroData)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
-	err := models.ValidateGyroscopeData(&gyroData)
-	if err != nil{
+	if err := models.ValidateGyroscopeData(&gyroData); err != nil {
+		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -22,10 +33,20 @@ func GyroscopeData(w http.ResponseWriter, r *http.Request) {
 
 func GPSData(w http.ResponseWriter, r *http.Request) {
 	var gpsData models.GPS
-	json.NewDecoder(r.Body).Decode(&gpsData)
 
-	err := models.ValidateGPSData(&gpsData)
-	if err != nil{
+	if r.Body == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err := json.NewDecoder(r.Body).Decode(&gpsData)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if err := models.ValidateGPSData(&gpsData); err != nil {
+		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -36,10 +57,20 @@ func GPSData(w http.ResponseWriter, r *http.Request) {
 
 func PhotoData(w http.ResponseWriter, r *http.Request) {
 	var photoData models.Photo
-	json.NewDecoder(r.Body).Decode(&photoData)
+	if r.Body == nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
-	err := models.ValidatePhotoData(&photoData)
-	if err != nil{
+	err := json.NewDecoder(r.Body).Decode(&photoData)
+	if err != nil {
+		log.Println(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if err := models.ValidatePhotoData(&photoData); err != nil {
+		log.Println(err.Error())
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}

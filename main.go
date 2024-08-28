@@ -32,8 +32,8 @@ func main() {
 
 	// run http server
 	go func() {
-		logrus.Infof("Listening and serving on port %s", port)
-		logrus.Info("api routes")
+		fmt.Printf("Listening and serving on port %s\n", port)
+		logrus.Info("API routes")
 		router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
 		path, err := route.GetPathTemplate()
 		if err != nil {
@@ -63,7 +63,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
-		logrus.Error("could not shutdown server greacefully")
+		logrus.Error("Could not shutdown server gracefully")
 
 	}
 	<-ctx.Done()
