@@ -77,15 +77,18 @@ O banco da aplicação é um mysql organizado em 4 tabelas:
 A tabela devices é definida como no sql abaixo e é utilizada para validar os IDs recebidos.
 Esta tabela também facilita possiveis expansões futuras do sistema.
 
+```
 devices (
     deviceID varchar(255) not null primary key
     );
+```
 
 A tabela gyroscope guarda as informações do giroscópio e é definida pelo sql abaixo.
 A chave primária é o identificador do dispositivo e o timestamp da captura. Portanto, dados do dispositivos deverão ser capturados com intervalos maiores que 1 segundo.
 O identificador do dispositivo faz referência a tabela devices e só são aceitos dados de dispositivos cadastrados.
 As restições de chave primária e estrangeira são replicadas para as tabelas gps e photos.
 
+```
 gyroscope (
     deviceID varchar(255) not null,
     x float(24) not null,
@@ -95,9 +98,11 @@ gyroscope (
     constraint ID primary key (deviceID, time),
     constraint gyroscope_device foreign key (deviceID) references devices(deviceID)
     );
+```
 
 A tabela gps guarda as informações do giroscópio e é definida pelo sql abaixo.
 
+```
 gps (
     deviceID varchar(255) not null,
     latitude float(24) not null,
@@ -106,12 +111,14 @@ gps (
     constraint ID primary key (deviceID, time),
     constraint gps_device foreign key (deviceID) references devices(deviceID)
     );
+```
 
 A tabela photos guarda as informações relacionadas as fotos e é definida pelo sql abaixo.
 A tabela não guarda a foto propriamente dita, mas o caminho para onde a foto está salva no servidor.
 Para evitar inconsistencias com blobs no banco de dados, as fotos são guardas em um diretório no servidor.
 O nome do arquivo utilizado para cada foto é o mesmo da chave primária da foto no banco de dados seguido do formato salvo. Ou seja, <deviceID>-<timestamp>.<formato>
 
+```
 photos (
     deviceID varchar(255) not null,
     photo varchar(255) not null,
@@ -119,6 +126,7 @@ photos (
     constraint ID primary key (deviceID, time),
     constraint photo_device foreign key (deviceID) references devices(deviceID)
     );
+```
 
 ### Executando a aplicação
 
