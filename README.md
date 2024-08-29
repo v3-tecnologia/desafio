@@ -27,6 +27,7 @@ O timestamp esta no formato unix, como um numero de 64 bits que é o numero de s
 
 Para o endpoint `POST /telemetry/gyroscope` o corpo do pacote é:
 
+```
 {
   "deviceID": string,
   "timestamp": uint,
@@ -34,24 +35,29 @@ Para o endpoint `POST /telemetry/gyroscope` o corpo do pacote é:
   "y": float,
   "z": float
 }
+```
 
 Para o endpoint `POST /telemetry/gps` o corpos do pacote é:
 
+```
 {
   "deviceID": string,
   "timestamp": uint,
   "logitude": float,
   "latitude": float
 }
+```
 
 Para o endpoint `POST /telemetry/photo` o corpo do pacote é:
 
+```
 {
   "deviceID": string,
   "timestamp": uint,
   "image": string,
   "format":string 
 }
+```
 
 Neste endpoint a imagem é recebida como o blob da imagem codificada com base64.
 O formato é em que a imagem foi codificada (jpg, png, bmp, etc).
@@ -137,9 +143,10 @@ Para executar a aplicação são necessárias 3 preparações do ambiente:
 
 #### Configuração do banco
 
-Com o mysql-server instalado, acesse o banco com o comando "mysql -u root -p";
-Depois crie um banco chamado "v3";
-Por fim execute o script "create_devices.sql" do diretório "database".
+Os passo são:
+ - Com o mysql-server instalado, acesse o banco com o comando "mysql -u root -p";
+ - Depois crie um banco chamado "v3";
+ - Por fim execute o script "create_devices.sql" do diretório "database".
 
 O script cria um usuário para a aplicação com o acesso ao banco "v3", cria todas as tabelas que ainda não foram criadas e cadastra alguns dispositivos para demostração.
 Os dispositivos são cadastrados com identificadores Device1, Device2 e Device3.
@@ -189,10 +196,12 @@ O dockerfile da aplicação está no diretório "app". A geração da imagem de 
 
 Para rodar a aplicação execute os comandos:
 
+```
 mkdir db_data
 mkdir photo_data
 docker run --name database --network="host" -v ./db_data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=root_passwd -d database_desafio
 docker run --name application -v ./photo_data:/usr/app/images --network="host" app_desafio
+```
 
 ## Nível 5
 
