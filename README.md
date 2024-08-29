@@ -171,7 +171,7 @@ A aplicação começa a rodar após a chamada do comando "go run . <nome do arqu
 
 ## Nível 3
 
-### tarefa
+### Tarefa
 
 Crie testes unitários para cada arquivo da aplicação. Para cada nova implementação a seguir, também deve-se criar os testes.
 
@@ -184,11 +184,11 @@ Com o usuário do banco criado, os testes podem ser rodados com o comando "go te
 
 ## Nível 4
 
-### tarefa
+### Tarefa
 
 Crie um _container_ em _Docker_ que contenha a sua aplicação e o banco de dados utilizado nos testes.
 
-### solução
+### Solução
 
 Foram criados dois dockerfiles um para a aplicação e um para o banco de dados.
 O dockerfile do banco está no diretório "database". Para gerar a imagem, basta rodar o comando "docker build -t database ." dentro do diretório.
@@ -205,13 +205,13 @@ docker run --name application -v ./photo_data:/usr/app/images --network="host" a
 
 ## Nível 5
 
-### tarefa
+### Tarefa
 A cada foto recebida, deve-se utilizar o AWS Rekognition para comparar se a foto enviada é reconhecida com base nas fotos anteriores enviadas.
 
 Se a foto enviada for reconhecida, retorne como resposta do `POST` um atributo que indique isso.
 
 Utilize as fotos iniciais para realizar o treinamento da IA.
 
-### solução
+### Solução
 
 Não consegui realizar está tarefa a tempo.
