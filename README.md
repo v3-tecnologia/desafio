@@ -1,158 +1,101 @@
 # Desafio Técnico V3
 
-## ❤️ Bem vindos
+Este repositório consiste em uma aplicação backend desenvolvida em GO para recebimento e salvamento de dados enviados por um equipamento através de um aplicativo. O objetivo do desafio é criar uma API que receba dados de giroscópio, GPS e fotos, validá-los e salvar essas informações em banco de dados, além de realizar testes unitários para garantir a funcionalidade da aplicação.
 
-Olá, tudo certo?
+## API de recebimeto de dados
 
-Seja bem vindo ao teste de seleção para novos desenvolvedores na V3!
+Este projeto consiste em uma API para receber e validar dados de equipamentos de telemetria, que possui endpoints para processamento e armazenamento de dados.
 
-Estamos honrados que você tenha chegado até aqui!
+## Requisitos do projeto
+- Go 1.23
+- Docker e docker-compose
+- PostgreSQL
 
-Prepare aquele ☕️ , e venha conosco codar e se divertir!
+## Estrutura dos diretórios do projeto
+- handlers: contém as funções e testes referentes às requisições.
 
-## Poxa, outro teste?
+- migration: funções de criação das tabelas do banco de dados.
 
-Nós sabemos que os processos de seleção podem ser ingratos! Você investe um tempão e no final pode não ser aprovado!
+- models: contém as structs básicas utilizadas no projeto
 
-Aqui, nós presamos pela **transparência**!
+- repository: contém as funções relacionadas ao banco de dados.
 
-Este teste tem um **propósito** bastante simples:
+- routes: configuração das rotas utilizadas pela API.
 
-> Nós queremos avaliar como você consegue transformar problemas em soluções através de código!
+- service: funções para manipulação de dados e regras do serviço.
 
-**🚨 IMPORTANTE!** Se você entende que já possui algum projeto pessoal, ou contribuição em um projeto _open-source_ que contemple conhecimentos equivalentes aos que existem neste desafio, então, basta submeter o repositório explicando essa correlação!
+## Endpoints
+### 1. Dados de giroscópio (POST /telemetry/gyroscope)
+- Recebe e valida os dados do giroscópio
+- O corpo da requisição deve conter o json:
 
-## 🚀 Bora nessa!
+  ```json
+   {
+        "macAddress": "00:A6:C7:87:F7:26",
+        "x": 123.1, 
+        "y": 213.2,
+        "z": 32.3, 
+        "timestamp": 1724855500 
+    }
 
-Este é um teste para analisarmos como você desempenha ao entender, traduzir, resolver e entregar um código que resolve um problema.
+### 2. Dados de GPS (POST /telemetry/gyroscope)
+- Recebe e valida os dados do giroscópio
+- O corpo da requisição deve conter o json:
 
-### Dicas
+  ```json
+   {
+        "macAddress": "00:A6:C7:87:F7:26",
+        "latitude": "-5.088889", 
+        "longitude": "-42.801944",
+        "timestamp": 1724855500 
+    }
 
-- Documente seu projeto;
-- Faça perguntas sobre os pontos que não ficaram claros para você;
-- Mostre a sua linha de raciocínio;
-- Trabalhe bem o seu README.md;
-  - Explique até onde implementou;
-  - Como o projeto pode ser executado;
-  - Como pode-se testar o projeto;
+### 3. Dados de foto (POST /telemetry/gyroscope)
+- Recebe e valida os dados do giroscópio
+- O corpo da requisição deve conter o json:
 
-### Como você deverá desenvolver?
+  ```json
+   {
+        "macAddress": "00:A6:C7:87:F7:26",
+        "photo": "/9j/4AAQSkZJRgABAQEBLAEsAAD ...", 
+        "timestamp": 1724855500 
+    }
 
-1. Faça um _fork_ deste projeto em seu GitHub pessoal;
-2. Realize as implementações de acordo com cada um dos níveis;
-3. Faça pequenos _commits_;
-4. Depois de sentir que fez o seu máximo, faça um PR para o repositório original.
+## Armazenamento de dados
 
-🚨 **IMPORTANTE!** Não significa que você precisa implementar **todos os níveis** para ser aprovado no processo! Faça até onde se sentir confortável.
+Os dados são armazenados em um banco de dados PostgreSQL. O banco de dados foi configurado usando o docker-compose, que executa uma instância pré-configurada com as tabelas usadas no projeto. Foi implementada uma migration para a criação das tabelas gyroscope_data, gps_data e photo.
 
-### Qual o tempo para entregar?
+## Testes
 
-Quanto antes você enviar, mais cuidado podemos ter na revisão do seu teste. Mas sabemos que o dia a dia é corrido, faça de forma que fique confortável para você!
+Os testes unitários foram realizados em funções essenciais para a aplicação, como as funções do handler e service.
 
-**Mas não desista! Envie até onde conseguir.**
+### Ferramentas de teste
+- Testing
+- [Testify](github.com/stretchr/testify)
+- [Mockery](github.com/vektra/mockery)
 
-## 💻 O Problema
+A utilização do pacote mockery foi necessário para isolar o comportamento das interfaces da comunicação de ferramentas externas, por meio da geração de mocks.
 
-Um dos nossos clientes ainda não consegue comprar o equipamento para colocar nos veículos de sua frota, mas ele quer muito utilizar a nossa solução.
+Para executar os testes, use o comando:
+``` 
+go test -v -cover ./...
+```
+No makefile criado para a execução da aplicação, existe comandos para a criação dos mocks e rodar os testes:
+``` 
+make build-mocks
+```
+``` 
+make run-tests
+```
 
-Por isso, vamos fazer um MVP bastante simples para testar se, o celular do motorista poderia ser utilizado como o dispositivo de obtenção das informações.
+## Execução da aplicação
 
-> Parece fazer sentido certo? Ele possui vários mecanismos parecidos com o equipamento que oferecemos!
+O repositório possui um makefile em que há os comandos para testes e execução da aplicação. Isso foi feito para facilitar a utilização dos comandos. Para a aplicação, comando é:
+``` 
+make run-app
+```
+Este comando executa os contêineres configurados no arquivo docker-compose.yml
 
-Sua missão ajudar na criação deste MVP para que possamos testar as frotas deste cliente.
+## Considerações finais
 
-Essa versão do produto será bastante simplificada. Queremos apenas criar as estruturas para obter algumas informações do seu dispositivo (Android) e armazená-la em um Banco de Dados.
-
-Essas informações, depois de armazenadas devem estar disponíveis através de uma API para que este cliente integre com um Front-end já existente!
-
-### Quais serão as informações que deverão ser coletadas?
-
-1. **Dados de Giroscópio** - Estes dados devem retornar 3 valores (`x`, `y`, `z`). E devem ser armazenados juntamente com o `TIMESTAMP` do momento em que foi coletado;
-2. **Dados de GPS** - Estes dados devem retornar 2 valores (`latitude` , `longitude`). E também devem ser armazenados juntamente com o `TIMESTAMP` do momento em que foram coletados;
-3. **Uma foto** - Obter uma foto de uma das câmeras do dispositivo e enviá-la também junto com o `TIMESTAMP` em que foi coletada;
-
-**🚨 É importante que se envie junto à essas informações um campo adicional, contendo uma identificação única do dispositivo, que pode ser seu endereço MAC.**
-
-### Funcionamento
-
-A aplicação Android deverá rodar em Background, e coletar e enviar as informações descritas a cada 10 segundos.
-
-### Qual parte do desafio devo realizar?
-
-Você deve realizar somente o desafio para a vaga que se candidatou.
-
-Caso tenha sido a vaga de Android Embarcado, então resolva somente esta sessão.
-
-Caso tenha sido a vaga de Backend, então resolva somente esta sessão.
-
----
-
-# Desafio Android Embarcado
-
-Você deverá criar uma aplicação que deverá coletar os dados e enviá-los para o servidor Back-end;
-
-Lembre-se que essa é uma aplicação Android nativa, e não deve possuir qualquer tipo de interface com o usuário.
-
-## Nível 1
-
-Deve-se coletar os dados de acordo com as especificações, e armazená-los em um banco de dados local;
-
-## Nível 2
-
-Deve-se criar testes unitários para garantir o funcionamento das estruturas criadas;
-
-## Nível 3
-
-Deve-se enviar os dados obtidos a cada 10 segundos para uma API com a seguinte rota
-
-- `POST /telemetry/gyroscope` - Dados do giroscópio;
-- `POST /telemetry/gps` - Dados do GPS;
-- `POST /telemetry/photo` - Dados da Foto;
-
-## Nível 4
-
-Deve-se realizar um _crop_ da foto obtida para que se consiga extrair somente um rosto. Caso a foto não tenha um rosto, ela não deverá ser enviada.
-
-## Nível 5
-
-Faça com que cada uma das requisições ocorra de forma paralela, e não de forma síncrona;
-
-# Desafio Backend
-
-Você deverá criar uma aplicação que irá receber os dados enviados pelo aplicativo.
-
-Lembre-se essa aplicação precisa ser em GO!
-
-## Nível 1
-
-Deve-se criar uma API que receba requisições de acordo com os endpoints:
-
-- `POST /telemetry/gyroscope` - Dados do giroscópio;
-- `POST /telemetry/gps` - Dados do GPS;
-- `POST /telemetry/photo` - Dados da Foto;
-
-Deve-se garantir que os dados recebidos estão preenchidos corretamente.
-
-Caso algum dado esteja faltando, então retorne uma mensagem de erro e um Status 400.
-
-## Nível 2
-
-Salve cada uma das informações em um banco de dados a sua escolha.
-
-Salve estes dados de forma identificável e consistente;
-
-## Nível 3
-
-Crie testes unitários para cada arquivo da aplicação. Para cada nova implementação a seguir, também deve-se criar os testes.
-
-## Nível 4
-
-Crie um _container_ em _Docker_ que contenha a sua aplicação e o banco de dados utilizado nos testes.
-
-## Nível 5
-
-A cada foto recebida, deve-se utilizar o AWS Rekognition para comparar se a foto enviada é reconhecida com base nas fotos anteriores enviadas.
-
-Se a foto enviada for reconhecida, retorne como resposta do `POST` um atributo que indique isso.
-
-Utilize as fotos iniciais para realizar o treinamento da IA.
+O projeto foi desenvolvido a partir das diretrizes propostas no desafio. Foram realizadas todas as atividades até o nível 4. Não foi possível realizar o nível 5, pois para atender o prazo estabelecido, não houve tempo hábil para completar o que foi proposto nesse nível.

@@ -7,4 +7,4 @@ run-tests:
 	go test -v -cover ./...
 
 run-app:
-	@sudo docker compose up --build
+	@sudo docker-compose up --build
