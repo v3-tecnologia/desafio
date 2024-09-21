@@ -66,19 +66,17 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
-
-//    implementation(libs.androidx.hilt.lifecycle.viewmodel)
-//    implementation(libs.androidx.navigation.compose)
-
+    //Dependency Injection
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     ksp(libs.androidx.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
-
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.extensions)
 
+    //Sensors Lib
+    implementation(libs.composesensors)
 
     //Testing
     testImplementation(libs.junit)

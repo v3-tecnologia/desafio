@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.2"
+composesensors = "1.1.2"
 converterGson = "2.11.0"
 fragmentKtx = "1.2.5"
 hiltAndroid = "2.51.1"
@@ -14,7 +15,6 @@ activityCompose = "1.9.2"
 composeBom = "2024.09.02"
 lifecycleViewmodel = "2.2.0"
 materialIconsExtended = "1.7.2"
-navigationCompose = "2.8.1"
 retrofit = "2.11.0"
 ksp = "2.0.0-1.0.23"
 hilt = "2.51.1"
@@ -27,6 +27,7 @@ androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref =
 androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "lifecycleViewmodel" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleViewmodel" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+composesensors = { module = "com.mutualmobile:composesensors", version.ref = "composesensors" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

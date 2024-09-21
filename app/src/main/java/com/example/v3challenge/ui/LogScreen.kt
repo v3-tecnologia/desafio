@@ -1,8 +1,6 @@
 package com.example.v3challenge.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,14 +22,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.v3challenge.viewModel.LogsViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.v3challenge.viewModel.LogsViewModel
+import com.mutualmobile.composesensors.rememberGyroscopeSensorState
 
 @Composable
 fun LogScreen(viewModel: LogsViewModel = hiltViewModel()) {
     val log = viewModel.log
     val screenIsOn: MutableState<Boolean> = remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
+
+    val sensorValue = rememberGyroscopeSensorState()
+    viewModel.setGyroData(sensorValue)
 
     LaunchedEffect(key1 = true) {
         viewModel.startTimer()
