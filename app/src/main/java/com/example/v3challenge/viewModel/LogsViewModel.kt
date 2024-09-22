@@ -18,6 +18,7 @@ import com.example.v3challenge.localData.PrefsInterface
 import com.example.v3challenge.localData.PrefsRepository
 import com.example.v3challenge.model.Gps
 import com.example.v3challenge.model.Gyro
+import com.example.v3challenge.model.Photo
 import com.example.v3challenge.network.ApiSettings.TEN_SECONDS
 import com.example.v3challenge.network.ApiSettings.moshi
 import com.example.v3challenge.repository.LogsRepository
@@ -42,13 +43,13 @@ class LogsViewModel @Inject constructor(
 ) : ViewModel(), DefaultLifecycleObserver {
     private val context: Context by lazy { application.applicationContext }
     private val timer = Timer()
-    private var faceDetected: Boolean = true
     private var currentGyroData: MutableState<Gyro> = mutableStateOf(Gyro())
     private var currentGpsData: MutableState<Gps> = mutableStateOf(Gps())
+    private var currentPhotoData: MutableState<Photo> = mutableStateOf(Photo())
     private var isFaceDetectedNow: MutableState<Boolean> = mutableStateOf(false)
+    private val setAdapter: JsonAdapter<Set<*>>? = moshi.adapter(Set::class.java)
     private var fusedLocationProviderClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
-    private val setAdapter: JsonAdapter<Set<*>>? = moshi.adapter(Set::class.java)
 
     private val gyroPrefs: PrefsInterface by lazy {
         PrefsRepository(context, "gyro-data")
@@ -56,7 +57,6 @@ class LogsViewModel @Inject constructor(
     private val gpsPrefs: PrefsInterface by lazy {
         PrefsRepository(context, "gps-data")
     }
-
     private val photoPrefs: PrefsInterface by lazy {
         PrefsRepository(context, "photo-data")
     }
@@ -80,15 +80,25 @@ class LogsViewModel @Inject constructor(
 
     fun startTimer() {
         timer.schedule(0L, TEN_SECONDS) {
-            if (faceDetected) {
+            if (isFaceDetectedNow.value) {
                 saveAndSendGyroData()
                 saveAndSendGpsData()
                 saveAndSendPhotoData()
-                log.value += ""
+                log.value += "\nFace detected!"
             } else {
                 log.value += "\nNo face detected!"
             }
         }
+    }
+
+    private fun hasNoLocationPermissions(): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
     }
 
     private fun saveGyroDataLocally() {
@@ -114,9 +124,8 @@ class LogsViewModel @Inject constructor(
                     currentGpsData.value.timestamp = System.currentTimeMillis()
                 }
             }
-            .addOnFailureListener { exception ->
+            .addOnFailureListener { _ ->
                 // If an error occurs, invoke the failure callback with the exception
-                // TODO
             }
 
         val gpsData = gpsPrefs.getPref()
@@ -127,12 +136,20 @@ class LogsViewModel @Inject constructor(
         } else {
             gyroPrefs.setPref(setAdapter?.toJson(arraySetOf(currentGpsData.value)).toString())
         }
-        Log.i("New GPS saved:", currentGpsData.value.toString())
+//        Log.i("New GPS saved:", currentGpsData.value.toString())
     }
 
-//    private fun savePhotoDataLocally() {
-//
-//    }
+    private fun savePhotoDataLocally() {
+        val photoData = photoPrefs.getPref()
+        if (photoData != null) {
+            val photoSet: LinkedHashSet<Photo> =
+                setAdapter?.fromJson(photoData) as LinkedHashSet<Photo>
+            photoSet.add(currentPhotoData.value)
+            photoPrefs.setPref(setAdapter.toJson(photoSet).toString())
+        } else {
+            photoPrefs.setPref(setAdapter?.toJson(arraySetOf(currentPhotoData.value)).toString())
+        }
+    }
 
     private fun saveAndSendGyroData() {
         saveGyroDataLocally()
@@ -142,7 +159,7 @@ class LogsViewModel @Inject constructor(
     }
 
     private fun saveAndSendGpsData() {
-        if (hasNotLocationPermissions()) return
+        if (hasNoLocationPermissions()) return
 
         saveGpsDataLocally()
         CoroutineScope(Dispatchers.Main).launch {
@@ -151,18 +168,8 @@ class LogsViewModel @Inject constructor(
         }
     }
 
-    private fun hasNotLocationPermissions(): Boolean {
-        return ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED
-    }
-
     private fun saveAndSendPhotoData() {
-//        savePhotoDataLocally()
+        savePhotoDataLocally()
         CoroutineScope(Dispatchers.Main).launch {
             val result = ""
             logsRepository.sendPhoto(result)

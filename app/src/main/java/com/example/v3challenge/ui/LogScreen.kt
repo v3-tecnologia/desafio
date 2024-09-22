@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.v3challenge.utils.CameraManager
 import com.example.v3challenge.viewModel.LogsViewModel
 import com.mutualmobile.composesensors.rememberGyroscopeSensorState
@@ -64,7 +63,9 @@ fun LogScreen(viewModel: LogsViewModel = hiltViewModel()) {
             if (screenIsOn.value) {
                 Column(modifier = Modifier.fillMaxSize().verticalScroll(scrollState)) {
                     Text(
-                        text = log.value
+                        text = log.value,
+                        color = Color.Black,
+                        fontSize = 14.sp
                     )
                 }
             } else {

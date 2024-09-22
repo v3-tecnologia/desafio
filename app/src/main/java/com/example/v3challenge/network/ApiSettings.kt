@@ -7,7 +7,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 object ApiSettings {
 
     const val BASE_URL = "https://jsonplaceholder.typicode.com/"
-    const val TEN_SECONDS = 1000L
+    const val TEN_SECONDS = 2000L
 
     val moshi: Moshi =  Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 

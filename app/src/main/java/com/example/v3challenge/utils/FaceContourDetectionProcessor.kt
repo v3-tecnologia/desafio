@@ -36,12 +36,12 @@ class FaceContourDetectionProcessor(
         results: List<Face>,
         image: Image,
     ) {
-       if (results.isEmpty()){
-           onSuccessCallback(FaceStatus.NO_FACE, null)
-           Log.e(TAG, "Face Detector failed.")
-       }
+        if (results.isNotEmpty()) {
+            onSuccessCallback(FaceStatus.VALID, image)
+        } else {
+            onSuccessCallback(FaceStatus.NO_FACE, null)
+        }
     }
-
 
     override fun onFailure(e: Exception) {
         Log.e(TAG, "Face Detector failed. $e")
