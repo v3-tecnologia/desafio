@@ -40,6 +40,8 @@ fun LogScreen(viewModel: LogsViewModel = hiltViewModel()) {
         screenIsOn.value = true
     }
 
+    RequestLocationPermission({},{},{})
+
     @Composable
     fun screenContent() {
         Box(

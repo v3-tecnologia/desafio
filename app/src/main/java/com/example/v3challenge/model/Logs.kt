@@ -12,8 +12,8 @@ data class Gyro(
 
 data class Gps(
     var timestamp: Long? = null,
-    var lat: String = "",
-    var lon: String = ""
+    var lat: Double? = null,
+    var lon: Double? = null
 )
 
 data class Photo(

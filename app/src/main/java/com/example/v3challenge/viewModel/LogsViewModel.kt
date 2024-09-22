@@ -1,25 +1,29 @@
 package com.example.v3challenge.viewModel
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
-import androidx.collection.ArraySet
 import androidx.collection.arraySetOf
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import com.example.v3challenge.localData.PrefsInterface
 import com.example.v3challenge.localData.PrefsRepository
+import com.example.v3challenge.model.Gps
 import com.example.v3challenge.model.Gyro
 import com.example.v3challenge.network.ApiSettings.TEN_SECONDS
 import com.example.v3challenge.network.ApiSettings.moshi
 import com.example.v3challenge.repository.LogsRepository
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.mutualmobile.composesensors.GyroscopeSensorState
 import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,8 +42,9 @@ class LogsViewModel @Inject constructor(
     private val timer = Timer()
     private var faceDetected: Boolean = true
     private var currentGyroData: MutableState<Gyro> = mutableStateOf(Gyro())
+    private var currentGpsData: MutableState<Gps> = mutableStateOf(Gps())
 
-    private val gyroAdapter: JsonAdapter<Set<*>>? = moshi.adapter(Set::class.java)
+    private val setAdapter: JsonAdapter<Set<*>>? = moshi.adapter(Set::class.java)
 
     private val gyroPrefs: PrefsInterface by lazy {
         PrefsRepository(context, "gyro-data")
@@ -53,18 +58,9 @@ class LogsViewModel @Inject constructor(
 
     var log: MutableState<String> = mutableStateOf("")
 
-    private fun saveGyroDataLocally() {
-        val gyroData = gyroPrefs.getPref()
-        if (gyroData != null) {
-            val gyroSet: LinkedHashSet<Gyro> = gyroAdapter?.fromJson(gyroData) as LinkedHashSet<Gyro>
-            gyroSet.add(currentGyroData.value)
-            gyroPrefs.setPref(gyroAdapter.toJson(gyroSet).toString())
-        } else {
-            gyroPrefs.setPref(gyroAdapter?.toJson(arraySetOf(currentGyroData.value)).toString())
-        }
-        Log.i("New gyro saved:", currentGyroData.value.toString())
-    }
+    private var fusedLocationProviderClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
+    //Start Functions
     fun startTimer() {
         timer.schedule(0L, TEN_SECONDS) {
             if(faceDetected) {
@@ -78,22 +74,75 @@ class LogsViewModel @Inject constructor(
         }
     }
 
+    private fun saveGyroDataLocally() {
+        val gyroData = gyroPrefs.getPref()
+        if (gyroData != null) {
+            val gyroSet: LinkedHashSet<Gyro> = setAdapter?.fromJson(gyroData) as LinkedHashSet<Gyro>
+            gyroSet.add(currentGyroData.value)
+            gyroPrefs.setPref(setAdapter.toJson(gyroSet).toString())
+        } else {
+            gyroPrefs.setPref(setAdapter?.toJson(arraySetOf(currentGyroData.value)).toString())
+        }
+//        Log.i("New gyro saved:", currentGyroData.value.toString())
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun saveGpsDataLocally() {
+
+        // Retrieve the last known location
+        fusedLocationProviderClient.lastLocation
+            .addOnSuccessListener { location ->
+                location?.let {
+                    currentGpsData.value.lat = it.latitude
+                    currentGpsData.value.lon = it.longitude
+                    currentGpsData.value.timestamp = System.currentTimeMillis()
+                }
+            }
+            .addOnFailureListener { exception ->
+                // If an error occurs, invoke the failure callback with the exception
+                // TODO
+            }
+
+        val gpsData = gpsPrefs.getPref()
+        if (gpsData != null) {
+            val gpsSet: LinkedHashSet<Gps> = setAdapter?.fromJson(gpsData) as LinkedHashSet<Gps>
+            gpsSet.add(currentGpsData.value)
+            gyroPrefs.setPref(setAdapter.toJson(gpsSet).toString())
+        } else {
+            gyroPrefs.setPref(setAdapter?.toJson(arraySetOf(currentGpsData.value)).toString())
+        }
+        Log.i("New GPS saved:", currentGpsData.value.toString())
+    }
+
     private fun saveAndSendGyroData() {
         saveGyroDataLocally()
         CoroutineScope(Dispatchers.Main).launch {
-            val result = "X: ${currentGyroData.value.x}\nY: ${currentGyroData.value.y}\nZ: ${currentGyroData.value.z}"
-            logsRepository.sendGyro(result)
+            logsRepository.sendGyro(currentGyroData.value.toString())
         }
     }
 
     private fun saveAndSendGpsData() {
+        if (hasNotLocationPermissions()) return
+
+        saveGpsDataLocally()
         CoroutineScope(Dispatchers.Main).launch {
             val result = ""
             logsRepository.sendGps(result)
         }
     }
 
+    private fun hasNotLocationPermissions(): Boolean {
+        return ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+    }
+
     private fun saveAndSendPhotoData() {
+        //savePhotoDataLocally()
         CoroutineScope(Dispatchers.Main).launch {
             val result = ""
             logsRepository.sendPhoto(result)
