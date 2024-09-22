@@ -61,8 +61,7 @@ class LogsViewModel @Inject constructor(
         PrefsRepository(context, "photo-data")
     }
 
-    var log: MutableState<String> = mutableStateOf("")
-
+    val logs: MutableList<String> = mutableListOf()
 
     //Start Functions
     internal fun processPicture(faceStatus: FaceStatus, image: Image?) {
@@ -84,9 +83,9 @@ class LogsViewModel @Inject constructor(
                 saveAndSendGyroData()
                 saveAndSendGpsData()
                 saveAndSendPhotoData()
-                log.value += "\nFace detected!"
+                logs.add("Face detected!")
             } else {
-                log.value += "\nNo face detected!"
+                logs.add("No face detected!")
             }
         }
     }

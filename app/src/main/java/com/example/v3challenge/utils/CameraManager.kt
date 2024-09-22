@@ -8,6 +8,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.compose.runtime.MutableState
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import java.util.concurrent.ExecutorService
@@ -16,12 +17,12 @@ import java.util.concurrent.Executors
 class CameraManager(
     private val context: Context,
     private val lifecycleOwner: LifecycleOwner,
-    private val onSuccessCallback: ((FaceStatus, Image?) -> Unit)
+    private val cameraSelectorOption: MutableState<Int>,
+    private val onSuccessCallback: (FaceStatus, Image?) -> Unit
 ) {
     private var preview: Preview? = null
     private var camera: Camera? = null
     private lateinit var cameraExecutor: ExecutorService
-    private var cameraSelectorOption = CameraSelector.LENS_FACING_FRONT
     private var cameraProvider: ProcessCameraProvider? = null
 
     private var imageAnalyzer: ImageAnalysis? = null
@@ -51,7 +52,7 @@ class CameraManager(
                     }
 
                 val cameraSelector = CameraSelector.Builder()
-                    .requireLensFacing(cameraSelectorOption)
+                    .requireLensFacing(cameraSelectorOption.value)
                     .build()
 
                 setCameraConfig(cameraProvider, cameraSelector)
@@ -83,9 +84,12 @@ class CameraManager(
 
     fun changeCameraSelector() {
         cameraProvider?.unbindAll()
-        cameraSelectorOption =
-            if (cameraSelectorOption == CameraSelector.LENS_FACING_BACK) CameraSelector.LENS_FACING_FRONT
-            else CameraSelector.LENS_FACING_BACK
+        cameraSelectorOption.value =
+            if (cameraSelectorOption.value == CameraSelector.LENS_FACING_BACK) {
+                CameraSelector.LENS_FACING_FRONT
+            } else {
+                CameraSelector.LENS_FACING_BACK
+            }
         startCamera()
     }
 
