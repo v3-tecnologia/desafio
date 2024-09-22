@@ -11,7 +11,8 @@ import com.google.mlkit.vision.face.FaceDetectorOptions
 import java.io.IOException
 
 class FaceContourDetectionProcessor(
-    private val onSuccessCallback: (FaceStatus, Bitmap?, Long?) -> Unit) :
+    private val onSuccessCallback: (FaceStatus, Bitmap?, Long?) -> Unit
+) :
     BaseImageAnalyzer<List<Face>>() {
 
     private val realTimeOpts = FaceDetectorOptions.Builder()

@@ -9,7 +9,7 @@ object ApiSettings {
     const val BASE_URL = "https://jsonplaceholder.typicode.com/"
     const val TEN_SECONDS = 1000L
 
-    val moshi: Moshi =  Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+    val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
     internal fun moshiFactory(): MoshiConverterFactory {
         return MoshiConverterFactory.create(moshi)

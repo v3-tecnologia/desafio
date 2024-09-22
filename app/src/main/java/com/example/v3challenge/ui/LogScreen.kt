@@ -4,7 +4,6 @@ import androidx.camera.core.CameraSelector
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -69,6 +68,9 @@ fun LogScreen(viewModel: LogsViewModel = hiltViewModel()) {
         }
     }
 
+    //TODO
+    // Should add permission fallbacks in case some permission fails.
+    // Ideally, each type of permission should be treated individually.
     RequestPermissions({}, {}, {})
 
     @Composable
@@ -130,11 +132,10 @@ fun LogScreen(viewModel: LogsViewModel = hiltViewModel()) {
         Button(
             modifier = modifier,
             onClick = {
-                viewModel.logs.clear()
+                viewModel.logs.removeAll { true }
             }) {
             Icon(Icons.Default.DeleteSweep, "")
         }
-
     }
 
     //Main UI
@@ -170,5 +171,3 @@ fun LogScreen(viewModel: LogsViewModel = hiltViewModel()) {
     }
 
 }
-
-

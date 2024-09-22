@@ -7,16 +7,19 @@ interface LogsInterface {
 
     @POST("/telemetry/gyroscope")
     suspend fun sendGyro(
-        @Header("gyro") gyro: String
+        @Header("gyro") gyro: String,
+        @Header("mac") macAddress: String,
     ): String
 
     @POST("/telemetry/gps")
     suspend fun sendGps(
-        @Header("gps") gps: String
+        @Header("gps") gps: String,
+        @Header("mac") macAddress: String,
     ): String
 
     @POST("/telemetry/photo")
     suspend fun sendPhoto(
-        @Header("photo") photo: String
+        @Header("photo") photo: String,
+        @Header("mac") macAddress: String,
     ): String
 }
