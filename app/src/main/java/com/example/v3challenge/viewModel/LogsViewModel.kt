@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.media.Image
 import android.util.Log
 import androidx.collection.arraySetOf
@@ -64,19 +65,6 @@ class LogsViewModel @Inject constructor(
     val logs: MutableList<String> = mutableListOf()
 
     //Start Functions
-    internal fun processPicture(faceStatus: FaceStatus, image: Image?) {
-        Log.e("facestatus", "This is it ${faceStatus.name}")
-        when (faceStatus) {
-            FaceStatus.VALID -> {
-                isFaceDetectedNow.value = true
-            }
-
-            else -> {
-                isFaceDetectedNow.value = false
-            }
-        }
-    }
-
     fun startTimer() {
         timer.schedule(0L, TEN_SECONDS) {
             if (isFaceDetectedNow.value) {
@@ -162,7 +150,7 @@ class LogsViewModel @Inject constructor(
 
         saveGpsDataLocally()
         CoroutineScope(Dispatchers.Main).launch {
-            val result = ""
+            val result = currentGpsData.value.toString()
             logsRepository.sendGps(result)
         }
     }
@@ -170,7 +158,7 @@ class LogsViewModel @Inject constructor(
     private fun saveAndSendPhotoData() {
         savePhotoDataLocally()
         CoroutineScope(Dispatchers.Main).launch {
-            val result = ""
+            val result = currentPhotoData.value.toString()
             logsRepository.sendPhoto(result)
         }
     }
@@ -186,6 +174,21 @@ class LogsViewModel @Inject constructor(
         currentGyroData.value.y = event.yRotation.toString()
         currentGyroData.value.z = event.zRotation.toString()
         currentGyroData.value.timestamp = System.currentTimeMillis()
+    }
+
+    internal fun processPicture(faceStatus: FaceStatus, bitmap: Bitmap?, timestamp: Long?) {
+        Log.e("Face status", "This is ${faceStatus.name}")
+        when (faceStatus) {
+            FaceStatus.VALID -> {
+                currentPhotoData.value.photo = bitmap.toString()
+                currentPhotoData.value.timestamp = timestamp
+                isFaceDetectedNow.value = true
+            }
+
+            else -> {
+                isFaceDetectedNow.value = false
+            }
+        }
     }
 
 }

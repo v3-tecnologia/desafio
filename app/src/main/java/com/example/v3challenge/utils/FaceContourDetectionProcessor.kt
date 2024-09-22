@@ -1,5 +1,6 @@
 package com.example.v3challenge.utils
 
+import android.graphics.Bitmap
 import android.media.Image
 import android.util.Log
 import com.google.android.gms.tasks.Task
@@ -10,7 +11,7 @@ import com.google.mlkit.vision.face.FaceDetectorOptions
 import java.io.IOException
 
 class FaceContourDetectionProcessor(
-    private val onSuccessCallback: (FaceStatus, Image?) -> Unit) :
+    private val onSuccessCallback: (FaceStatus, Bitmap?, Long?) -> Unit) :
     BaseImageAnalyzer<List<Face>>() {
 
     private val realTimeOpts = FaceDetectorOptions.Builder()
@@ -34,18 +35,19 @@ class FaceContourDetectionProcessor(
 
     override fun onSuccess(
         results: List<Face>,
-        image: Image,
+        image: Bitmap?,
+        timestamp: Long?
     ) {
         if (results.isNotEmpty()) {
-            onSuccessCallback(FaceStatus.VALID, image)
+            onSuccessCallback(FaceStatus.VALID, image, timestamp)
         } else {
-            onSuccessCallback(FaceStatus.NO_FACE, null)
+            onSuccessCallback(FaceStatus.NO_FACE, null, null)
         }
     }
 
     override fun onFailure(e: Exception) {
         Log.e(TAG, "Face Detector failed. $e")
-        onSuccessCallback(FaceStatus.NO_FACE, null)
+        onSuccessCallback(FaceStatus.NO_FACE, null, null)
     }
 
     companion object {

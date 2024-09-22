@@ -1,6 +1,7 @@
 package com.example.v3challenge.utils
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.media.Image
 import android.util.Log
 import androidx.camera.core.Camera
@@ -18,7 +19,7 @@ class CameraManager(
     private val context: Context,
     private val lifecycleOwner: LifecycleOwner,
     private val cameraSelectorOption: MutableState<Int>,
-    private val onSuccessCallback: (FaceStatus, Image?) -> Unit
+    private val onSuccessCallback: (FaceStatus, Bitmap?, Long?) -> Unit
 ) {
     private var preview: Preview? = null
     private var camera: Camera? = null

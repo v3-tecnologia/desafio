@@ -1,11 +1,14 @@
 package com.example.v3challenge.utils
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.Image
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.common.internal.ImageConvertUtils
 
 abstract class BaseImageAnalyzer<T> : ImageAnalysis.Analyzer {
 
@@ -13,9 +16,15 @@ abstract class BaseImageAnalyzer<T> : ImageAnalysis.Analyzer {
     override fun analyze(imageProxy: ImageProxy) {
         val mediaImage = imageProxy.image
         mediaImage?.let { image ->
-            detectInImage(InputImage.fromMediaImage(image, imageProxy.imageInfo.rotationDegrees))
+            val inputImage = InputImage.fromMediaImage(image, imageProxy.imageInfo.rotationDegrees)
+            detectInImage(inputImage)
                 .addOnSuccessListener { results ->
-                    onSuccess(results, image)
+                    //TODO
+                    // Crop the image right here, before sending it through callback
+                    // with image.cropRect
+                    val bitmap = ImageConvertUtils.getInstance().getUpRightBitmap(inputImage)
+
+                    onSuccess(results, bitmap, image.timestamp)
                     imageProxy.close()
                 }
                 .addOnFailureListener {
@@ -31,7 +40,8 @@ abstract class BaseImageAnalyzer<T> : ImageAnalysis.Analyzer {
 
     protected abstract fun onSuccess(
         results: T,
-        image: Image,
+        image: Bitmap?,
+        timestamp: Long?
     )
 
     protected abstract fun onFailure(e: Exception)
