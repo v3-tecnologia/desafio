@@ -20,22 +20,35 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.v3challenge.utils.CameraManager
 import com.example.v3challenge.viewModel.LogsViewModel
 import com.mutualmobile.composesensors.rememberGyroscopeSensorState
 
 @Composable
 fun LogScreen(viewModel: LogsViewModel = hiltViewModel()) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val log = viewModel.log
     val screenIsOn: MutableState<Boolean> = remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
-
     val sensorValue = rememberGyroscopeSensorState()
+
+    val cameraManager = CameraManager(
+        context,
+        lifecycleOwner,
+        viewModel::processPicture
+    )
+
     viewModel.setGyroData(sensorValue)
 
     LaunchedEffect(key1 = true) {
+        cameraManager.startCamera()
         viewModel.startTimer()
         screenIsOn.value = true
     }

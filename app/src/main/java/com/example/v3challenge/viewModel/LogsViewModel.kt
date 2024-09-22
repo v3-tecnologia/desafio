@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.Image
 import android.util.Log
 import androidx.collection.arraySetOf
 import androidx.compose.runtime.MutableState
@@ -20,6 +21,7 @@ import com.example.v3challenge.model.Gyro
 import com.example.v3challenge.network.ApiSettings.TEN_SECONDS
 import com.example.v3challenge.network.ApiSettings.moshi
 import com.example.v3challenge.repository.LogsRepository
+import com.example.v3challenge.utils.FaceStatus
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.mutualmobile.composesensors.GyroscopeSensorState
@@ -43,7 +45,9 @@ class LogsViewModel @Inject constructor(
     private var faceDetected: Boolean = true
     private var currentGyroData: MutableState<Gyro> = mutableStateOf(Gyro())
     private var currentGpsData: MutableState<Gps> = mutableStateOf(Gps())
-
+    private var isFaceDetectedNow: MutableState<Boolean> = mutableStateOf(false)
+    private var fusedLocationProviderClient: FusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(context)
     private val setAdapter: JsonAdapter<Set<*>>? = moshi.adapter(Set::class.java)
 
     private val gyroPrefs: PrefsInterface by lazy {
@@ -52,18 +56,31 @@ class LogsViewModel @Inject constructor(
     private val gpsPrefs: PrefsInterface by lazy {
         PrefsRepository(context, "gps-data")
     }
+
     private val photoPrefs: PrefsInterface by lazy {
         PrefsRepository(context, "photo-data")
     }
 
     var log: MutableState<String> = mutableStateOf("")
 
-    private var fusedLocationProviderClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
     //Start Functions
+    internal fun processPicture(faceStatus: FaceStatus, image: Image?) {
+        Log.e("facestatus", "This is it ${faceStatus.name}")
+        when (faceStatus) {
+            FaceStatus.VALID -> {
+                isFaceDetectedNow.value = true
+            }
+
+            else -> {
+                isFaceDetectedNow.value = false
+            }
+        }
+    }
+
     fun startTimer() {
         timer.schedule(0L, TEN_SECONDS) {
-            if(faceDetected) {
+            if (faceDetected) {
                 saveAndSendGyroData()
                 saveAndSendGpsData()
                 saveAndSendPhotoData()
@@ -88,7 +105,6 @@ class LogsViewModel @Inject constructor(
 
     @SuppressLint("MissingPermission")
     private fun saveGpsDataLocally() {
-
         // Retrieve the last known location
         fusedLocationProviderClient.lastLocation
             .addOnSuccessListener { location ->
@@ -113,6 +129,10 @@ class LogsViewModel @Inject constructor(
         }
         Log.i("New GPS saved:", currentGpsData.value.toString())
     }
+
+//    private fun savePhotoDataLocally() {
+//
+//    }
 
     private fun saveAndSendGyroData() {
         saveGyroDataLocally()
@@ -142,12 +162,13 @@ class LogsViewModel @Inject constructor(
     }
 
     private fun saveAndSendPhotoData() {
-        //savePhotoDataLocally()
+//        savePhotoDataLocally()
         CoroutineScope(Dispatchers.Main).launch {
             val result = ""
             logsRepository.sendPhoto(result)
         }
     }
+
 
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
