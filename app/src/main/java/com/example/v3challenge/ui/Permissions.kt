@@ -9,7 +9,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun RequestLocationPermission(
+fun RequestPermissions(
     onPermissionGranted: () -> Unit,
     onPermissionDenied: () -> Unit,
     onPermissionsRevoked: () -> Unit
@@ -19,6 +19,7 @@ fun RequestLocationPermission(
         listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.CAMERA
         )
     )
 

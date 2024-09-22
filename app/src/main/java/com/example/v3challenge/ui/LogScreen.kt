@@ -40,7 +40,7 @@ fun LogScreen(viewModel: LogsViewModel = hiltViewModel()) {
         screenIsOn.value = true
     }
 
-    RequestLocationPermission({},{},{})
+    RequestPermissions({},{},{})
 
     @Composable
     fun screenContent() {
@@ -68,12 +68,7 @@ fun LogScreen(viewModel: LogsViewModel = hiltViewModel()) {
     @Composable
     fun onOffButton(modifier: Modifier) {
         FloatingActionButton(modifier = modifier, onClick = { screenIsOn.value = !screenIsOn.value }) {
-            if(screenIsOn.value) {
-                Icon(Icons.Default.PowerSettingsNew, "")
-            } else {
-                Icon(Icons.Default.PowerSettingsNew, "")
-            }
-
+            Icon(Icons.Default.PowerSettingsNew, "")
         }
     }
 
