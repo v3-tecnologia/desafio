@@ -64,7 +64,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.retrofit)
-    implementation(libs.converter.gson)
+    implementation(libs.retrofit2.converter.moshi)
+    implementation (libs.moshi.kotlin)
+    implementation (libs.moshi.adapters)
+    ksp(libs.moshi.kotlin.codegen)
 
     //Dependency Injection
     implementation(libs.hilt.android)
