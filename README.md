@@ -1,158 +1,47 @@
 # Desafio Técnico V3
 
-## ❤️ Bem vindos
+## Sobre a implemetação
 
-Olá, tudo certo?
+A descrição original do desafio pode ser encontrada aqui:
+https://github.com/v3-tecnologia/desafio/blob/main/README.md
 
-Seja bem vindo ao teste de seleção para novos desenvolvedores na V3!
 
-Estamos honrados que você tenha chegado até aqui!
+Para esse projeto, foi criado um aplicativo escrito em Kotlin, com a biblioteca Jetpack Compose e arquitetura MVVM.
 
-Prepare aquele ☕️ , e venha conosco codar e se divertir!
+O projeto está apontando para o Java 18, então é necessário ter essa versão instalada e configurada, tanto nas variáveis de ambiente, como no Android Studio, ou fazer o projeto apontar para outra versão do compilador.
 
-## Poxa, outro teste?
 
-Nós sabemos que os processos de seleção podem ser ingratos! Você investe um tempão e no final pode não ser aprovado!
+# Foram utilizados:
 
-Aqui, nós presamos pela **transparência**!
+- Dagger Hilt para fazer a injeção de dependências.
+- Retrofit para chamadas de rede.
+- Moshi para serialização de objetos.
+- SharedPreferences para salvar as informações localmente no cache do app.
+- Material para ícones.
+- FusedLocation para pegar o posicionamento GPS.
+- Accompanist para gerenciamento de permissões.
+- ComposeSensors para os dados do Gyroscópio.
+- Camerax para fotos
+- MLKit para detecção de rostos.
 
-Este teste tem um **propósito** bastante simples:
+Também usei alguns arquivos isolados desse repositório: https://github.com/Hechio/CameraX-FaceDetection-MlKit/tree/master, que possui uma ótima implementação do Camerax+MLKit, mas foi necessário haver todo um trabalho de adaptação e limpeza dos métodos para ficar coerente e funcional com o projeto presente.
 
-> Nós queremos avaliar como você consegue transformar problemas em soluções através de código!
+# Alguns design patterns utilizados:
+- Singleton para repositórios e serviços.
+- Wrapper para encapsular as respostas dos services.
+- Facade para os métodos do SharedPreferences.
 
-**🚨 IMPORTANTE!** Se você entende que já possui algum projeto pessoal, ou contribuição em um projeto _open-source_ que contemple conhecimentos equivalentes aos que existem neste desafio, então, basta submeter o repositório explicando essa correlação!
+# Ideia e UI
+Foi especificado que o aplicativo não teria tela, que os dados deveriam ser tratados apenas no background, por isso tive a ideia de fazer uma tela que poderia ser "ligada ou desligada" com um botão power para atender à especificação, mas também tendo um modo de visualizar alguns status sem ter q depender apenas olhar os logs da aplicação ou o debugger.
 
-## 🚀 Bora nessa!
+A tela principal tem o botão mencionado. No modo Desligado a tela fica escura, mas o processamento de dados ainda está rolando no background. 
+No modo Ligado há um feed de logs reportando os status do background.
+Também há mais dois botões embaixo, um para trocar a câmera q está sendo usada, entre a Traseira e a Frontal.
+E um botão para limpar o feed. Importante: o botão não vai apagar os dados do Cache do aplicativo, apenas a lista q está sendo exibida! A lista é rolável e otimizada, então não tem problema se crescer demais.
 
-Este é um teste para analisarmos como você desempenha ao entender, traduzir, resolver e entregar um código que resolve um problema.
+O app fica constantemente coletando dados no background, da câmera, gps e giroscópio, mas não salva nada. Apenas a cada 10 segundos os dados daquele momento são salvos no cache local e enviados para os endpoints fake. A photo só é salva se um rosto for detectado.
+Estou fazendo requisições reais para a URL https://jsonplaceholder.typicode.com/, mas o response das chamadas está sendo ignorado, já q sempre vai retornar erro.
 
-### Dicas
-
-- Documente seu projeto;
-- Faça perguntas sobre os pontos que não ficaram claros para você;
-- Mostre a sua linha de raciocínio;
-- Trabalhe bem o seu README.md;
-  - Explique até onde implementou;
-  - Como o projeto pode ser executado;
-  - Como pode-se testar o projeto;
-
-### Como você deverá desenvolver?
-
-1. Faça um _fork_ deste projeto em seu GitHub pessoal;
-2. Realize as implementações de acordo com cada um dos níveis;
-3. Faça pequenos _commits_;
-4. Depois de sentir que fez o seu máximo, faça um PR para o repositório original.
-
-🚨 **IMPORTANTE!** Não significa que você precisa implementar **todos os níveis** para ser aprovado no processo! Faça até onde se sentir confortável.
-
-### Qual o tempo para entregar?
-
-Quanto antes você enviar, mais cuidado podemos ter na revisão do seu teste. Mas sabemos que o dia a dia é corrido, faça de forma que fique confortável para você!
-
-**Mas não desista! Envie até onde conseguir.**
-
-## 💻 O Problema
-
-Um dos nossos clientes ainda não consegue comprar o equipamento para colocar nos veículos de sua frota, mas ele quer muito utilizar a nossa solução.
-
-Por isso, vamos fazer um MVP bastante simples para testar se, o celular do motorista poderia ser utilizado como o dispositivo de obtenção das informações.
-
-> Parece fazer sentido certo? Ele possui vários mecanismos parecidos com o equipamento que oferecemos!
-
-Sua missão ajudar na criação deste MVP para que possamos testar as frotas deste cliente.
-
-Essa versão do produto será bastante simplificada. Queremos apenas criar as estruturas para obter algumas informações do seu dispositivo (Android) e armazená-la em um Banco de Dados.
-
-Essas informações, depois de armazenadas devem estar disponíveis através de uma API para que este cliente integre com um Front-end já existente!
-
-### Quais serão as informações que deverão ser coletadas?
-
-1. **Dados de Giroscópio** - Estes dados devem retornar 3 valores (`x`, `y`, `z`). E devem ser armazenados juntamente com o `TIMESTAMP` do momento em que foi coletado;
-2. **Dados de GPS** - Estes dados devem retornar 2 valores (`latitude` , `longitude`). E também devem ser armazenados juntamente com o `TIMESTAMP` do momento em que foram coletados;
-3. **Uma foto** - Obter uma foto de uma das câmeras do dispositivo e enviá-la também junto com o `TIMESTAMP` em que foi coletada;
-
-**🚨 É importante que se envie junto à essas informações um campo adicional, contendo uma identificação única do dispositivo, que pode ser seu endereço MAC.**
-
-### Funcionamento
-
-A aplicação Android deverá rodar em Background, e coletar e enviar as informações descritas a cada 10 segundos.
-
-### Qual parte do desafio devo realizar?
-
-Você deve realizar somente o desafio para a vaga que se candidatou.
-
-Caso tenha sido a vaga de Android Embarcado, então resolva somente esta sessão.
-
-Caso tenha sido a vaga de Backend, então resolva somente esta sessão.
-
----
-
-# Desafio Android Embarcado
-
-Você deverá criar uma aplicação que deverá coletar os dados e enviá-los para o servidor Back-end;
-
-Lembre-se que essa é uma aplicação Android nativa, e não deve possuir qualquer tipo de interface com o usuário.
-
-## Nível 1
-
-Deve-se coletar os dados de acordo com as especificações, e armazená-los em um banco de dados local;
-
-## Nível 2
-
-Deve-se criar testes unitários para garantir o funcionamento das estruturas criadas;
-
-## Nível 3
-
-Deve-se enviar os dados obtidos a cada 10 segundos para uma API com a seguinte rota
-
-- `POST /telemetry/gyroscope` - Dados do giroscópio;
-- `POST /telemetry/gps` - Dados do GPS;
-- `POST /telemetry/photo` - Dados da Foto;
-
-## Nível 4
-
-Deve-se realizar um _crop_ da foto obtida para que se consiga extrair somente um rosto. Caso a foto não tenha um rosto, ela não deverá ser enviada.
-
-## Nível 5
-
-Faça com que cada uma das requisições ocorra de forma paralela, e não de forma síncrona;
-
-# Desafio Backend
-
-Você deverá criar uma aplicação que irá receber os dados enviados pelo aplicativo.
-
-Lembre-se essa aplicação precisa ser em GO!
-
-## Nível 1
-
-Deve-se criar uma API que receba requisições de acordo com os endpoints:
-
-- `POST /telemetry/gyroscope` - Dados do giroscópio;
-- `POST /telemetry/gps` - Dados do GPS;
-- `POST /telemetry/photo` - Dados da Foto;
-
-Deve-se garantir que os dados recebidos estão preenchidos corretamente.
-
-Caso algum dado esteja faltando, então retorne uma mensagem de erro e um Status 400.
-
-## Nível 2
-
-Salve cada uma das informações em um banco de dados a sua escolha.
-
-Salve estes dados de forma identificável e consistente;
-
-## Nível 3
-
-Crie testes unitários para cada arquivo da aplicação. Para cada nova implementação a seguir, também deve-se criar os testes.
-
-## Nível 4
-
-Crie um _container_ em _Docker_ que contenha a sua aplicação e o banco de dados utilizado nos testes.
-
-## Nível 5
-
-A cada foto recebida, deve-se utilizar o AWS Rekognition para comparar se a foto enviada é reconhecida com base nas fotos anteriores enviadas.
-
-Se a foto enviada for reconhecida, retorne como resposta do `POST` um atributo que indique isso.
-
-Utilize as fotos iniciais para realizar o treinamento da IA.
+# Pendências 
+De pendências do projeto devido ao tempo limitado, ficaram: o crop da imagem e os testes, apenas. Todo o resto foi implementado.
+Há alguns comentários pelo código com //TODO em locais que deveriam receber atenção, caso esse fosse um projeto real que fosse ser continuado.
