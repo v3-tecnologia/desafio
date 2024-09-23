@@ -181,14 +181,6 @@ v3_teste/
 2. **Validação e Armazenamento**: Implementação de regras de validação no backend para garantir a integridade dos dados recebidos.
 3. **Processamento de Imagens**: O uso de bibliotecas como OpenCV facilitou a manipulação e processamento de imagens no dispositivo Android.
 
-## Como Contribuir
-
-1. Faça um fork do projeto.
-2. Crie uma nova branch (`git checkout -b feature/nova-feature`).
-3. Faça suas alterações e commit (`git commit -am 'Adicionar nova feature'`).
-4. Envie para a branch (`git push origin feature/nova-feature`).
-5. Abra um Pull Request.
-
 ## Licença
 
 Este projeto é licenciado sob a Licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
