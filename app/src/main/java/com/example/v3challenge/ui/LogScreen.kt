@@ -1,17 +1,22 @@
 package com.example.v3challenge.ui
 
 import androidx.camera.core.CameraSelector
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteSweep
+import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.FlipCameraIos
+import androidx.compose.material.icons.filled.PinDrop
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
@@ -26,12 +31,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.example.v3challenge.model.Photo
+import com.example.v3challenge.ui.theme.DarkGreen
 import com.example.v3challenge.utils.CameraManager
+import com.example.v3challenge.utils.LogType
 import com.example.v3challenge.viewModel.LogsViewModel
 import com.mutualmobile.composesensors.rememberGyroscopeSensorState
 
@@ -87,13 +98,60 @@ fun LogScreen(viewModel: LogsViewModel = hiltViewModel()) {
                         .padding(bottom = 100.dp),
                     state = scrollState
                 ) {
-                    logs.forEach { log ->
+                    logs.forEach { genericLog ->
                         item {
-                            Text(
-                                text = log,
-                                color = Color.Black,
-                                fontSize = 14.sp
-                            )
+                            when (genericLog.type) {
+                                LogType.GYRO -> {
+                                    Row {
+                                        Icon(
+                                            imageVector = Icons.Default.PinDrop,
+                                            contentDescription = ""
+                                        )
+                                        Text(
+                                            modifier = Modifier.padding(start = 5.dp),
+                                            text = "Gyro data saved and Sent!",
+                                            color = DarkGreen,
+                                            fontSize = 14.sp,
+                                            fontWeight = Bold
+                                        )
+                                    }
+                                }
+
+                                LogType.GPS -> {
+                                    Row {
+                                        Icon(
+                                            imageVector = Icons.Default.Explore,
+                                            contentDescription = ""
+                                        )
+                                        Text(
+                                            modifier = Modifier.padding(start = 5.dp),
+                                            text = "GPS data saved and sent!",
+                                            color = DarkGreen,
+                                            fontSize = 14.sp,
+                                            fontWeight = Bold
+                                        )
+                                    }
+                                }
+
+                                LogType.PHOTO -> {
+                                    val log = genericLog.log as Photo
+                                    if (log.photo == null) {
+                                        Text(
+                                            text = "No face detected!",
+                                            color = Color.Red,
+                                            fontSize = 14.sp,
+                                            fontWeight = Bold
+                                        )
+                                    } else {
+                                        Text(
+                                            text = "Face saved and sent!",
+                                            color = DarkGreen,
+                                            fontSize = 14.sp,
+                                            fontWeight = Bold
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

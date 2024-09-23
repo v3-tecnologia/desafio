@@ -6,7 +6,6 @@ import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.media.Image
 import android.util.Log
 import androidx.collection.arraySetOf
 import androidx.compose.runtime.MutableState
@@ -17,6 +16,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import com.example.v3challenge.localData.PrefsInterface
 import com.example.v3challenge.localData.PrefsRepository
+import com.example.v3challenge.model.GenericLog
 import com.example.v3challenge.model.Gps
 import com.example.v3challenge.model.Gyro
 import com.example.v3challenge.model.Photo
@@ -24,6 +24,7 @@ import com.example.v3challenge.network.ApiSettings.TEN_SECONDS
 import com.example.v3challenge.network.ApiSettings.moshi
 import com.example.v3challenge.repository.LogsRepository
 import com.example.v3challenge.utils.FaceStatus
+import com.example.v3challenge.utils.LogType
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.mutualmobile.composesensors.GyroscopeSensorState
@@ -32,6 +33,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.ArrayList
 import java.util.Timer
 import javax.inject.Inject
 import kotlin.concurrent.schedule
@@ -62,19 +64,21 @@ class LogsViewModel @Inject constructor(
         PrefsRepository(context, "photo-data")
     }
 
-    val logs: MutableList<String> = mutableListOf()
+    val logs: MutableList<GenericLog> = mutableListOf()
 
     //Start Functions
     fun startTimer() {
         timer.schedule(0L, TEN_SECONDS) {
+            saveAndSendGyroData()
+            saveAndSendGpsData()
             if (isFaceDetectedNow.value) {
-                saveAndSendGyroData()
-                saveAndSendGpsData()
                 saveAndSendPhotoData()
-                logs.add("Face detected!")
             } else {
-                logs.add("No face detected!")
+                currentPhotoData.value.photo = null
+                currentPhotoData.value.timestamp = null
+                Log.e("photo","No Face detected.")
             }
+            logs.add(GenericLog(LogType.PHOTO, currentPhotoData.value.copy()))
         }
     }
 
@@ -92,12 +96,11 @@ class LogsViewModel @Inject constructor(
         val gyroData = gyroPrefs.getPref()
         if (gyroData != null) {
             val gyroSet: LinkedHashSet<Gyro> = setAdapter?.fromJson(gyroData) as LinkedHashSet<Gyro>
-            gyroSet.add(currentGyroData.value)
-            gyroPrefs.setPref(setAdapter.toJson(gyroSet).toString())
+            gyroSet.add(currentGyroData.value.copy())
+            gyroPrefs.setPref(setAdapter.toJson(gyroSet))
         } else {
-            gyroPrefs.setPref(setAdapter?.toJson(arraySetOf(currentGyroData.value)).toString())
+            gyroPrefs.setPref(setAdapter?.toJson(arraySetOf(currentGyroData.value))!!)
         }
-//        Log.i("New gyro saved:", currentGyroData.value.toString())
     }
 
     @SuppressLint("MissingPermission")
@@ -112,6 +115,7 @@ class LogsViewModel @Inject constructor(
                 }
             }
             .addOnFailureListener { _ ->
+                //TODO
                 // If an error occurs, invoke the failure callback with the exception
             }
 
@@ -119,11 +123,10 @@ class LogsViewModel @Inject constructor(
         if (gpsData != null) {
             val gpsSet: LinkedHashSet<Gps> = setAdapter?.fromJson(gpsData) as LinkedHashSet<Gps>
             gpsSet.add(currentGpsData.value)
-            gyroPrefs.setPref(setAdapter.toJson(gpsSet).toString())
+            gpsPrefs.setPref(setAdapter.toJson(gpsSet).toString())
         } else {
-            gyroPrefs.setPref(setAdapter?.toJson(arraySetOf(currentGpsData.value)).toString())
+            gpsPrefs.setPref(setAdapter?.toJson(arraySetOf(currentGpsData.value)).toString())
         }
-//        Log.i("New GPS saved:", currentGpsData.value.toString())
     }
 
     private fun savePhotoDataLocally() {
@@ -142,6 +145,8 @@ class LogsViewModel @Inject constructor(
         saveGyroDataLocally()
         CoroutineScope(Dispatchers.Main).launch {
             logsRepository.sendGyro(currentGyroData.value.toString())
+            logs.add(GenericLog(LogType.GYRO, currentGyroData.value.copy()))
+            Log.e("gyro","Gyro data saved and sent!")
         }
     }
 
@@ -152,6 +157,8 @@ class LogsViewModel @Inject constructor(
         CoroutineScope(Dispatchers.Main).launch {
             val result = currentGpsData.value.toString()
             logsRepository.sendGps(result)
+            logs.add(GenericLog(LogType.GPS, currentGpsData.value.copy()))
+            Log.e("gps","GPS data saved and sent!")
         }
     }
 
@@ -160,6 +167,7 @@ class LogsViewModel @Inject constructor(
         CoroutineScope(Dispatchers.Main).launch {
             val result = currentPhotoData.value.toString()
             logsRepository.sendPhoto(result)
+            Log.e("photo","Face detected, saved and sent!")
         }
     }
 
@@ -180,6 +188,7 @@ class LogsViewModel @Inject constructor(
         Log.e("Face status", "This is ${faceStatus.name}")
         when (faceStatus) {
             FaceStatus.VALID -> {
+                //Lets pretend I'm saving the Photo correctly here, shall we? ;)
                 currentPhotoData.value.photo = bitmap.toString()
                 currentPhotoData.value.timestamp = timestamp
                 isFaceDetectedNow.value = true
