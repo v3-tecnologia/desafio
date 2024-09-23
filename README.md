@@ -15,8 +15,7 @@
    - [Funcionalidades do Projeto Android](#funcionalidades-do-projeto-android)
    - [Funcionalidades do Projeto Backend](#funcionalidades-do-projeto-backend)
 8. [Desafios e Soluções](#desafios-e-soluções)
-9. [Como Contribuir](#como-contribuir)
-10. [Licença](#licença)
+9. [Licença](#licença)
 
 ## Sobre o Projeto
 
